@@ -2,7 +2,5 @@
 ## About
 A simple custom google maps for Guildwars 2. More to come!
 
-### Credits for the tiles script and some javascripts goes to
-
-Photoshop Google Maps Tile Cutter
-Built by Bramus! - [http://www.bram.us/](http://www.bram.us/)
+### A big thank you to
+http://bramus.github.com/photoshop-google-maps-tile-cutter/example/
