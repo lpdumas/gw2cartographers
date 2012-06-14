@@ -9,7 +9,6 @@
     function CustomMap(id) {
       var overlay,
         _this = this;
-      this.repeatOnXAxis = false;
       this.blankTilePath = 'tiles/_empty.jpg';
       this.maxZoom = 7;
       this.gMapOptions = {
@@ -25,11 +24,10 @@
       };
       this.customMapType = new google.maps.ImageMapType({
         getTileUrl: function(coord, zoom) {
-          var normalizedCoord;
-          normalizedCoord = _this.getNormalizedCoord(coord, zoom);
+          var normalizedCoord, path;
+          normalizedCoord = coord;
           if (normalizedCoord && (normalizedCoord.x < Math.pow(2, zoom)) && (normalizedCoord.x > -1) && (normalizedCoord.y < Math.pow(2, zoom)) && (normalizedCoord.y > -1)) {
-            console.log("test");
-            return 'tiles/' + zoom + '_' + normalizedCoord.x + '_' + normalizedCoord.y + '.jpg';
+            return path = 'tiles/' + zoom + '_' + normalizedCoord.x + '_' + normalizedCoord.y + '.jpg';
           } else {
             return _this.blankTilePath;
           }
@@ -38,13 +36,10 @@
         maxZoom: this.maxZoom,
         name: 'GW2 Map'
       });
-      console.log($(id)[0]);
       this.map = new google.maps.Map($(id)[0], this.gMapOptions);
       this.map.mapTypes.set('custom', this.customMapType);
       this.map.setMapTypeId('custom');
       overlay = new google.maps.OverlayView();
-      overlay.draw = function() {};
-      overlay.setMap(this.map);
       this.longContainer = $('#long');
       this.latContainer = $('#lat');
       google.maps.event.addListener(this.map, 'mousemove', function(e) {
@@ -52,26 +47,6 @@
         return _this.latContainer.html(e.latLng.lat());
       });
     }
-
-    CustomMap.prototype.getNormalizedCoord = function(coord, zoom) {
-      var tileRange, x, y;
-      if (!this.repeatOnXAxis) {
-        return coord;
-      }
-      y = coord.y;
-      x = coord.x;
-      tileRange = 1 << zoom;
-      if (y < 0 || y >= tileRange) {
-        return null;
-      }
-      if (x < 0 || x >= tileRange) {
-        x = (x % tileRange + tileRange) % tileRange;
-      }
-      return {
-        x: x,
-        y: y
-      };
-    };
 
     return CustomMap;
 
