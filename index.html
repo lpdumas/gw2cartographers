@@ -1,153 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Guild Wars 2 Map</title>
-        <meta charset="utf-8" />
-        <style>
-            html, body {
-                height: 100%;
-                margin: 0;
-                padding: 0;
-                background-color: black;
-            }
-            #map {
-                width:100%;
-                height:100%;
-                text-align: center;
-                font: 300 italic 72px/400px "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
-                color: #CCC;
-                background: #EFEFEF;
-            }
-            
-            #coord {
-                display: block;
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: #fff;
-                color: #000;
-            }
-            #coord span{
-                display: inline-block;
-                margin-right: 10px;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="map">loading tiles...</div>
-        <div id="coord"><span id="long"></span><span id="lat"></span></div>        
-        <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
-        <script>
+<!doctype html>
+<html class="no-js" lang="fr">
+<head>
+  <meta charset="utf-8">
 
-            /*
-             * = Config
-             * ----------------
-             */
-            
-                var repeatOnXAxis = false; // Do we need to repeat the image on the X-axis? Most likely you'll want to set this to false
-                var blankTilePath = 'tiles/_empty.jpg'; // Path to a blank tile when repeat is set to false
-                var maxZoom = 7; // Maximum zoom level. Set this to the first number of the last tile generated (eg. 5_31_31 -> 5)
-            
-            
-            /*
-             * Helper function which normalizes the coords so that tiles can repeat across the X-axis (horizontally) like the standard Google map tiles.
-             * ----------------
-             */
-            
-                function getNormalizedCoord(coord, zoom) {
-            
-                    if (!repeatOnXAxis) return coord;
-            
-                    var y = coord.y;
-                    var x = coord.x;
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-                    // tile range in one direction range is dependent on zoom level
-                    // 0 = 1 tile, 1 = 2 tiles, 2 = 4 tiles, 3 = 8 tiles, etc
-                    var tileRange = 1 << zoom;
+  <title>Guild Wars 2 Map</title>
+  <meta name="description" content="A simple guildwars 2 map">
 
-                    // don't repeat across Y-axis (vertically)
-                    if (y < 0 || y >= tileRange) {
-                        return null;
-                    }
+  <meta name="viewport" content="width=device-width">
 
-                    // repeat across X-axis
-                    if (x < 0 || x >= tileRange) {
-                        x = (x % tileRange + tileRange) % tileRange;
-                    }
+  <link rel="stylesheet" href="assets/stylesheets/global.css">
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+  <!--[if lt IE 9]>
+  <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+<body>
 
-                    return {
-                        x: x,
-                        y: y
-                    };
-        
-                }
+    <div id="map">loading tiles...</div>
+    <div id="coord"><span id="long"></span><span id="lat"></span></div>
 
 
-            /*
-             * Main Core
-             * ----------------
-             */
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="assets/javascripts/libs/jquery-latest.js"><\/script>')</script>
+    <script src="assets/javascripts/global.js"></script>
 
-                window.onload = function() {
-                
-                    // Define our custom map type
-                    var customMapType = new google.maps.ImageMapType({
-                        getTileUrl: function(coord, zoom) {
-                            var normalizedCoord = getNormalizedCoord(coord, zoom);
-                            if(normalizedCoord && (normalizedCoord.x < Math.pow(2, zoom)) && (normalizedCoord.x > -1) && (normalizedCoord.y < Math.pow(2, zoom)) && (normalizedCoord.y > -1)) {
-                                return 'tiles/' + zoom + '_' + normalizedCoord.x + '_' + normalizedCoord.y + '.jpg';
-                            } else {
-                                return blankTilePath;
-                            }
-                        },
-                        tileSize: new google.maps.Size(256, 256),
-                        maxZoom: maxZoom,
-                        name: 'Champagne in the park'
-                    });
-            
-                    // Basic options for our map
-                    var myOptions = {
-                        center: new google.maps.LatLng(0, 0),
-                        zoom: 2,
-                        minZoom: 0,
-                        maxZoom: maxZoom,
-                        streetViewControl: false,
-                        mapTypeControl: false,
-                        mapTypeControlOptions: {
-                            mapTypeIds: ["custom", google.maps.MapTypeId.ROADMAP]
-                        }
-                    };
-
-                    // Init the map
-                    var map = new google.maps.Map(document.getElementById('map'), myOptions);
-                    
-                    // Hook the our custom map type to the map and activate it
-                    map.mapTypes.set('custom', customMapType);
-                    map.setMapTypeId('custom'); 
-                    
-                    var overlay = new google.maps.OverlayView();
-                    overlay.draw = function() {};
-                    overlay.setMap(map); // 'map' is new google.maps.Map(...)
-                    
-                    // 23.563987128451217, -46.23046875 
-                    // var marker = new google.maps.Marker({
-                        // position: new google.maps.LatLng(23.563987128451217, -46.23046875),
-                        // map: map,
-                        // icon: "icons/supermarket.gif",
-                        // title: "Badass title"
-                    // });
-                    
-                    longContainer = document.getElementById('long')
-                    latContainer = document.getElementById('lat')
-
-                    google.maps.event.addListener(map, 'mousemove', function(e) {
-                        longContainer.innerHTML = e.latLng.lng()
-                        latContainer.innerHTML = e.latLng.lat()
-                    });
-                    
-
-                }
-        </script>
-
-    </body>
+</body>
 </html>
