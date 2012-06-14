@@ -1,6 +1,6 @@
 class CustomMap
   constructor: (id)->
-    @blankTilePath = 'tiles/_empty.jpg'
+    @blankTilePath = 'tiles/00empty.jpg'
     @maxZoom       = 7
     @gMapOptions   = 
       center: new google.maps.LatLng(0, 0)

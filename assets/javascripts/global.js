@@ -9,7 +9,7 @@
     function CustomMap(id) {
       var overlay,
         _this = this;
-      this.blankTilePath = 'tiles/_empty.jpg';
+      this.blankTilePath = 'tiles/00empty.jpg';
       this.maxZoom = 7;
       this.gMapOptions = {
         center: new google.maps.LatLng(0, 0),
