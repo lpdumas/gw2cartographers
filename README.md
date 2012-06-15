@@ -9,7 +9,9 @@ A simple custom google maps for Guildwars 2. More to come!
 * InfoWindow on marker's click
 * More markers types
 * Toggling between marker type
-* Dynamic events?
+* Dynamic events chain: Toggling between different chains live on the map.
+* URL sharing
+* iFrame embeding
 
 I can't think of anything else right now. Waiting suggestions.
 
