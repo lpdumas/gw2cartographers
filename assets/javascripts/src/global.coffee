@@ -55,10 +55,9 @@ class CustomMap
       title: "#{markerInfo.title}"
     )
     @heartsMarker.push marker
+  
   setHearts:()->
-    $.get('/assets/javascripts/json/hearts.json', (e)=>
-      @addMarkers(heart, "#{@iconsPath}/heart.png") for heart in e.hearts
-    )
+      @addMarkers(heart, "#{@iconsPath}/heart.png") for heart in Markers.Hearts
     
 $ ()->
   myCustomMap = new CustomMap('#map')

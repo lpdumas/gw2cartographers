@@ -65,17 +65,14 @@
     };
 
     CustomMap.prototype.setHearts = function() {
-      var _this = this;
-      return $.get('/assets/javascripts/json/hearts.json', function(e) {
-        var heart, _i, _len, _ref, _results;
-        _ref = e.hearts;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          heart = _ref[_i];
-          _results.push(_this.addMarkers(heart, "" + _this.iconsPath + "/heart.png"));
-        }
-        return _results;
-      });
+      var heart, _i, _len, _ref, _results;
+      _ref = Markers.Hearts;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        heart = _ref[_i];
+        _results.push(this.addMarkers(heart, "" + this.iconsPath + "/heart.png"));
+      }
+      return _results;
     };
 
     return CustomMap;
