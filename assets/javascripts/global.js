@@ -48,11 +48,19 @@
       google.maps.event.addListener(this.map, 'click', function(e) {
         return alert("" + (e.latLng.lat()) + ", " + (e.latLng.lng()));
       });
-      this.heartsMarker = [];
+      this.gMarker = {
+        "hearts": [],
+        "waypoints": [],
+        "poi": [],
+        "skillpoints": []
+      };
       this.setHearts();
+      this.setWaypoints();
+      this.setPOI();
+      this.setSkillPoints();
     }
 
-    CustomMap.prototype.addMarkers = function(markerInfo, img) {
+    CustomMap.prototype.addMarkers = function(markerInfo, img, type) {
       var marker;
       marker = new google.maps.Marker({
         position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat),
@@ -61,7 +69,7 @@
         draggable: true,
         title: "" + markerInfo.title
       });
-      return this.heartsMarker.push(marker);
+      return this.gMarker[type] = marker;
     };
 
     CustomMap.prototype.setHearts = function() {
@@ -70,7 +78,40 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         heart = _ref[_i];
-        _results.push(this.addMarkers(heart, "" + this.iconsPath + "/heart.png"));
+        _results.push(this.addMarkers(heart, "" + this.iconsPath + "/heart.png", "hearts"));
+      }
+      return _results;
+    };
+
+    CustomMap.prototype.setWaypoints = function() {
+      var waypoint, _i, _len, _ref, _results;
+      _ref = Markers.Wayppoints;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        waypoint = _ref[_i];
+        _results.push(this.addMarkers(waypoint, "" + this.iconsPath + "/waypoint.png", "waypoints"));
+      }
+      return _results;
+    };
+
+    CustomMap.prototype.setPOI = function() {
+      var poi, _i, _len, _ref, _results;
+      _ref = Markers.POI;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        poi = _ref[_i];
+        _results.push(this.addMarkers(poi, "" + this.iconsPath + "/pointOfInterest.png", "poi"));
+      }
+      return _results;
+    };
+
+    CustomMap.prototype.setSkillPoints = function() {
+      var skillPoint, _i, _len, _ref, _results;
+      _ref = Markers.SkillPoints;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        skillPoint = _ref[_i];
+        _results.push(this.addMarkers(skillPoint, "" + this.iconsPath + "/skillPoint.png", "skillpoints"));
       }
       return _results;
     };

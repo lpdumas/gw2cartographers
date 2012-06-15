@@ -44,9 +44,18 @@ class CustomMap
     )
     
     #marker
-    @heartsMarker = []
+    @gMarker = 
+      "hearts" : []
+      "waypoints" : []
+      "poi" : []
+      "skillpoints" : []
+      
     @setHearts()
-  addMarkers:(markerInfo, img)->
+    @setWaypoints()
+    @setPOI()
+    @setSkillPoints()
+  
+  addMarkers:(markerInfo, img, type)->
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat)
       map: @map
@@ -54,10 +63,18 @@ class CustomMap
       draggable: true
       title: "#{markerInfo.title}"
     )
-    @heartsMarker.push marker
+    @gMarker[type] = marker
   
   setHearts:()->
-      @addMarkers(heart, "#{@iconsPath}/heart.png") for heart in Markers.Hearts
+      @addMarkers(heart, "#{@iconsPath}/heart.png","hearts") for heart in Markers.Hearts
+  
+  setWaypoints:()->
+    @addMarkers(waypoint, "#{@iconsPath}/waypoint.png", "waypoints") for waypoint in Markers.Wayppoints
+
+  setPOI:()->
+    @addMarkers(poi, "#{@iconsPath}/pointOfInterest.png", "poi") for poi in Markers.POI
+  setSkillPoints:()->
+    @addMarkers(skillPoint, "#{@iconsPath}/skillPoint.png", "skillpoints") for skillPoint in Markers.SkillPoints    
     
 $ ()->
   myCustomMap = new CustomMap('#map')
