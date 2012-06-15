@@ -7,13 +7,15 @@
     CustomMap.name = 'CustomMap';
 
     function CustomMap(id) {
-      var overlay,
-        _this = this;
+      var _this = this;
       this.blankTilePath = 'tiles/00empty.jpg';
+      this.iconsPath = 'assets/images/icons/32x32';
       this.maxZoom = 7;
+      this.lngContainer = $('#long');
+      this.latContainer = $('#lat');
       this.gMapOptions = {
-        center: new google.maps.LatLng(0, 0),
-        zoom: 2,
+        center: new google.maps.LatLng(25.760319754713887, -35.6396484375),
+        zoom: 6,
         minZoom: 0,
         maxZoom: this.maxZoom,
         streetViewControl: false,
@@ -39,14 +41,42 @@
       this.map = new google.maps.Map($(id)[0], this.gMapOptions);
       this.map.mapTypes.set('custom', this.customMapType);
       this.map.setMapTypeId('custom');
-      overlay = new google.maps.OverlayView();
-      this.longContainer = $('#long');
-      this.latContainer = $('#lat');
       google.maps.event.addListener(this.map, 'mousemove', function(e) {
-        _this.longContainer.html(e.latLng.lng());
+        _this.lngContainer.html(e.latLng.lng());
         return _this.latContainer.html(e.latLng.lat());
       });
+      google.maps.event.addListener(this.map, 'click', function(e) {
+        return alert("" + (e.latLng.lat()) + ", " + (e.latLng.lng()));
+      });
+      this.heartsMarker = [];
+      this.setHearts();
     }
+
+    CustomMap.prototype.addMarkers = function(markerInfo, img) {
+      var marker;
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat),
+        map: this.map,
+        icon: img,
+        draggable: true,
+        title: "" + markerInfo.title
+      });
+      return this.heartsMarker.push(marker);
+    };
+
+    CustomMap.prototype.setHearts = function() {
+      var _this = this;
+      return $.get('/assets/javascripts/json/hearts.json', function(e) {
+        var heart, _i, _len, _ref, _results;
+        _ref = e.hearts;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          heart = _ref[_i];
+          _results.push(_this.addMarkers(heart, "" + _this.iconsPath + "/heart.png"));
+        }
+        return _results;
+      });
+    };
 
     return CustomMap;
 
