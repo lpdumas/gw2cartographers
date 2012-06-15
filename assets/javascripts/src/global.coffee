@@ -60,7 +60,7 @@ class CustomMap
       position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat)
       map: @map
       icon: img
-      draggable: true
+      draggable: false
       title: "#{markerInfo.title}"
     )
     
