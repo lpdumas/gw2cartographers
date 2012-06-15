@@ -63,6 +63,11 @@ class CustomMap
       draggable: true
       title: "#{markerInfo.title}"
     )
+    
+    google.maps.event.addListener(marker, 'dragend', (e)=>
+      console.log "#{e.latLng.lat()}, #{e.latLng.lng()}"
+    )
+    
     @gMarker[type] = marker
   
   setHearts:()->
@@ -73,6 +78,7 @@ class CustomMap
 
   setPOI:()->
     @addMarkers(poi, "#{@iconsPath}/pointOfInterest.png", "poi") for poi in Markers.POI
+    
   setSkillPoints:()->
     @addMarkers(skillPoint, "#{@iconsPath}/skillPoint.png", "skillpoints") for skillPoint in Markers.SkillPoints    
     

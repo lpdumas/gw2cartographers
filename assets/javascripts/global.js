@@ -61,13 +61,17 @@
     }
 
     CustomMap.prototype.addMarkers = function(markerInfo, img, type) {
-      var marker;
+      var marker,
+        _this = this;
       marker = new google.maps.Marker({
         position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat),
         map: this.map,
         icon: img,
         draggable: true,
         title: "" + markerInfo.title
+      });
+      google.maps.event.addListener(marker, 'dragend', function(e) {
+        return console.log("" + (e.latLng.lat()) + ", " + (e.latLng.lng()));
       });
       return this.gMarker[type] = marker;
     };

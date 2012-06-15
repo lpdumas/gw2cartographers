@@ -10,7 +10,7 @@ Markers.Wayppoints = [
   {"lng" : "29.19053283229458", "lat" : "-43.033447265625", "title" : "Fields Waypoint", "desc" : ""},
   {"lng" : "29.9168522330702", "lat" : "-40.4296875", "title" : "Shaemoor Waypoint", "desc" : ""},
   {"lng" : "28.516969440401084", "lat" : "-37.957763671875", "title" : "Garrison Waypoint", "desc" : ""},
-  {"lng" : "26.175158990178186", "lat" : "-37.55126953125", "title" : "??", "desc" : ""}
+  {"lng" : "26.106120832355593", "lat" : "-37.55126953125", "title" : "??", "desc" : ""}
 ]
 
 // Points of interest
@@ -24,6 +24,7 @@ Markers.POI = [
 
 // Points of interest
 Markers.SkillPoints = [
-  {"lng" : "28.969700808694157", "lat" : "-38.089599609375", "title" : "Commune with Earthen Magic", "desc" : ""}
+  {"lng" : "28.969700808694157", "lat" : "-38.089599609375", "title" : "Commune with Earthen Magic", "desc" : ""},
+  {"lng" : "24.25698131588254", "lat" : "-47.4169921875", "title" : "Use Erts Unguent", "desc" : ""}
 ]
 
