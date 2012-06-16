@@ -22,13 +22,27 @@
   </script>
 </head>
 <body>
-
+    <div id="dev-box">
+        <label>
+            <span class="label">Dev mode</span>
+            <input type="checkbox" name="dev-mod" id="dev-mod">
+        </label>
+    </div>
+    <div id="markers-box">
+        <ul>
+            <li><span id="waypoint"><img src="assets/images/icons/32x32/waypoint.png"  alt="Waypoint" /></span></li>
+            <li><span id="POI"></span></li>
+            <li><span id="heart"></span></li>
+            <li><span id="skillPoint"></span></li>
+        </ul>
+    </div>
     <div id="map"><img src="assets/images/loading.gif"  alt="Loading ..." /></div>
     <div id="coord"><span id="long"></span><span id="lat"></span></div>
 
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="assets/javascripts/libs/jquery-latest.js"><\/script>')</script>
+    <script src="assets/javascripts/libs/underscore.js"></script>
     <script src="assets/javascripts/config.js"></script>
     <script src="assets/javascripts/global.js"></script>
 

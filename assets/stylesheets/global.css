@@ -77,6 +77,7 @@ html, body {
 }
         
 #coord {
+    z-index: 10;
     display: block;
     position: fixed;
     bottom: 20px;
@@ -87,4 +88,45 @@ html, body {
 #coord span{
     display: inline-block;
     margin-right: 10px;
+}
+
+#dev-box {
+  z-index: 10;
+  display: block;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 75px;
+  margin-left: -37px;
+  background: #fff;
+  color: #000;
+  padding: 5px 10px;
+  text-align: center;
+}
+
+#markers-box {
+  position:fixed;
+  z-index: 5;
+  top: 0;
+  right: -40px;
+  bottom: 0;
+  width: 40px;
+  background: rgba(0, 0, 0, 0.7);
+  -webkit-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
+  -moz-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
+  -ms-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
+  -o-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
+}
+
+#markers-box.active {
+  right: 0;
+}
+
+#markers-box ul {
+  margin: 0;
+  padding: 0;
+  list-style:none;
+}
+#markers-box ul li{
+  margin-bottom: 5px;
 }

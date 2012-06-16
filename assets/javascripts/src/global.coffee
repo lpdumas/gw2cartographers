@@ -3,8 +3,12 @@ class CustomMap
     @blankTilePath = 'tiles/00empty.jpg'
     @iconsPath     = 'assets/images/icons/32x32'
     @maxZoom       = 7
-    @lngContainer = $('#long')
-    @latContainer = $('#lat')
+    @lngContainer  = $('#long')
+    @latContainer  = $('#lat')
+    @devModInput   = $('#dev-mod')
+    @markersBox    = $('#markers-box')
+    @canRemoveMarker = true
+    @draggableMarker = false
     @gMapOptions   = 
       center: new google.maps.LatLng(25.760319754713887, -35.6396484375)
       zoom: 6
@@ -39,9 +43,11 @@ class CustomMap
       @lngContainer.html e.latLng.lng()
       @latContainer.html e.latLng.lat()
     )
-    google.maps.event.addListener(@map, 'click', (e)=>
-      alert "#{e.latLng.lat()}, #{e.latLng.lng()}"
-    )
+    # google.maps.event.addListener(@map, 'click', (e)=>
+      # alert "#{e.latLng.lat()}, #{e.latLng.lng()}"
+    # )
+    
+    @devModInput.bind('click', @handleDevMod)
     
     #marker
     @gMarker = 
@@ -67,8 +73,13 @@ class CustomMap
     google.maps.event.addListener(marker, 'dragend', (e)=>
       console.log "#{e.latLng.lat()}, #{e.latLng.lng()}"
     )
-    
-    @gMarker[type] = marker
+    google.maps.event.addListener(marker, 'click', (e)=>
+      if @canRemoveMarker && @draggableMarker
+        @removeMarker(marker.__gm_id)
+      else
+        console.log "opening info window"
+    )
+    @gMarker[type].push(marker)
   
   setHearts:()->
       @addMarkers(heart, "#{@iconsPath}/heart.png","hearts") for heart in Markers.Hearts
@@ -81,6 +92,31 @@ class CustomMap
     
   setSkillPoints:()->
     @addMarkers(skillPoint, "#{@iconsPath}/skillPoint.png", "skillpoints") for skillPoint in Markers.SkillPoints    
+  
+  handleDevMod:(e)=>
+    this_ = $(e.currentTarget)
+    if this_.prop('checked')
+      @setDraggableMarker(true)
+      @markersBox.addClass('active')
+    else
+      @setDraggableMarker(false)
+      @markersBox.removeClass('active')
+
+  removeMarker:(id)->
+    for markersId, markers of @gMarker
+      @gMarker[markersId] = _.reject(markers, (m)=>
+        return m.__gm_id == id
+      )
+      for marker in markers
+        if marker.__gm_id == id
+          marker.setMap(null)
+  
+  setDraggableMarker:(val)->
+    @draggableMarker = val
+    for markersId, markers of @gMarker
+      for marker in markers
+        marker.setDraggable(val)
+      
     
 $ ()->
   myCustomMap = new CustomMap('#map')
