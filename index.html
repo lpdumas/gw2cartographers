@@ -28,13 +28,16 @@
             <input type="checkbox" name="dev-mod" id="dev-mod">
         </label>
     </div>
-    <div id="markers-box">
-        <ul>
-            <li><span id="waypoint"><img src="assets/images/icons/32x32/waypoint.png"  alt="Waypoint" /></span></li>
-            <li><span id="POI"></span></li>
-            <li><span id="heart"></span></li>
-            <li><span id="skillPoint"></span></li>
-        </ul>
+    <div id="options-box">
+        <div class="subnavGroup group">
+            <a href="javascript:" id="add-marker">+</a>
+            <ul id="marker-list">
+                <li><span data-type="waypoints"><img src="assets/images/icons/32x32/waypoints.png"  alt="Waypoint" /></span></li>
+                <li><span data-type="poi"><img src="assets/images/icons/32x32/poi.png"  alt="Point of interest" /></span></li>
+                <li><span data-type="hearts"><img src="assets/images/icons/32x32/hearts.png"  alt="Heart" /></span></li>
+                <li><span data-type="skillpoints"><img src="assets/images/icons/32x32/skillpoints.png"  alt="Skill point" /></span></li>
+            </ul>
+        </div>
     </div>
     <div id="map"><img src="assets/images/loading.gif"  alt="Loading ..." /></div>
     <div id="coord"><span id="long"></span><span id="lat"></span></div>

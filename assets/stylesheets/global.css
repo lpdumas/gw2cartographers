@@ -57,9 +57,9 @@ td { vertical-align: top; }
 .chromeframe { margin: 0.2em 0; background: #ccc; color: black; padding: 0.2em 0; }
 /*}}}*/
 /* common {{{*/
-.clearfix:before, .clearfix:after { content: ""; display: table; }
-.clearfix:after { clear: both; }
-.clearfix { *zoom: 1; }
+.group:before, .group:after { content: ""; display: table; }
+.group:after { clear: both; }
+.group { *zoom: 1; position: relative }
 /*}}}*/
 html, body {
     height: 100%;
@@ -74,6 +74,7 @@ html, body {
     font: 300 italic 72px/400px "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
     color: #CCC;
     background: #EFEFEF;
+    cursor: move;
 }
         
 #coord {
@@ -104,7 +105,7 @@ html, body {
   text-align: center;
 }
 
-#markers-box {
+#options-box {
   position:fixed;
   z-index: 5;
   top: 0;
@@ -118,15 +119,59 @@ html, body {
   -o-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
 }
 
-#markers-box.active {
+#options-box.active {
   right: 0;
 }
 
-#markers-box ul {
-  margin: 0;
-  padding: 0;
-  list-style:none;
+#add-marker {
+  display: block;
+  color: #fff;
+  font-size: 65px;
+  font-size: 6.5rem;
+  -webkit-transition: color 150ms linear;
+  -moz-transition: color 150ms linear;
+  -ms-transition: color 150ms linear;
+  -o-transition: color 150ms linear;
+  line-height: normal;
 }
-#markers-box ul li{
-  margin-bottom: 5px;
+#add-marker:hover,
+#add-marker.active {
+  cursor: pointer;
+  color: #666666;
+}
+#options-box #marker-list {
+  position: absolute;
+  display: block;
+  z-index:5;
+  margin: 0;
+  padding: 10px;
+  list-style:none;
+  width: 160px;
+  height: auto;
+  left: -190px;
+  top: -9999em;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.7);
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
+}
+#options-box #marker-list.active {
+  top: 10px;
+  opacity: 1;
+}
+#options-box #marker-list li {
+  float: left;
+}
+#options-box #marker-list li + li {
+  margin-left: 10px;
+}
+#options-box #marker-list li + li span{ position: relative; top: 5px }
+
+#options-box #marker-list li span{
+  display: inline-block;
+  width: 32px;
+  cursor: pointer;
+  text-align: center;
 }

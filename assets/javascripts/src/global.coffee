@@ -6,8 +6,10 @@ class CustomMap
     @lngContainer  = $('#long')
     @latContainer  = $('#lat')
     @devModInput   = $('#dev-mod')
-    @markersBox    = $('#markers-box')
-    @canRemoveMarker = true
+    @optionsBox    = $('#options-box')
+    @addMarkerLink = $('#add-marker')
+    @markerList    = $('#marker-list')
+    @canRemoveMarker = false
     @draggableMarker = false
     @gMapOptions   = 
       center: new google.maps.LatLng(25.760319754713887, -35.6396484375)
@@ -60,13 +62,28 @@ class CustomMap
     @setWaypoints()
     @setPOI()
     @setSkillPoints()
+
+    @markerList.find('span').bind('click', (e)=>
+      this_      = $(e.currentTarget)
+      markerType = this_.attr('data-type')
+      coord       = @map.getCenter()
+      markerinfo = 
+        "lng" : coord.lat()
+        "lat" : coord.lng()
+        "title" : "--"
+      img        = "#{@iconsPath}/#{markerType}.png"
+      @addMarkers(markerinfo, img, markerType)
+    )
+    
+    # UI
+    @addMarkerLink.bind('click', @toggleMarkerList)
   
   addMarkers:(markerInfo, img, type)->
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat)
       map: @map
       icon: img
-      draggable: false
+      draggable: @draggableMarker
       title: "#{markerInfo.title}"
     )
     
@@ -82,25 +99,25 @@ class CustomMap
     @gMarker[type].push(marker)
   
   setHearts:()->
-      @addMarkers(heart, "#{@iconsPath}/heart.png","hearts") for heart in Markers.Hearts
+      @addMarkers(heart, "#{@iconsPath}/hearts.png","hearts") for heart in Markers.Hearts
   
   setWaypoints:()->
-    @addMarkers(waypoint, "#{@iconsPath}/waypoint.png", "waypoints") for waypoint in Markers.Wayppoints
+    @addMarkers(waypoint, "#{@iconsPath}/waypoints.png", "waypoints") for waypoint in Markers.Wayppoints
 
   setPOI:()->
-    @addMarkers(poi, "#{@iconsPath}/pointOfInterest.png", "poi") for poi in Markers.POI
+    @addMarkers(poi, "#{@iconsPath}/poi.png", "poi") for poi in Markers.POI
     
   setSkillPoints:()->
-    @addMarkers(skillPoint, "#{@iconsPath}/skillPoint.png", "skillpoints") for skillPoint in Markers.SkillPoints    
+    @addMarkers(skillPoint, "#{@iconsPath}/skillpoints.png", "skillpoints") for skillPoint in Markers.SkillPoints    
   
   handleDevMod:(e)=>
     this_ = $(e.currentTarget)
     if this_.prop('checked')
       @setDraggableMarker(true)
-      @markersBox.addClass('active')
+      @optionsBox.addClass('active')
     else
       @setDraggableMarker(false)
-      @markersBox.removeClass('active')
+      @optionsBox.removeClass('active')
 
   removeMarker:(id)->
     for markersId, markers of @gMarker
@@ -116,7 +133,15 @@ class CustomMap
     for markersId, markers of @gMarker
       for marker in markers
         marker.setDraggable(val)
-      
+        if val
+          marker.setCursor('move')
+        else
+          marker.setCursor('pointer')
+          
+  toggleMarkerList: (e)=>
+    this_ = $(e.currentTarget)
+    @markerList.toggleClass('active')
+    this_.toggleClass('active')
     
 $ ()->
   myCustomMap = new CustomMap('#map')

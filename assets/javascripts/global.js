@@ -6,6 +6,8 @@
   CustomMap = (function() {
 
     function CustomMap(id) {
+      this.toggleMarkerList = __bind(this.toggleMarkerList, this);
+
       this.handleDevMod = __bind(this.handleDevMod, this);
 
       var _this = this;
@@ -15,8 +17,10 @@
       this.lngContainer = $('#long');
       this.latContainer = $('#lat');
       this.devModInput = $('#dev-mod');
-      this.markersBox = $('#markers-box');
-      this.canRemoveMarker = true;
+      this.optionsBox = $('#options-box');
+      this.addMarkerLink = $('#add-marker');
+      this.markerList = $('#marker-list');
+      this.canRemoveMarker = false;
       this.draggableMarker = false;
       this.gMapOptions = {
         center: new google.maps.LatLng(25.760319754713887, -35.6396484375),
@@ -61,6 +65,20 @@
       this.setWaypoints();
       this.setPOI();
       this.setSkillPoints();
+      this.markerList.find('span').bind('click', function(e) {
+        var coord, img, markerType, markerinfo, this_;
+        this_ = $(e.currentTarget);
+        markerType = this_.attr('data-type');
+        coord = _this.map.getCenter();
+        markerinfo = {
+          "lng": coord.lat(),
+          "lat": coord.lng(),
+          "title": "--"
+        };
+        img = "" + _this.iconsPath + "/" + markerType + ".png";
+        return _this.addMarkers(markerinfo, img, markerType);
+      });
+      this.addMarkerLink.bind('click', this.toggleMarkerList);
     }
 
     CustomMap.prototype.addMarkers = function(markerInfo, img, type) {
@@ -70,7 +88,7 @@
         position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat),
         map: this.map,
         icon: img,
-        draggable: false,
+        draggable: this.draggableMarker,
         title: "" + markerInfo.title
       });
       google.maps.event.addListener(marker, 'dragend', function(e) {
@@ -92,7 +110,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         heart = _ref[_i];
-        _results.push(this.addMarkers(heart, "" + this.iconsPath + "/heart.png", "hearts"));
+        _results.push(this.addMarkers(heart, "" + this.iconsPath + "/hearts.png", "hearts"));
       }
       return _results;
     };
@@ -103,7 +121,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         waypoint = _ref[_i];
-        _results.push(this.addMarkers(waypoint, "" + this.iconsPath + "/waypoint.png", "waypoints"));
+        _results.push(this.addMarkers(waypoint, "" + this.iconsPath + "/waypoints.png", "waypoints"));
       }
       return _results;
     };
@@ -114,7 +132,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         poi = _ref[_i];
-        _results.push(this.addMarkers(poi, "" + this.iconsPath + "/pointOfInterest.png", "poi"));
+        _results.push(this.addMarkers(poi, "" + this.iconsPath + "/poi.png", "poi"));
       }
       return _results;
     };
@@ -125,7 +143,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         skillPoint = _ref[_i];
-        _results.push(this.addMarkers(skillPoint, "" + this.iconsPath + "/skillPoint.png", "skillpoints"));
+        _results.push(this.addMarkers(skillPoint, "" + this.iconsPath + "/skillpoints.png", "skillpoints"));
       }
       return _results;
     };
@@ -135,10 +153,10 @@
       this_ = $(e.currentTarget);
       if (this_.prop('checked')) {
         this.setDraggableMarker(true);
-        return this.markersBox.addClass('active');
+        return this.optionsBox.addClass('active');
       } else {
         this.setDraggableMarker(false);
-        return this.markersBox.removeClass('active');
+        return this.optionsBox.removeClass('active');
       }
     };
 
@@ -181,12 +199,24 @@
           _results1 = [];
           for (_i = 0, _len = markers.length; _i < _len; _i++) {
             marker = markers[_i];
-            _results1.push(marker.setDraggable(val));
+            marker.setDraggable(val);
+            if (val) {
+              _results1.push(marker.setCursor('move'));
+            } else {
+              _results1.push(marker.setCursor('pointer'));
+            }
           }
           return _results1;
         })());
       }
       return _results;
+    };
+
+    CustomMap.prototype.toggleMarkerList = function(e) {
+      var this_;
+      this_ = $(e.currentTarget);
+      this.markerList.toggleClass('active');
+      return this_.toggleClass('active');
     };
 
     return CustomMap;
