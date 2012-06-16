@@ -89,6 +89,7 @@
         map: this.map,
         icon: img,
         draggable: this.draggableMarker,
+        cursor: this.draggableMarker ? "move" : "pointer",
         title: "" + markerInfo.title
       });
       google.maps.event.addListener(marker, 'dragend', function(e) {

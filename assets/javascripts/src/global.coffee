@@ -84,6 +84,7 @@ class CustomMap
       map: @map
       icon: img
       draggable: @draggableMarker
+      cursor : if @draggableMarker then "move" else "pointer"
       title: "#{markerInfo.title}"
     )
     
