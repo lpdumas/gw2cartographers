@@ -171,7 +171,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         dungeon = _ref[_i];
-        _results.push(this.addMarkers(dungeon, "" + this.iconsPath + "/skillpoints.png", "dungeons"));
+        _results.push(this.addMarkers(dungeon, "" + this.iconsPath + "/dungeon.png", "dungeons"));
       }
       return _results;
     };
