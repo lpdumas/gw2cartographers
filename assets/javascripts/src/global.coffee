@@ -90,10 +90,13 @@ class CustomMap
     )
     
   addMarkers:(markerInfo, img, type)->
+    iconsize = 32;
+    iconmid = iconsize / 2;
+    image = new google.maps.MarkerImage(img, null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat)
       map: @map
-      icon: img
+      icon: image
       draggable: @draggableMarker
       cursor : if @draggableMarker then "move" else "pointer"
       title: "#{markerInfo.title}"

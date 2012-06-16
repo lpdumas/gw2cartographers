@@ -94,12 +94,15 @@
     }
 
     CustomMap.prototype.addMarkers = function(markerInfo, img, type) {
-      var marker,
+      var iconmid, iconsize, image, marker,
         _this = this;
+      iconsize = 32;
+      iconmid = iconsize / 2;
+      image = new google.maps.MarkerImage(img, null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
       marker = new google.maps.Marker({
         position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat),
         map: this.map,
-        icon: img,
+        icon: image,
         draggable: this.draggableMarker,
         cursor: this.draggableMarker ? "move" : "pointer",
         title: "" + markerInfo.title
