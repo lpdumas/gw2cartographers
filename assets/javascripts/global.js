@@ -66,12 +66,14 @@
         "hearts": [],
         "waypoints": [],
         "poi": [],
-        "skillpoints": []
+        "skillpoints": [],
+        "dungeons" : []
       };
       this.setHearts();
       this.setWaypoints();
       this.setPOI();
       this.setSkillPoints();
+      this.setDungeons();
       this.markerList.find('span').bind('click', function(e) {
         var coord, img, markerType, markerinfo, this_;
         this_ = $(e.currentTarget);
@@ -159,6 +161,17 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         skillPoint = _ref[_i];
         _results.push(this.addMarkers(skillPoint, "" + this.iconsPath + "/skillpoints.png", "skillpoints"));
+      }
+      return _results;
+    };
+    
+    CustomMap.prototype.setDungeons = function() {
+      var dungeon, _i, _len, _ref, _results;
+      _ref = Markers.Dungeons;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        dungeon = _ref[_i];
+        _results.push(this.addMarkers(dungeon, "" + this.iconsPath + "/skillpoints.png", "dungeons"));
       }
       return _results;
     };

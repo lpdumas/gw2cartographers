@@ -516,6 +516,11 @@ Markers.SkillPoints = [
 {"lng" : "34.06176136129721", "lat" : "45.263671875", "title" : "", "desc" : ""}
 ]
 
+Markers.Dungeons = [
+{"lng" : "19.00499664280239", "lat" : "75.574951171875", "title" : "Ascalonian Catacombs", "desc" : ""},
+{"lng" : "32.31499127724558", "lat" : "-25.64208984375", "title" : "Caudecus Manor", "desc" : ""}
+]
+
 
 // Markers.Wayppoints = [
 //   {"lng" : "31.306715155075167", "lat" : "-45.516357421875", "title" : "Orchard Waypoint", "desc" : ""},
