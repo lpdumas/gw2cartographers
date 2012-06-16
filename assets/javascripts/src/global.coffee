@@ -3,18 +3,23 @@ class CustomMap
     @blankTilePath = 'tiles/00empty.jpg'
     @iconsPath     = 'assets/images/icons/32x32'
     @maxZoom       = 7
-    @lngContainer  = $('#long')
-    @latContainer  = $('#lat')
-    @devModInput   = $('#dev-mod')
-    @optionsBox    = $('#options-box')
-    @addMarkerLink = $('#add-marker')
-    @markerList    = $('#marker-list')
+    # HTML element
+    @lngContainer     = $('#long')
+    @latContainer     = $('#lat')
+    @devModInput      = $('#dev-mod')
+    @optionsBox       = $('#options-box')
+    @addMarkerLink    = $('#add-marker')
+    @removeMarkerLink = $('#remove-marker')
+    @markerList       = $('#marker-list')
+    @exportBtn        = $('#export')
+    @exportWindow     = $('#export-windows')
+    
     @canRemoveMarker = false
     @draggableMarker = false
     @gMapOptions   = 
       center: new google.maps.LatLng(25.760319754713887, -35.6396484375)
       zoom: 6
-      minZoom: 0
+      minZoom: 4
       maxZoom: @maxZoom
       streetViewControl: false
       mapTypeControl: false
@@ -77,7 +82,13 @@ class CustomMap
     
     # UI
     @addMarkerLink.bind('click', @toggleMarkerList)
-  
+    @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
+    @exportBtn.bind('click', @handleExport)
+    
+    @exportWindow.find('.close').click(()=>
+      @exportWindow.hide()
+    )
+    
   addMarkers:(markerInfo, img, type)->
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat)
@@ -87,6 +98,8 @@ class CustomMap
       cursor : if @draggableMarker then "move" else "pointer"
       title: "#{markerInfo.title}"
     )
+    marker["title"] = "#{markerInfo.title}"
+    marker["desc"]  = "#{markerInfo.desc}"
     
     google.maps.event.addListener(marker, 'dragend', (e)=>
       console.log "#{e.latLng.lat()}, #{e.latLng.lng()}"
@@ -95,8 +108,9 @@ class CustomMap
       if @canRemoveMarker && @draggableMarker
         @removeMarker(marker.__gm_id)
       else
-        console.log "opening info window"
+        console.log marker["title"]
     )
+
     @gMarker[type].push(marker)
   
   setHearts:()->
@@ -119,7 +133,38 @@ class CustomMap
     else
       @setDraggableMarker(false)
       @optionsBox.removeClass('active')
+      @markerList.removeClass('active')
+      @addMarkerLink.removeClass('active')
 
+  handleMarkerRemovalTool:(e)=>
+    if @removeMarkerLink.hasClass('active')
+      @removeMarkerLink.removeClass('active')
+      @optionsBox.removeClass('red')
+      @canRemoveMarker = false
+    else
+      @removeMarkerLink.addClass('active')
+      @optionsBox.addClass('red')
+      @canRemoveMarker = true
+      @markerList.removeClass('active')
+      @addMarkerLink.removeClass('active')
+    
+  handleExport:(e)=>
+    markerObject = {}
+    for markersId, markers of @gMarker
+      if !markerObject[markersId]
+        markerObject[markersId] = []
+      for marker in markers
+        nm = 
+          "lng" : marker.getPosition().lng()
+          "lat" : marker.getPosition().lat()
+          "title" : marker.title
+          "desc"  : marker.desc
+        markerObject[markersId].push(nm)
+    
+    jsonString = JSON.stringify(markerObject)
+    @exportWindow.find('.content').html(jsonString)
+    @exportWindow.show();
+    
   removeMarker:(id)->
     for markersId, markers of @gMarker
       @gMarker[markersId] = _.reject(markers, (m)=>
@@ -143,6 +188,10 @@ class CustomMap
     this_ = $(e.currentTarget)
     @markerList.toggleClass('active')
     this_.toggleClass('active')
+    if this_.hasClass('active')
+      @removeMarkerLink.removeClass('active')
+      @optionsBox.removeClass('red')
+      @canRemoveMarker = false
     
 $ ()->
   myCustomMap = new CustomMap('#map')

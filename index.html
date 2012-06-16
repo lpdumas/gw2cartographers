@@ -30,7 +30,7 @@
     </div>
     <div id="options-box">
         <div class="subnavGroup group">
-            <a href="javascript:" id="add-marker">+</a>
+            <a href="javascript:" id="add-marker"><img src="assets/images/layout/add.png"  alt="Add" /></a>
             <ul id="marker-list">
                 <li><span data-type="waypoints"><img src="assets/images/icons/32x32/waypoints.png"  alt="Waypoint" /></span></li>
                 <li><span data-type="poi"><img src="assets/images/icons/32x32/poi.png"  alt="Point of interest" /></span></li>
@@ -38,10 +38,18 @@
                 <li><span data-type="skillpoints"><img src="assets/images/icons/32x32/skillpoints.png"  alt="Skill point" /></span></li>
             </ul>
         </div>
+            <a href="javascript:" id="remove-marker"><img src="assets/images/layout/remove.png"  alt="Remove" /></a>
     </div>
     <div id="map"><img src="assets/images/loading.gif"  alt="Loading ..." /></div>
     <div id="coord"><span id="long"></span><span id="lat"></span></div>
-
+    
+    
+    <a id="export" href="javascript:">Export</a>
+    <div id="export-windows">
+        <a href="javascript:" class="close">close</a>
+        <div class="content">
+        </div>
+    </div>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="assets/javascripts/libs/jquery-latest.js"><\/script>')</script>

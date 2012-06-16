@@ -8,6 +8,10 @@
     function CustomMap(id) {
       this.toggleMarkerList = __bind(this.toggleMarkerList, this);
 
+      this.handleExport = __bind(this.handleExport, this);
+
+      this.handleMarkerRemovalTool = __bind(this.handleMarkerRemovalTool, this);
+
       this.handleDevMod = __bind(this.handleDevMod, this);
 
       var _this = this;
@@ -19,13 +23,16 @@
       this.devModInput = $('#dev-mod');
       this.optionsBox = $('#options-box');
       this.addMarkerLink = $('#add-marker');
+      this.removeMarkerLink = $('#remove-marker');
       this.markerList = $('#marker-list');
+      this.exportBtn = $('#export');
+      this.exportWindow = $('#export-windows');
       this.canRemoveMarker = false;
       this.draggableMarker = false;
       this.gMapOptions = {
         center: new google.maps.LatLng(25.760319754713887, -35.6396484375),
         zoom: 6,
-        minZoom: 0,
+        minZoom: 4,
         maxZoom: this.maxZoom,
         streetViewControl: false,
         mapTypeControl: false,
@@ -79,6 +86,11 @@
         return _this.addMarkers(markerinfo, img, markerType);
       });
       this.addMarkerLink.bind('click', this.toggleMarkerList);
+      this.removeMarkerLink.bind('click', this.handleMarkerRemovalTool);
+      this.exportBtn.bind('click', this.handleExport);
+      this.exportWindow.find('.close').click(function() {
+        return _this.exportWindow.hide();
+      });
     }
 
     CustomMap.prototype.addMarkers = function(markerInfo, img, type) {
@@ -92,6 +104,8 @@
         cursor: this.draggableMarker ? "move" : "pointer",
         title: "" + markerInfo.title
       });
+      marker["title"] = "" + markerInfo.title;
+      marker["desc"] = "" + markerInfo.desc;
       google.maps.event.addListener(marker, 'dragend', function(e) {
         return console.log("" + (e.latLng.lat()) + ", " + (e.latLng.lng()));
       });
@@ -99,7 +113,7 @@
         if (_this.canRemoveMarker && _this.draggableMarker) {
           return _this.removeMarker(marker.__gm_id);
         } else {
-          return console.log("opening info window");
+          return console.log(marker["title"]);
         }
       });
       return this.gMarker[type].push(marker);
@@ -157,8 +171,49 @@
         return this.optionsBox.addClass('active');
       } else {
         this.setDraggableMarker(false);
-        return this.optionsBox.removeClass('active');
+        this.optionsBox.removeClass('active');
+        this.markerList.removeClass('active');
+        return this.addMarkerLink.removeClass('active');
       }
+    };
+
+    CustomMap.prototype.handleMarkerRemovalTool = function(e) {
+      if (this.removeMarkerLink.hasClass('active')) {
+        this.removeMarkerLink.removeClass('active');
+        this.optionsBox.removeClass('red');
+        return this.canRemoveMarker = false;
+      } else {
+        this.removeMarkerLink.addClass('active');
+        this.optionsBox.addClass('red');
+        this.canRemoveMarker = true;
+        this.markerList.removeClass('active');
+        return this.addMarkerLink.removeClass('active');
+      }
+    };
+
+    CustomMap.prototype.handleExport = function(e) {
+      var jsonString, marker, markerObject, markers, markersId, nm, _i, _len, _ref;
+      markerObject = {};
+      _ref = this.gMarker;
+      for (markersId in _ref) {
+        markers = _ref[markersId];
+        if (!markerObject[markersId]) {
+          markerObject[markersId] = [];
+        }
+        for (_i = 0, _len = markers.length; _i < _len; _i++) {
+          marker = markers[_i];
+          nm = {
+            "lng": marker.getPosition().lng(),
+            "lat": marker.getPosition().lat(),
+            "title": marker.title,
+            "desc": marker.desc
+          };
+          markerObject[markersId].push(nm);
+        }
+      }
+      jsonString = JSON.stringify(markerObject);
+      this.exportWindow.find('.content').html(jsonString);
+      return this.exportWindow.show();
     };
 
     CustomMap.prototype.removeMarker = function(id) {
@@ -217,7 +272,12 @@
       var this_;
       this_ = $(e.currentTarget);
       this.markerList.toggleClass('active');
-      return this_.toggleClass('active');
+      this_.toggleClass('active');
+      if (this_.hasClass('active')) {
+        this.removeMarkerLink.removeClass('active');
+        this.optionsBox.removeClass('red');
+        return this.canRemoveMarker = false;
+      }
     };
 
     return CustomMap;
