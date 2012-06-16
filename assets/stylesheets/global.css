@@ -223,4 +223,5 @@ html, body {
   position: relative;
   overflow-y: scroll;
   height: 350px;
+  width: 100%;
 }

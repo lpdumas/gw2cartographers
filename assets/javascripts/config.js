@@ -516,6 +516,7 @@ Markers.SkillPoints = [
 {"lng" : "34.06176136129721", "lat" : "45.263671875", "title" : "", "desc" : ""}
 ]
 
+
 // Markers.Wayppoints = [
 //   {"lng" : "31.306715155075167", "lat" : "-45.516357421875", "title" : "Orchard Waypoint", "desc" : ""},
 //   {"lng" : "29.19053283229458", "lat" : "-43.033447265625", "title" : "Fields Waypoint", "desc" : ""},
