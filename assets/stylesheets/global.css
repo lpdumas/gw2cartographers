@@ -76,7 +76,20 @@ html, body {
     background: #EFEFEF;
     cursor: move;
 }
-        
+     
+#notice {
+  padding: 4px 10px;
+  width: 270px;
+  position: absolute;
+  display: block;
+  z-index: 5;
+  top: 10px;
+  left: 50%;
+  margin-left: -145px;
+  background: #e8ffeb;
+  color: #278900;
+  text-align: center;
+}   
 #coord {
     z-index: 10;
     display: block;
