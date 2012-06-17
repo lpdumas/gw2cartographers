@@ -51,6 +51,8 @@ class CustomMap
       if @map.getZoom() == 4
         @visibleMarkers = false
         @hideAllMarker()
+        overlay = new AreaSummary(@map, Areas[0]);
+        overlay = new AreaSummary(@map, Areas[1]);
       else if @visibleMarkers == false
         console.log "showing marker"
         @visibleMarkers = true
@@ -209,6 +211,75 @@ class CustomMap
       @removeMarkerLink.removeClass('active')
       @optionsBox.removeClass('red')
       @canRemoveMarker = false
+      
+class AreaSummary
+    constructor:(map, area)->
+        swBound = new google.maps.LatLng(area.swLat, area.swLng)
+        neBound = new google.maps.LatLng(area.neLat, area.neLng)
+        @bounds_ = new google.maps.LatLngBounds(swBound, neBound)
+        @area_ = area
+        @div_ = null
+        
+        @setMap(map)
+    
+    
+    AreaSummary.prototype = new google.maps.OverlayView();
+    
+    onAdd:()->
+        div = document.createElement('div')
+        div.style.borderWidth = "1px"
+        div.style.borderColor = "red"
+        div.style.backgroundColor = "#333"
+        div.style.opacity = 0.8
+        div.style.color = "#FFF"
+        div.style.position = "absolute"
+        div.innerHTML = @area_.name
+        
+        ul = document.createElement('ul')
+        
+        for type of @area_.summary
+            if(@area_.summary[type] > 0)
+                li = document.createElement('li')
+                li.innerHTML = type + " : " + @area_.summary[type]
+                ul.appendChild(li)
+
+        div.appendChild(ul)        
+        
+        @div_ = div
+        panes = @getPanes()
+        panes.overlayImage.appendChild(@div_)
+        
+    draw:()->
+      overlayProjection = @getProjection()
+      sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
+      ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
+
+      div = this.div_;
+      div.style.left = sw.x + 'px';
+      div.style.top = ne.y + 'px';
+      div.style.width = (ne.x - sw.x) + 'px';
+      div.style.height = (sw.y - ne.y) + 'px';
+
+    
+    setVisible:(isVisible)->
+        if @div_
+            if isVisible is true
+                @div_.style.visibility = "visible"
+            else
+                @div_.style.visibility = "hidden"
+    
+    ###
+     AreaInformation.prototype.onRemove = function() {
+       this.div_.parentNode.removeChild(this.div_);
+     }
+     AreaInformation.prototype.toggleDOM = function() {
+       if (this.getMap()) {
+         this.setMap(null);
+       } else {
+         this.setMap(this.map_);
+       }
+   }
+    ###
     
 $ ()->
   myCustomMap = new CustomMap('#map')

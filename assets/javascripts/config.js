@@ -10,6 +10,29 @@ Resources.Icons = [
     {"id" : "dungeons", "url" : Resources.Paths.icons + "dungeon.png"}
 ]
 
+Areas = [
+    { name : "Divinity Reach", 
+        summary : {
+            "hearts" : 0,
+            "waypoints" : 12,
+            "skillpoints" : 0,
+            "poi" : 10,
+            "dungeons" : 0 
+        },
+        "neLat" : "43.19591001164034", "neLng" : "-31.519775390625", "swLat" : "33.44977658311853", "swLng" : "-45.955810546875"
+    },
+    { name : "Queensdale", 
+        summary : {
+            "hearts" : 14,
+            "waypoints" : 15,
+            "skillpoints" : 12,
+            "poi" : 7,
+            "dungeons" : 1
+        },
+        "neLat" : "33.38558626887102", "neLng" : "-23.8623046875", "swLat" : "18.406654713919085", "swLng" : "-48.27392578125"
+    }
+]
+
 Markers.hearts = [
 //Queensdale
   {"lng" : "29.19053283229458", "lat" : "-44.384765625", "title" : "Help Farmer Diah", "desc" : "Help Diah by watering corn, stomping wurm mounds, feeding cattle, and defending the fields."},
