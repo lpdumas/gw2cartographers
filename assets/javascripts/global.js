@@ -343,7 +343,7 @@
     AreaSummary.prototype = new google.maps.OverlayView();
 
     AreaSummary.prototype.onAdd = function() {
-      var div, img, li, panes, title, type, ul;
+      var div, img, li, panes, rangeLvl, title, type, ul;
       div = document.createElement('div');
       div.style.borderWidth = "1px";
       div.style.borderColor = "red";
@@ -358,7 +358,12 @@
       title.style.padding = "2px";
       title.style.fontWeight = "bold";
       title.style.fontSize = "13px";
-      title.innerHTML = this.area_.name;
+      if (this.area_.rangeLvl !== "") {
+        rangeLvl = "(" + this.area_.rangeLvl + ")";
+      } else {
+        rangeLvl = "";
+      }
+      title.innerHTML = this.area_.name + rangeLvl;
       div.appendChild(title);
       ul = document.createElement('ul');
       for (type in this.area_.summary) {

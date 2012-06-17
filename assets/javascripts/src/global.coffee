@@ -243,7 +243,12 @@ class AreaSummary
         title.style.padding = "2px"
         title.style.fontWeight = "bold"
         title.style.fontSize = "13px"
-        title.innerHTML = @area_.name
+        if(@area_.rangeLvl != "")
+            rangeLvl = "(" + @area_.rangeLvl + ")"
+        else
+            rangeLvl = ""
+        
+        title.innerHTML = @area_.name + rangeLvl
         
         #div.innerHTML = @area_.name
         div.appendChild(title)

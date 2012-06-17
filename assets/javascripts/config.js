@@ -11,7 +11,7 @@ Resources.Icons = {
 }
 
 Areas = [
-    { name : "Divinity Reach", 
+    { name : "Divinity Reach", rangeLvl : "",
         summary : {
             "hearts" : 0,
             "waypoints" : 13,
@@ -21,7 +21,7 @@ Areas = [
         },
         "neLat" : "43.19591001164034", "neLng" : "-31.519775390625", "swLat" : "33.44977658311853", "swLng" : "-45.955810546875"
     },
-    { name : "Queensdale", 
+    { name : "Queensdale",  rangeLvl : "1 - 17",
         summary : {
             "hearts" : 17,
             "waypoints" : 16,
