@@ -240,7 +240,7 @@ class AreaSummary
         for type of @area_.summary
             if(@area_.summary[type] > 0)
                 li = document.createElement('li')
-                li.innerHTML = type + " : " + @area_.summary[type]
+                li.innerHTML = Resources.Icons[type].label + " : " + @area_.summary[type]
                 ul.appendChild(li)
 
         div.appendChild(ul)        
@@ -267,19 +267,6 @@ class AreaSummary
                 @div_.style.visibility = "visible"
             else
                 @div_.style.visibility = "hidden"
-    
-    ###
-     AreaInformation.prototype.onRemove = function() {
-       this.div_.parentNode.removeChild(this.div_);
-     }
-     AreaInformation.prototype.toggleDOM = function() {
-       if (this.getMap()) {
-         this.setMap(null);
-       } else {
-         this.setMap(this.map_);
-       }
-   }
-    ###
     
 $ ()->
   myCustomMap = new CustomMap('#map')

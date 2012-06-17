@@ -3,11 +3,11 @@ Resources.Paths = {
 }
 
 Resources.Icons = {
-    "hearts" : {"id" : "hearts", "url" : Resources.Paths.icons + "hearts.png"},
-    "waypoints" : {"id" : "waypoints", "url" : Resources.Paths.icons + "waypoints.png"},
-    "skillpoints" : {"id" : "skillpoints", "url" : Resources.Paths.icons + "skillpoints.png"},
-    "poi" : {"id" : "poi", "url" : Resources.Paths.icons + "poi.png"},
-    "dungeons": {"id" : "dungeons", "url" : Resources.Paths.icons + "dungeon.png"}
+    "hearts" : {"label" : "Hearts", "url" : Resources.Paths.icons + "hearts.png"},
+    "waypoints" : {"label" : "Waypoints", "url" : Resources.Paths.icons + "waypoints.png"},
+    "skillpoints" : {"label" : "Skill points", "url" : Resources.Paths.icons + "skillpoints.png"},
+    "poi" : {"label" : "Points of interest", "url" : Resources.Paths.icons + "poi.png"},
+    "dungeons": {"label" : "Dungeons", "url" : Resources.Paths.icons + "dungeon.png"}
 }
 
 Areas = [

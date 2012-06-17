@@ -354,7 +354,7 @@
       for (type in this.area_.summary) {
         if (this.area_.summary[type] > 0) {
           li = document.createElement('li');
-          li.innerHTML = type + " : " + this.area_.summary[type];
+          li.innerHTML = Resources.Icons[type].label + " : " + this.area_.summary[type];
           ul.appendChild(li);
         }
       }
@@ -385,20 +385,6 @@
         }
       }
     };
-
-    /*
-         AreaInformation.prototype.onRemove = function() {
-           this.div_.parentNode.removeChild(this.div_);
-         }
-         AreaInformation.prototype.toggleDOM = function() {
-           if (this.getMap()) {
-             this.setMap(null);
-           } else {
-             this.setMap(this.map_);
-           }
-       }
-    */
-
 
     return AreaSummary;
 
