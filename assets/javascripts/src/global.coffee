@@ -50,6 +50,15 @@ class CustomMap
       @lngContainer.html e.latLng.lng()
       @latContainer.html e.latLng.lat()
     )
+    
+    google.maps.event.addListener(@map, 'zoom_changed', (e)=>
+        zoomLevel = @map.getZoom()
+        if zoomLevel == 4
+            @setAllMarkersVisibility(false);
+        else if zoomLevel > 4
+            @setAllMarkersVisibility(true);
+    )
+    
     # google.maps.event.addListener(@map, 'click', (e)=>
       # alert "#{e.latLng.lat()}, #{e.latLng.lng()}"
     # )
@@ -118,6 +127,12 @@ class CustomMap
     
   getIconURLByType:(type)->
     return icon.url for icon in Resources.Icons when icon.id is type
+
+  setAllMarkersVisibility:(isVisible)->
+    @setMarkersVisibilityByType(isVisible, type) for type of Markers
+
+  setMarkersVisibilityByType:(isVisible, type)->
+    marker.setVisible(isVisible) for marker in @gMarker[type]
 
   handleDevMod:(e)=>
     this_ = $(e.currentTarget)

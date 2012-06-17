@@ -61,6 +61,15 @@
         _this.lngContainer.html(e.latLng.lng());
         return _this.latContainer.html(e.latLng.lat());
       });
+      google.maps.event.addListener(this.map, 'zoom_changed', function(e) {
+        var zoomLevel;
+        zoomLevel = _this.map.getZoom();
+        if (zoomLevel === 4) {
+          return _this.setAllMarkersVisibility(false);
+        } else if (zoomLevel > 4) {
+          return _this.setAllMarkersVisibility(true);
+        }
+      });
       this.devModInput.bind('click', this.handleDevMod);
       this.gMarker = {};
       this.setAllMarkers();
@@ -144,6 +153,26 @@
           return icon.url;
         }
       }
+    };
+
+    CustomMap.prototype.setAllMarkersVisibility = function(isVisible) {
+      var type, _results;
+      _results = [];
+      for (type in Markers) {
+        _results.push(this.setMarkersVisibilityByType(isVisible, type));
+      }
+      return _results;
+    };
+
+    CustomMap.prototype.setMarkersVisibilityByType = function(isVisible, type) {
+      var marker, _i, _len, _ref, _results;
+      _ref = this.gMarker[type];
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        marker = _ref[_i];
+        _results.push(marker.setVisible(isVisible));
+      }
+      return _results;
     };
 
     CustomMap.prototype.handleDevMod = function(e) {
