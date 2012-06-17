@@ -57,16 +57,9 @@ class CustomMap
     @devModInput.bind('click', @handleDevMod)
     
     #marker
-    @gMarker = 
-      "hearts" : []
-      "waypoints" : []
-      "poi" : []
-      "skillpoints" : []
-      
-    @setHearts()
-    @setWaypoints()
-    @setPOI()
-    @setSkillPoints()
+    @gMarker = {}
+
+    @setAllMarkers()
 
     @markerList.find('span').bind('click', (e)=>
       this_      = $(e.currentTarget)
@@ -89,10 +82,10 @@ class CustomMap
       @exportWindow.hide()
     )
     
-  addMarkers:(markerInfo, img, type)->
+  addMarker:(markerInfo, type)->
     iconsize = 32;
     iconmid = iconsize / 2;
-    image = new google.maps.MarkerImage(img, null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
+    image = new google.maps.MarkerImage(@getIconURLByType(type), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat)
       map: @map
@@ -114,20 +107,21 @@ class CustomMap
         console.log marker["title"]
     )
 
+    # this is a bit ugly but I can't do better in CoffeeScript to initialize dynamically the array
+    `if(this.gMarker[type] == null)
+        this.gMarker[type] = [];
+    `
     @gMarker[type].push(marker)
-  
-  setHearts:()->
-      @addMarkers(heart, "#{@iconsPath}/hearts.png","hearts") for heart in Markers.Hearts
-  
-  setWaypoints:()->
-    @addMarkers(waypoint, "#{@iconsPath}/waypoints.png", "waypoints") for waypoint in Markers.Wayppoints
 
-  setPOI:()->
-    @addMarkers(poi, "#{@iconsPath}/poi.png", "poi") for poi in Markers.POI
+  setMarkersByType:(type, markers)->
+    @addMarker(marker, type) for marker in markers
+
+  setAllMarkers:()->
+    @setMarkersByType(type, markers) for type, markers of Markers
     
-  setSkillPoints:()->
-    @addMarkers(skillPoint, "#{@iconsPath}/skillpoints.png", "skillpoints") for skillPoint in Markers.SkillPoints    
-  
+  getIconURLByType:(type)->
+    return icon.url for icon in Resources.Icons when icon.id is type
+
   handleDevMod:(e)=>
     this_ = $(e.currentTarget)
     if this_.prop('checked')

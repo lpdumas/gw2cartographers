@@ -62,16 +62,8 @@
         return _this.latContainer.html(e.latLng.lat());
       });
       this.devModInput.bind('click', this.handleDevMod);
-      this.gMarker = {
-        "hearts": [],
-        "waypoints": [],
-        "poi": [],
-        "skillpoints": []
-      };
-      this.setHearts();
-      this.setWaypoints();
-      this.setPOI();
-      this.setSkillPoints();
+      this.gMarker = {};
+      this.setAllMarkers();
       this.markerList.find('span').bind('click', function(e) {
         var coord, img, markerType, markerinfo, this_;
         this_ = $(e.currentTarget);
@@ -93,12 +85,12 @@
       });
     }
 
-    CustomMap.prototype.addMarkers = function(markerInfo, img, type) {
+    CustomMap.prototype.addMarker = function(markerInfo, type) {
       var iconmid, iconsize, image, marker,
         _this = this;
       iconsize = 32;
       iconmid = iconsize / 2;
-      image = new google.maps.MarkerImage(img, null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
+      image = new google.maps.MarkerImage(this.getIconURLByType(type), null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
       marker = new google.maps.Marker({
         position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat),
         map: this.map,
@@ -119,51 +111,42 @@
           return console.log(marker["title"]);
         }
       });
+      if(this.gMarker[type] == null)
+        this.gMarker[type] = [];
+    ;
+
       return this.gMarker[type].push(marker);
     };
 
-    CustomMap.prototype.setHearts = function() {
-      var heart, _i, _len, _ref, _results;
-      _ref = Markers.Hearts;
+    CustomMap.prototype.setMarkersByType = function(type, markers) {
+      var marker, _i, _len, _results;
       _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        heart = _ref[_i];
-        _results.push(this.addMarkers(heart, "" + this.iconsPath + "/hearts.png", "hearts"));
+      for (_i = 0, _len = markers.length; _i < _len; _i++) {
+        marker = markers[_i];
+        _results.push(this.addMarker(marker, type));
       }
       return _results;
     };
 
-    CustomMap.prototype.setWaypoints = function() {
-      var waypoint, _i, _len, _ref, _results;
-      _ref = Markers.Wayppoints;
+    CustomMap.prototype.setAllMarkers = function() {
+      var markers, type, _results;
       _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        waypoint = _ref[_i];
-        _results.push(this.addMarkers(waypoint, "" + this.iconsPath + "/waypoints.png", "waypoints"));
+      for (type in Markers) {
+        markers = Markers[type];
+        _results.push(this.setMarkersByType(type, markers));
       }
       return _results;
     };
 
-    CustomMap.prototype.setPOI = function() {
-      var poi, _i, _len, _ref, _results;
-      _ref = Markers.POI;
-      _results = [];
+    CustomMap.prototype.getIconURLByType = function(type) {
+      var icon, _i, _len, _ref;
+      _ref = Resources.Icons;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        poi = _ref[_i];
-        _results.push(this.addMarkers(poi, "" + this.iconsPath + "/poi.png", "poi"));
+        icon = _ref[_i];
+        if (icon.id === type) {
+          return icon.url;
+        }
       }
-      return _results;
-    };
-
-    CustomMap.prototype.setSkillPoints = function() {
-      var skillPoint, _i, _len, _ref, _results;
-      _ref = Markers.SkillPoints;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        skillPoint = _ref[_i];
-        _results.push(this.addMarkers(skillPoint, "" + this.iconsPath + "/skillpoints.png", "skillpoints"));
-      }
-      return _results;
     };
 
     CustomMap.prototype.handleDevMod = function(e) {

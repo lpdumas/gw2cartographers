@@ -1,4 +1,15 @@
-Markers.Hearts = [
+Resources.Paths = {
+    "icons" : "assets/images/icons/32x32/"
+}
+
+Resources.Icons = [
+    {"id" : "hearts", "url" : Resources.Paths.icons + "hearts.png"},
+    {"id" : "waypoints", "url" : Resources.Paths.icons + "waypoints.png"},
+    {"id" : "skillpoints", "url" : Resources.Paths.icons + "skillpoints.png"},
+    {"id" : "poi", "url" : Resources.Paths.icons + "poi.png"}
+]
+
+Markers.hearts = [
 //Queensdale
   {"lng" : "29.19053283229458", "lat" : "-44.384765625", "title" : "Help Farmer Diah", "desc" : "Help Diah by watering corn, stomping wurm mounds, feeding cattle, and defending the fields."},
   {"lng" : "29.439597566602927", "lat" : "-46.636962890625", "title" : "Help Farmer George", "desc" : "Make the area around the pumping station safe for Farmer George."},
@@ -104,7 +115,7 @@ Markers.Hearts = [
 {"lng" : "31.43803717312449", "lat" : "45.15380859375", "title" : "", "desc" : ""}
 ]
 
-Markers.Wayppoints = [
+Markers.waypoints = [
 //Queensdale
   {"lng" : "31.306715155075167", "lat" : "-45.516357421875", "title" : "Orchard Waypoint", "desc" : ""},
   {"lng" : "29.19053283229458", "lat" : "-43.033447265625", "title" : "Fields Waypoint", "desc" : ""},
@@ -305,7 +316,7 @@ Markers.Wayppoints = [
 ]
 
 // Points of interest
-Markers.POI = [
+Markers.poi = [
 //Queensdale
   {"lng" : "31.17520982831087", "lat" : "-46.680908203125", "title" : "L1", "desc" : ""},
   {"lng" : "29.5161103860623", "lat" : "-44.1650390625", "title" : "L2", "desc" : ""},
@@ -454,7 +465,7 @@ Markers.POI = [
 ]
 
 // Skill Points
-Markers.SkillPoints = [
+Markers.skillpoints = [
 //Queensdale
   {"lng" : "27.264395776495363", "lat" : "-37.353515625", "title" : "Commune with Earthen Magic", "desc" : ""},
   {"lng" : "24.25698131588254", "lat" : "-47.4169921875", "title" : "Use Erts Unguent", "desc" : ""},
