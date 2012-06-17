@@ -1,3 +1,7 @@
+Markers.Dungeons = [
+{"lng" : "19.00499664280239", "lat" : "75.574951171875", "title" : "Ascalonian Catacombs", "desc" : ""},
+{"lng" : "32.31499127724558", "lat" : "-25.64208984375", "title" : "Caudecus Manor", "desc" : ""}
+]
 Markers.Hearts = [
 //Queensdale
   {"lng" : "29.19053283229458", "lat" : "-44.384765625", "title" : "Help Farmer Diah", "desc" : "Help Diah by watering corn, stomping wurm mounds, feeding cattle, and defending the fields."},
