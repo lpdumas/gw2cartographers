@@ -14,6 +14,8 @@ class CustomMap
     @exportBtn        = $('#export')
     @exportWindow     = $('#export-windows')
     
+    @areaSummaryBoxes = []
+    
     @canRemoveMarker = false
     @draggableMarker = false
     @visibleMarkers   = true
@@ -51,22 +53,21 @@ class CustomMap
       if @map.getZoom() == 4
         @visibleMarkers = false
         @hideAllMarker()
-        overlay = new AreaSummary(@map, Areas[0]);
-        overlay = new AreaSummary(@map, Areas[1]);
+        @setAreasInformationVisibility(true)
       else if @visibleMarkers == false
         console.log "showing marker"
         @visibleMarkers = true
         @showAllMarker()
-    )
-    
-    
-    
+        @setAreasInformationVisibility(false)
+    ) 
+
     @devModInput.bind('click', @handleDevMod)
     
     #marker
     @gMarker = {}
 
     @setAllMarkers()
+    @initializeAreaSummaryBoxes()
 
     @markerList.find('span').bind('click', (e)=>
       this_      = $(e.currentTarget)
@@ -212,6 +213,14 @@ class CustomMap
       @optionsBox.removeClass('red')
       @canRemoveMarker = false
       
+  initializeAreaSummaryBoxes:()->
+    for area of Areas
+        @areaSummaryBoxes[area] = new AreaSummary(@map, Areas[area])
+        
+  setAreasInformationVisibility:(isVisible)->
+    for box in @areaSummaryBoxes
+        box.setVisible(isVisible)
+      
 class AreaSummary
     constructor:(map, area)->
         swBound = new google.maps.LatLng(area.swLat, area.swLng)
@@ -275,6 +284,7 @@ class AreaSummary
         @div_ = div
         panes = @getPanes()
         panes.overlayImage.appendChild(@div_)
+        @setVisible(false)
         
     draw:()->
       overlayProjection = @getProjection()

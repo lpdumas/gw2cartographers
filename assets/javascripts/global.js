@@ -27,6 +27,7 @@
       this.markerList = $('#marker-list');
       this.exportBtn = $('#export');
       this.exportWindow = $('#export-windows');
+      this.areaSummaryBoxes = [];
       this.canRemoveMarker = false;
       this.draggableMarker = false;
       this.visibleMarkers = true;
@@ -63,21 +64,21 @@
         return _this.latContainer.html(e.latLng.lat());
       });
       google.maps.event.addListener(this.map, 'zoom_changed', function(e) {
-        var overlay;
         if (_this.map.getZoom() === 4) {
           _this.visibleMarkers = false;
           _this.hideAllMarker();
-          overlay = new AreaSummary(_this.map, Areas[0]);
-          return overlay = new AreaSummary(_this.map, Areas[1]);
+          return _this.setAreasInformationVisibility(true);
         } else if (_this.visibleMarkers === false) {
           console.log("showing marker");
           _this.visibleMarkers = true;
-          return _this.showAllMarker();
+          _this.showAllMarker();
+          return _this.setAreasInformationVisibility(false);
         }
       });
       this.devModInput.bind('click', this.handleDevMod);
       this.gMarker = {};
       this.setAllMarkers();
+      this.initializeAreaSummaryBoxes();
       this.markerList.find('span').bind('click', function(e) {
         var coord, img, markerType, markerinfo, this_;
         this_ = $(e.currentTarget);
@@ -322,6 +323,26 @@
       }
     };
 
+    CustomMap.prototype.initializeAreaSummaryBoxes = function() {
+      var area, _results;
+      _results = [];
+      for (area in Areas) {
+        _results.push(this.areaSummaryBoxes[area] = new AreaSummary(this.map, Areas[area]));
+      }
+      return _results;
+    };
+
+    CustomMap.prototype.setAreasInformationVisibility = function(isVisible) {
+      var box, _i, _len, _ref, _results;
+      _ref = this.areaSummaryBoxes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        _results.push(box.setVisible(isVisible));
+      }
+      return _results;
+    };
+
     return CustomMap;
 
   })();
@@ -385,7 +406,8 @@
       div.appendChild(ul);
       this.div_ = div;
       panes = this.getPanes();
-      return panes.overlayImage.appendChild(this.div_);
+      panes.overlayImage.appendChild(this.div_);
+      return this.setVisible(false);
     };
 
     AreaSummary.prototype.draw = function() {
