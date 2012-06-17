@@ -219,13 +219,15 @@ class AreaSummary
         @bounds_ = new google.maps.LatLngBounds(swBound, neBound)
         @area_ = area
         @div_ = null
+        @height_ = 130
+        @width_ = 150
         
         @setMap(map)
     
     
     AreaSummary.prototype = new google.maps.OverlayView();
     
-    onAdd:()->
+    onAdd:()->        
         div = document.createElement('div')
         div.style.borderWidth = "1px"
         div.style.borderColor = "red"
@@ -233,6 +235,8 @@ class AreaSummary
         div.style.opacity = 0.8
         div.style.color = "#FFF"
         div.style.position = "absolute"
+        div.style.width = @width_ + "px"
+        div.style.height = @height_ + "px"
         div.innerHTML = @area_.name
         
         ul = document.createElement('ul')
@@ -255,11 +259,8 @@ class AreaSummary
       ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
 
       div = this.div_;
-      div.style.left = sw.x + 'px';
-      div.style.top = ne.y + 'px';
-      div.style.width = (ne.x - sw.x) + 'px';
-      div.style.height = (sw.y - ne.y) + 'px';
-
+      div.style.left = sw.x + ((ne.x - sw.x) - @width_) / 2 + 'px';
+      div.style.top = ne.y + ((sw.y - ne.y) - @height_) / 2 + 'px';
     
     setVisible:(isVisible)->
         if @div_

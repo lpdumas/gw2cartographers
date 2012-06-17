@@ -335,6 +335,8 @@
       this.bounds_ = new google.maps.LatLngBounds(swBound, neBound);
       this.area_ = area;
       this.div_ = null;
+      this.height_ = 130;
+      this.width_ = 150;
       this.setMap(map);
     }
 
@@ -349,6 +351,8 @@
       div.style.opacity = 0.8;
       div.style.color = "#FFF";
       div.style.position = "absolute";
+      div.style.width = this.width_ + "px";
+      div.style.height = this.height_ + "px";
       div.innerHTML = this.area_.name;
       ul = document.createElement('ul');
       for (type in this.area_.summary) {
@@ -370,10 +374,8 @@
       sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
       ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
       div = this.div_;
-      div.style.left = sw.x + 'px';
-      div.style.top = ne.y + 'px';
-      div.style.width = (ne.x - sw.x) + 'px';
-      return div.style.height = (sw.y - ne.y) + 'px';
+      div.style.left = sw.x + ((ne.x - sw.x) - this.width_) / 2 + 'px';
+      return div.style.top = ne.y + ((sw.y - ne.y) - this.height_) / 2 + 'px';
     };
 
     AreaSummary.prototype.setVisible = function(isVisible) {
