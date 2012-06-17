@@ -14,18 +14,18 @@ Areas = [
     { name : "Divinity Reach", 
         summary : {
             "hearts" : 0,
-            "waypoints" : 12,
+            "waypoints" : 13,
             "skillpoints" : 0,
-            "poi" : 10,
+            "poi" : 20,
             "dungeons" : 0 
         },
         "neLat" : "43.19591001164034", "neLng" : "-31.519775390625", "swLat" : "33.44977658311853", "swLng" : "-45.955810546875"
     },
     { name : "Queensdale", 
         summary : {
-            "hearts" : 14,
-            "waypoints" : 15,
-            "skillpoints" : 12,
+            "hearts" : 17,
+            "waypoints" : 16,
+            "skillpoints" : 21,
             "poi" : 7,
             "dungeons" : 1
         },
