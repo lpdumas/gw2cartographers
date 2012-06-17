@@ -237,16 +237,34 @@ class AreaSummary
         div.style.position = "absolute"
         div.style.width = @width_ + "px"
         div.style.height = @height_ + "px"
-        div.innerHTML = @area_.name
+        
+        title = document.createElement('p')
+        title.style.margin = "0"
+        title.style.padding = "2px"
+        title.style.fontWeight = "bold"
+        title.style.fontSize = "13px"
+        title.innerHTML = @area_.name
+        
+        #div.innerHTML = @area_.name
+        div.appendChild(title)
         
         ul = document.createElement('ul')
         
         for type of @area_.summary
             if(@area_.summary[type] > 0)
                 li = document.createElement('li')
-                li.innerHTML = Resources.Icons[type].label + " : " + @area_.summary[type]
+                img = document.createElement('img')
+                img.src = Resources.Icons[type].url
+                img.alt = Resources.Icons[type].label
+                img.style.width = "15px"
+                img.style.height = "15px"
+                li.innerHTML = Resources.Icons[type].label + ": " + @area_.summary[type]
+                li.appendChild(img, li.firstChild)
                 ul.appendChild(li)
 
+        ul.style.margin = "0 0 0 25px"
+        ul.style.padding = "0px"
+        ul.style.listStyleType = "none"
         div.appendChild(ul)        
         
         @div_ = div
