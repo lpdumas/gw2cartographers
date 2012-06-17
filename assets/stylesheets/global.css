@@ -236,3 +236,35 @@ html, body {
   height: 350px;
   width: 100%;
 }
+#menu-marker {
+    height: 36px;
+    z-index: 10;
+    position: absolute;
+    bottom: 1px;
+    left: 250px;
+    background: #000;
+    color: #FFF;
+}
+
+#menu-marker ul {
+    margin: 2.5px 10px;
+    padding: 0;
+    list-style-type: none;
+}
+#menu-marker ul li {
+    float: left;
+}
+#menu-marker ul li img {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    -webkit-transition: opacity 150ms linear;
+    -moz-transition: opacity 150ms linear;
+    -ms-transition: opacity 150ms linear;
+    -o-transition: opacity 150ms linear;
+}
+
+#menu-marker ul li.hidden img,
+#menu-marker ul li:hover img {
+    opacity: 0.5;
+}

@@ -58,18 +58,18 @@
       this.map = new google.maps.Map($(id)[0], this.gMapOptions);
       this.map.mapTypes.set('custom', this.customMapType);
       this.map.setMapTypeId('custom');
+      this.addMenuIcons();
       google.maps.event.addListener(this.map, 'mousemove', function(e) {
         _this.lngContainer.html(e.latLng.lng());
         return _this.latContainer.html(e.latLng.lat());
       });
       google.maps.event.addListener(this.map, 'zoom_changed', function(e) {
-        if (_this.map.getZoom() === 4) {
-          _this.visibleMarkers = false;
-          return _this.hideAllMarker();
-        } else if (_this.visibleMarkers === false) {
-          console.log("showing marker");
-          _this.visibleMarkers = true;
-          return _this.showAllMarker();
+        var zoomLevel;
+        zoomLevel = _this.map.getZoom();
+        if (zoomLevel === 4) {
+          return _this.setAllMarkersVisibility(false);
+        } else if (zoomLevel > 4) {
+          return _this.setAllMarkersVisibility(true);
         }
       });
       this.devModInput.bind('click', this.handleDevMod);
@@ -164,6 +164,30 @@
           return icon.url;
         }
       }
+    };
+
+    CustomMap.prototype.setAllMarkersVisibility = function(isVisible) {
+      var type, _results;
+      _results = [];
+      for (type in Markers) {
+        if (!$("[data-type='" + type + "']").hasClass('hidden')) {
+          _results.push(this.setMarkersVisibilityByType(isVisible, type));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    };
+
+    CustomMap.prototype.setMarkersVisibilityByType = function(isVisible, type) {
+      var marker, _i, _len, _ref, _results;
+      _ref = this.gMarker[type];
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        marker = _ref[_i];
+        _results.push(marker.setVisible(isVisible));
+      }
+      return _results;
     };
 
     CustomMap.prototype.handleDevMod = function(e) {
@@ -319,6 +343,36 @@
         this.optionsBox.removeClass('red');
         return this.canRemoveMarker = false;
       }
+    };
+
+    CustomMap.prototype.addMenuIcons = function() {
+      var icon, img, li, _i, _len, _ref, _results,
+        _this = this;
+      _ref = Resources.Icons;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        icon = _ref[_i];
+        li = $("<li></li>");
+        img = $("<img>", {
+          src: icon.url,
+          alt: icon.id
+        });
+        li.append(img);
+        li.attr('data-type', icon.id);
+        li.bind('click', function(e) {
+          var item;
+          item = e.currentTarget;
+          if (item.getAttribute('class') === 'hidden') {
+            _this.setMarkersVisibilityByType(true, item.getAttribute('data-type'));
+            return e.currentTarget.setAttribute('class', '');
+          } else {
+            _this.setMarkersVisibilityByType(false, item.getAttribute('data-type'));
+            return e.currentTarget.setAttribute('class', 'hidden');
+          }
+        });
+        _results.push($('#menu-marker ul').append(li));
+      }
+      return _results;
     };
 
     return CustomMap;

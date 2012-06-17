@@ -41,23 +41,22 @@ class CustomMap
     @map = new google.maps.Map($(id)[0], @gMapOptions)
     @map.mapTypes.set('custom', @customMapType)
     @map.setMapTypeId('custom')
+
+    @addMenuIcons()
     
     # Events
     google.maps.event.addListener(@map, 'mousemove', (e)=>
       @lngContainer.html e.latLng.lng()
       @latContainer.html e.latLng.lat()
     )
+    
     google.maps.event.addListener(@map, 'zoom_changed', (e)=>
-      if @map.getZoom() == 4
-        @visibleMarkers = false
-        @hideAllMarker()
-      else if @visibleMarkers == false
-        console.log "showing marker"
-        @visibleMarkers = true
-        @showAllMarker()
+        zoomLevel = @map.getZoom()
+        if zoomLevel == 4
+            @setAllMarkersVisibility(false);
+        else if zoomLevel > 4
+            @setAllMarkersVisibility(true);
     )
-    
-    
     
     @devModInput.bind('click', @handleDevMod)
     
@@ -131,6 +130,14 @@ class CustomMap
     
   getIconURLByType:(type)->
     return icon.url for icon in Resources.Icons when icon.id is type
+
+  setAllMarkersVisibility:(isVisible)->
+    for type of Markers
+      if !$("[data-type='#{type}']").hasClass('hidden')
+        @setMarkersVisibilityByType(isVisible, type) 
+
+  setMarkersVisibilityByType:(isVisible, type)->
+    marker.setVisible(isVisible) for marker in @gMarker[type]
 
   handleDevMod:(e)=>
     this_ = $(e.currentTarget)
@@ -209,6 +216,22 @@ class CustomMap
       @removeMarkerLink.removeClass('active')
       @optionsBox.removeClass('red')
       @canRemoveMarker = false
+
+  addMenuIcons:()->
+    for icon in Resources.Icons
+      li = $("<li></li>")
+      img = $("<img>", {src: icon.url, alt: icon.id})
+      li.append(img)
+      li.attr('data-type', icon.id)
+      li.bind 'click', (e)=>
+        item = e.currentTarget
+        if item.getAttribute('class') == 'hidden'
+          @setMarkersVisibilityByType(true, item.getAttribute('data-type'))
+          e.currentTarget.setAttribute('class', '')
+        else
+          @setMarkersVisibilityByType(false, item.getAttribute('data-type'))
+          e.currentTarget.setAttribute('class', 'hidden')
+      $('#menu-marker ul').append(li)
     
 $ ()->
   myCustomMap = new CustomMap('#map')
