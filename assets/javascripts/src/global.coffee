@@ -45,6 +45,8 @@ class CustomMap
     # overlay.draw = ()->
     # overlay.setMap(@map)
     
+    @addMenuIcons()
+    
     # Events
     google.maps.event.addListener(@map, 'mousemove', (e)=>
       @lngContainer.html e.latLng.lng()
@@ -201,6 +203,16 @@ class CustomMap
       @removeMarkerLink.removeClass('active')
       @optionsBox.removeClass('red')
       @canRemoveMarker = false
+
+  addMenuIcons:()->
+    for icon in Resources.Icons
+        li = document.createElement("li")
+        img = document.createElement("img")
+        img.src = icon.url
+        img.alt = icon.id
+        li.appendChild(img)
+        li.setAttribute('data-type', icon.id)
+        $('#menu-marker ul').append(li)
     
 $ ()->
   myCustomMap = new CustomMap('#map')

@@ -57,6 +57,7 @@
       this.map = new google.maps.Map($(id)[0], this.gMapOptions);
       this.map.mapTypes.set('custom', this.customMapType);
       this.map.setMapTypeId('custom');
+      this.addMenuIcons();
       google.maps.event.addListener(this.map, 'mousemove', function(e) {
         _this.lngContainer.html(e.latLng.lng());
         return _this.latContainer.html(e.latLng.lat());
@@ -290,6 +291,23 @@
         this.optionsBox.removeClass('red');
         return this.canRemoveMarker = false;
       }
+    };
+
+    CustomMap.prototype.addMenuIcons = function() {
+      var icon, img, li, _i, _len, _ref, _results;
+      _ref = Resources.Icons;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        icon = _ref[_i];
+        li = document.createElement("li");
+        img = document.createElement("img");
+        img.src = icon.url;
+        img.alt = icon.id;
+        li.appendChild(img);
+        li.setAttribute('data-type', icon.id);
+        _results.push($('#menu-marker ul').append(li));
+      }
+      return _results;
     };
 
     return CustomMap;
