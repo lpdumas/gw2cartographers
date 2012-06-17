@@ -294,17 +294,30 @@
     };
 
     CustomMap.prototype.addMenuIcons = function() {
-      var icon, img, li, _i, _len, _ref, _results;
+      var icon, img, li, _i, _len, _ref, _results,
+        _this = this;
       _ref = Resources.Icons;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         icon = _ref[_i];
-        li = document.createElement("li");
-        img = document.createElement("img");
-        img.src = icon.url;
-        img.alt = icon.id;
-        li.appendChild(img);
-        li.setAttribute('data-type', icon.id);
+        li = $("<li></li>");
+        img = $("<img>", {
+          src: icon.url,
+          alt: icon.id
+        });
+        li.append(img);
+        li.attr('data-type', icon.id);
+        li.bind('click', function(e) {
+          var item;
+          item = e.currentTarget;
+          if (item.getAttribute('class') === 'hidden') {
+            _this.setMarkersVisibilityByType(true, item.getAttribute('data-type'));
+            return e.currentTarget.setAttribute('class', '');
+          } else {
+            _this.setMarkersVisibilityByType(false, item.getAttribute('data-type'));
+            return e.currentTarget.setAttribute('class', 'hidden');
+          }
+        });
         _results.push($('#menu-marker ul').append(li));
       }
       return _results;

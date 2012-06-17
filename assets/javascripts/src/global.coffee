@@ -206,12 +206,18 @@ class CustomMap
 
   addMenuIcons:()->
     for icon in Resources.Icons
-        li = document.createElement("li")
-        img = document.createElement("img")
-        img.src = icon.url
-        img.alt = icon.id
-        li.appendChild(img)
-        li.setAttribute('data-type', icon.id)
+        li = $("<li></li>")
+        img = $("<img>", {src: icon.url, alt: icon.id})
+        li.append(img)
+        li.attr('data-type', icon.id)
+        li.bind 'click', (e)=>
+            item = e.currentTarget
+            if item.getAttribute('class') == 'hidden'
+                @setMarkersVisibilityByType(true, item.getAttribute('data-type'))
+                e.currentTarget.setAttribute('class', '')
+            else
+                @setMarkersVisibilityByType(false, item.getAttribute('data-type'))
+                e.currentTarget.setAttribute('class', 'hidden')
         $('#menu-marker ul').append(li)
     
 $ ()->
