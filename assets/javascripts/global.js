@@ -29,6 +29,7 @@
       this.exportWindow = $('#export-windows');
       this.canRemoveMarker = false;
       this.draggableMarker = false;
+      this.visibleMarkers = true;
       this.gMapOptions = {
         center: new google.maps.LatLng(25.760319754713887, -35.6396484375),
         zoom: 6,
@@ -61,6 +62,16 @@
         _this.lngContainer.html(e.latLng.lng());
         return _this.latContainer.html(e.latLng.lat());
       });
+      google.maps.event.addListener(this.map, 'zoom_changed', function(e) {
+        if (_this.map.getZoom() === 4) {
+          _this.visibleMarkers = false;
+          return _this.hideAllMarker();
+        } else if (_this.visibleMarkers === false) {
+          console.log("showing marker");
+          _this.visibleMarkers = true;
+          return _this.showAllMarker();
+        }
+      });
       this.devModInput.bind('click', this.handleDevMod);
       this.gMarker = {};
       this.setAllMarkers();
@@ -86,7 +97,7 @@
     }
 
     CustomMap.prototype.addMarker = function(markerInfo, type) {
-      var iconmid, iconsize, image, marker,
+      var iconmid, iconsize, image, infoWindow, marker,
         _this = this;
       iconsize = 32;
       iconmid = iconsize / 2;
@@ -99,8 +110,13 @@
         cursor: this.draggableMarker ? "move" : "pointer",
         title: "" + markerInfo.title
       });
+      infoWindow = new google.maps.InfoWindow({
+        content: ("" + markerInfo.desc) === "" ? "More info comming soon" : "" + markerInfo.desc,
+        maxWidth: 200
+      });
       marker["title"] = "" + markerInfo.title;
       marker["desc"] = "" + markerInfo.desc;
+      marker["infoWindow"] = infoWindow;
       google.maps.event.addListener(marker, 'dragend', function(e) {
         return console.log("" + (e.latLng.lat()) + ", " + (e.latLng.lng()));
       });
@@ -108,7 +124,11 @@
         if (_this.canRemoveMarker && _this.draggableMarker) {
           return _this.removeMarker(marker.__gm_id);
         } else {
-          return console.log(marker["title"]);
+          if (_this.currentOpenedInfoWindow) {
+            _this.currentOpenedInfoWindow.close();
+          }
+          marker.infoWindow.open(_this.map, marker);
+          return _this.currentOpenedInfoWindow = marker.infoWindow;
         }
       });
       if (!this.gMarker[type]) {
@@ -251,6 +271,44 @@
       return _results;
     };
 
+    CustomMap.prototype.hideAllMarker = function() {
+      var marker, markers, markersId, _ref, _results;
+      _ref = this.gMarker;
+      _results = [];
+      for (markersId in _ref) {
+        markers = _ref[markersId];
+        _results.push((function() {
+          var _i, _len, _results1;
+          _results1 = [];
+          for (_i = 0, _len = markers.length; _i < _len; _i++) {
+            marker = markers[_i];
+            _results1.push(marker.setVisible(false));
+          }
+          return _results1;
+        })());
+      }
+      return _results;
+    };
+
+    CustomMap.prototype.showAllMarker = function() {
+      var marker, markers, markersId, _ref, _results;
+      _ref = this.gMarker;
+      _results = [];
+      for (markersId in _ref) {
+        markers = _ref[markersId];
+        _results.push((function() {
+          var _i, _len, _results1;
+          _results1 = [];
+          for (_i = 0, _len = markers.length; _i < _len; _i++) {
+            marker = markers[_i];
+            _results1.push(marker.setVisible(true));
+          }
+          return _results1;
+        })());
+      }
+      return _results;
+    };
+
     CustomMap.prototype.toggleMarkerList = function(e) {
       var this_;
       this_ = $(e.currentTarget);
@@ -269,7 +327,10 @@
 
   $(function() {
     var myCustomMap;
-    return myCustomMap = new CustomMap('#map');
+    myCustomMap = new CustomMap('#map');
+    return $('#notice').click(function() {
+      return $(this).hide();
+    });
   });
 
 }).call(this);

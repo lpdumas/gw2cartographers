@@ -16,6 +16,7 @@ class CustomMap
     
     @canRemoveMarker = false
     @draggableMarker = false
+    @visibleMarkers   = true
     @gMapOptions   = 
       center: new google.maps.LatLng(25.760319754713887, -35.6396484375)
       zoom: 6
@@ -41,18 +42,22 @@ class CustomMap
     @map.mapTypes.set('custom', @customMapType)
     @map.setMapTypeId('custom')
     
-    # overlay = new google.maps.OverlayView()
-    # overlay.draw = ()->
-    # overlay.setMap(@map)
-    
     # Events
     google.maps.event.addListener(@map, 'mousemove', (e)=>
       @lngContainer.html e.latLng.lng()
       @latContainer.html e.latLng.lat()
     )
-    # google.maps.event.addListener(@map, 'click', (e)=>
-      # alert "#{e.latLng.lat()}, #{e.latLng.lng()}"
-    # )
+    google.maps.event.addListener(@map, 'zoom_changed', (e)=>
+      if @map.getZoom() == 4
+        @visibleMarkers = false
+        @hideAllMarker()
+      else if @visibleMarkers == false
+        console.log "showing marker"
+        @visibleMarkers = true
+        @showAllMarker()
+    )
+    
+    
     
     @devModInput.bind('click', @handleDevMod)
     
@@ -94,8 +99,14 @@ class CustomMap
       cursor : if @draggableMarker then "move" else "pointer"
       title: "#{markerInfo.title}"
     )
+    infoWindow = new google.maps.InfoWindow(
+      content  : if "#{markerInfo.desc}" == "" then "More info comming soon" else "#{markerInfo.desc}"
+      maxWidth : 200
+    )
+    
     marker["title"] = "#{markerInfo.title}"
     marker["desc"]  = "#{markerInfo.desc}"
+    marker["infoWindow"] = infoWindow
     
     google.maps.event.addListener(marker, 'dragend', (e)=>
       console.log "#{e.latLng.lat()}, #{e.latLng.lng()}"
@@ -104,7 +115,9 @@ class CustomMap
       if @canRemoveMarker && @draggableMarker
         @removeMarker(marker.__gm_id)
       else
-        console.log marker["title"]
+        if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+        marker.infoWindow.open(@map, marker)
+        @currentOpenedInfoWindow = marker.infoWindow
     )
 
     if !@gMarker[type]
@@ -177,7 +190,17 @@ class CustomMap
           marker.setCursor('move')
         else
           marker.setCursor('pointer')
-          
+
+  hideAllMarker:()->
+    for markersId, markers of @gMarker
+      for marker in markers
+        marker.setVisible(false)
+    
+  showAllMarker:()->
+    for markersId, markers of @gMarker
+      for marker in markers
+        marker.setVisible(true)
+        
   toggleMarkerList: (e)=>
     this_ = $(e.currentTarget)
     @markerList.toggleClass('active')
@@ -189,3 +212,6 @@ class CustomMap
     
 $ ()->
   myCustomMap = new CustomMap('#map')
+  $('#notice').click(()->
+    $(this).hide()
+  )

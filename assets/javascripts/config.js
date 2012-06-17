@@ -468,7 +468,8 @@ Markers.poi = [
 // Skill Points
 Markers.skillpoints = [
 //Queensdale
-  {"lng" : "27.264395776495363", "lat" : "-37.353515625", "title" : "Commune with Earthen Magic", "desc" : ""},
+  {"lng" : "28.99853181405182", "lat" : "-38.12255859375", "title" : "Commune with Earthen Magic", "desc" : ""},
+  // {"lng" : "27.264395776495363", "lat" : "-37.353515625", "title" : "Commune with Earthen Magic", "desc" : ""},
   {"lng" : "24.25698131588254", "lat" : "-47.4169921875", "title" : "Use Erts Unguent", "desc" : ""},
   {"lng" : "20.416716988945726", "lat" : "-25.576171875", "title" : "", "desc" : ""},
 {"lng" : "22.197577453351066", "lat" : "-30.60791015625", "title" : "", "desc" : ""},
