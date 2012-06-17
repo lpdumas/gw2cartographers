@@ -4,8 +4,6 @@ A simple custom google maps for Guildwars 2. More to come!
 
 ## Missing fonctionalities
 
-* Enabling user placed markers
-* Exporting placed markers (json string)
 * InfoWindow on marker's click
 * More markers types
 * Toggling between marker type
