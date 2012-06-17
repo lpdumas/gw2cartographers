@@ -160,7 +160,11 @@
       var type, _results;
       _results = [];
       for (type in Markers) {
-        _results.push(this.setMarkersVisibilityByType(isVisible, type));
+        if (!$("[data-type='" + type + "']").hasClass('hidden')) {
+          _results.push(this.setMarkersVisibilityByType(isVisible, type));
+        } else {
+          _results.push(void 0);
+        }
       }
       return _results;
     };

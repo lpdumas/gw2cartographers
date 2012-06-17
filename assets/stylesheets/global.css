@@ -259,7 +259,14 @@ html, body {
 #menu-marker ul li img {
     width: 32px;
     height: 32px;
+    cursor: pointer;
+    -webkit-transition: opacity 150ms linear;
+    -moz-transition: opacity 150ms linear;
+    -ms-transition: opacity 150ms linear;
+    -o-transition: opacity 150ms linear;
 }
-#menu-marker ul li.hidden img {
+
+#menu-marker ul li.hidden img,
+#menu-marker ul li:hover img {
     opacity: 0.5;
 }

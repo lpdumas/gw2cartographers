@@ -131,7 +131,9 @@ class CustomMap
     return icon.url for icon in Resources.Icons when icon.id is type
 
   setAllMarkersVisibility:(isVisible)->
-    @setMarkersVisibilityByType(isVisible, type) for type of Markers
+    for type of Markers
+      if !$("[data-type='#{type}']").hasClass('hidden')
+        @setMarkersVisibilityByType(isVisible, type) 
 
   setMarkersVisibilityByType:(isVisible, type)->
     marker.setVisible(isVisible) for marker in @gMarker[type]
@@ -206,19 +208,19 @@ class CustomMap
 
   addMenuIcons:()->
     for icon in Resources.Icons
-        li = $("<li></li>")
-        img = $("<img>", {src: icon.url, alt: icon.id})
-        li.append(img)
-        li.attr('data-type', icon.id)
-        li.bind 'click', (e)=>
-            item = e.currentTarget
-            if item.getAttribute('class') == 'hidden'
-                @setMarkersVisibilityByType(true, item.getAttribute('data-type'))
-                e.currentTarget.setAttribute('class', '')
-            else
-                @setMarkersVisibilityByType(false, item.getAttribute('data-type'))
-                e.currentTarget.setAttribute('class', 'hidden')
-        $('#menu-marker ul').append(li)
+      li = $("<li></li>")
+      img = $("<img>", {src: icon.url, alt: icon.id})
+      li.append(img)
+      li.attr('data-type', icon.id)
+      li.bind 'click', (e)=>
+        item = e.currentTarget
+        if item.getAttribute('class') == 'hidden'
+          @setMarkersVisibilityByType(true, item.getAttribute('data-type'))
+          e.currentTarget.setAttribute('class', '')
+        else
+          @setMarkersVisibilityByType(false, item.getAttribute('data-type'))
+          e.currentTarget.setAttribute('class', 'hidden')
+      $('#menu-marker ul').append(li)
     
 $ ()->
   myCustomMap = new CustomMap('#map')
