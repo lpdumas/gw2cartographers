@@ -6,7 +6,8 @@ Resources.Icons = [
     {"id" : "hearts", "url" : Resources.Paths.icons + "hearts.png"},
     {"id" : "waypoints", "url" : Resources.Paths.icons + "waypoints.png"},
     {"id" : "skillpoints", "url" : Resources.Paths.icons + "skillpoints.png"},
-    {"id" : "poi", "url" : Resources.Paths.icons + "poi.png"}
+    {"id" : "poi", "url" : Resources.Paths.icons + "poi.png"},
+    {"id" : "dungeons", "url" : Resources.Paths.icons + "dungeon.png"}
 ]
 
 Markers.hearts = [
@@ -525,4 +526,9 @@ Markers.skillpoints = [
 {"lng" : "28.815799886487323", "lat" : "42.86865234375", "title" : "", "desc" : ""},
 {"lng" : "33.458942753687666", "lat" : "40.05615234375", "title" : "", "desc" : ""},
 {"lng" : "34.06176136129721", "lat" : "45.263671875", "title" : "", "desc" : ""}
+]
+
+Markers.dungeons = [
+{"lng" : "19.00499664280239", "lat" : "75.574951171875", "title" : "Ascalonian Catacombs", "desc" : ""},
+{"lng" : "32.31499127724558", "lat" : "-25.64208984375", "title" : "Caudecus Manor", "desc" : ""}
 ]
