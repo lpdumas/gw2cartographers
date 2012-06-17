@@ -2,13 +2,13 @@ Resources.Paths = {
     "icons" : "assets/images/icons/32x32/"
 }
 
-Resources.Icons = [
-    {"id" : "hearts", "url" : Resources.Paths.icons + "hearts.png"},
-    {"id" : "waypoints", "url" : Resources.Paths.icons + "waypoints.png"},
-    {"id" : "skillpoints", "url" : Resources.Paths.icons + "skillpoints.png"},
-    {"id" : "poi", "url" : Resources.Paths.icons + "poi.png"},
-    {"id" : "dungeons", "url" : Resources.Paths.icons + "dungeon.png"}
-]
+Resources.Icons = {
+    "hearts" : {"id" : "hearts", "url" : Resources.Paths.icons + "hearts.png"},
+    "waypoints" : {"id" : "waypoints", "url" : Resources.Paths.icons + "waypoints.png"},
+    "skillpoints" : {"id" : "skillpoints", "url" : Resources.Paths.icons + "skillpoints.png"},
+    "poi" : {"id" : "poi", "url" : Resources.Paths.icons + "poi.png"},
+    "dungeons": {"id" : "dungeons", "url" : Resources.Paths.icons + "dungeon.png"}
+}
 
 Areas = [
     { name : "Divinity Reach", 

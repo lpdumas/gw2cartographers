@@ -132,7 +132,7 @@ class CustomMap
       @addMarker(marker, type) for marker in markerArray
     
   getIconURLByType:(type)->
-    return icon.url for icon in Resources.Icons when icon.id is type
+    return Resources.Icons[icon].url for icon of Resources.Icons when icon is type
 
   handleDevMod:(e)=>
     this_ = $(e.currentTarget)

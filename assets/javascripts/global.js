@@ -159,12 +159,10 @@
     };
 
     CustomMap.prototype.getIconURLByType = function(type) {
-      var icon, _i, _len, _ref;
-      _ref = Resources.Icons;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        icon = _ref[_i];
-        if (icon.id === type) {
-          return icon.url;
+      var icon;
+      for (icon in Resources.Icons) {
+        if (icon === type) {
+          return Resources.Icons[icon].url;
         }
       }
     };
@@ -353,7 +351,6 @@
       div.style.position = "absolute";
       div.innerHTML = this.area_.name;
       ul = document.createElement('ul');
-      ul.opacity = 1.0;
       for (type in this.area_.summary) {
         if (this.area_.summary[type] > 0) {
           li = document.createElement('li');
