@@ -190,7 +190,8 @@ html, body {
   text-align: center;
 }
 #export {
-  display: inline-block;
+/*  display: inline-block;*/
+  display: none;
   position: absolute;
   z-index: 5;
   bottom: 10px;
@@ -267,4 +268,25 @@ html, body {
 #menu-marker ul li.hidden img,
 #menu-marker ul li:hover img {
     opacity: 0.5;
+}
+
+
+div.area-summary-overlay {
+ padding: 10px;
+ border: none;
+ background: #333;
+ background: rgba(0, 0, 0, 0.5);
+ color: #fff;
+ position: absolute;
+ width: 130px; 
+ height: 60px; 
+}
+
+div.area-summary-overlay ul{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+div.area-summary-overlay ul li {
+  float: left;
 }

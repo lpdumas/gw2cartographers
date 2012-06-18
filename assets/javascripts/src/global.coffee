@@ -264,7 +264,7 @@ class AreaSummary
         @bounds_ = new google.maps.LatLngBounds(swBound, neBound)
         @area_ = area
         @div_ = null
-        @height_ = 130
+        @height_ = 80
         @width_ = 150
         
         @setMap(map)
@@ -273,15 +273,17 @@ class AreaSummary
     AreaSummary.prototype = new google.maps.OverlayView();
     
     onAdd:()->        
-        div = document.createElement('div')
-        div.style.borderWidth = "1px"
-        div.style.borderColor = "red"
-        div.style.backgroundColor = "#333"
-        div.style.opacity = 0.8
-        div.style.color = "#FFF"
-        div.style.position = "absolute"
-        div.style.width = @width_ + "px"
-        div.style.height = @height_ + "px"
+        div = $('<div class="area-summary-overlay"></div>')
+        console.log div
+        # div.style.borderWidth = "1px"
+        # div.style.padding = "10px"
+        # div.style.borderColor = "red"
+        # div.style.backgroundColor = "#333"
+        # div.style.opacity = 0.8
+        # div.style.color = "#FFF"
+        # div.style.position = "absolute"
+        # div.style.width = @width_ + "px"
+        # div.style.height = @height_ + "px"
         
         title = document.createElement('p')
         title.style.margin = "0"
@@ -296,7 +298,7 @@ class AreaSummary
         title.innerHTML = @area_.name + rangeLvl
         
         #div.innerHTML = @area_.name
-        div.appendChild(title)
+        div.append(title)
         
         ul = document.createElement('ul')
         
@@ -308,16 +310,14 @@ class AreaSummary
                 img.alt = Resources.Icons[type].label
                 img.style.width = "15px"
                 img.style.height = "15px"
-                li.innerHTML = Resources.Icons[type].label + ": " + @area_.summary[type]
+                li.innerHTML = @area_.summary[type]
                 li.appendChild(img, li.firstChild)
                 ul.appendChild(li)
 
-        ul.style.margin = "0 0 0 25px"
-        ul.style.padding = "0px"
         ul.style.listStyleType = "none"
-        div.appendChild(ul)        
+        div.append(ul)        
         
-        @div_ = div
+        @div_ = div[0]
         panes = @getPanes()
         panes.overlayImage.appendChild(@div_)
         @setVisible(false)
