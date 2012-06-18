@@ -2,12 +2,125 @@ Resources.Paths = {
     "icons" : "assets/images/icons/32x32/"
 }
 
-Resources.Icons = [
-    {"id" : "hearts", "url" : Resources.Paths.icons + "hearts.png"},
-    {"id" : "waypoints", "url" : Resources.Paths.icons + "waypoints.png"},
-    {"id" : "skillpoints", "url" : Resources.Paths.icons + "skillpoints.png"},
-    {"id" : "poi", "url" : Resources.Paths.icons + "poi.png"},
-    {"id" : "dungeons", "url" : Resources.Paths.icons + "dungeon.png"}
+Resources.Icons = {
+    "hearts" : {"label" : "Hearts", "url" : Resources.Paths.icons + "hearts.png"},
+    "waypoints" : {"label" : "Waypoints", "url" : Resources.Paths.icons + "waypoints.png"},
+    "skillpoints" : {"label" : "Skill points", "url" : Resources.Paths.icons + "skillpoints.png"},
+    "poi" : {"label" : "Points of interest", "url" : Resources.Paths.icons + "poi.png"},
+    "dungeons": {"label" : "Dungeons", "url" : Resources.Paths.icons + "dungeon.png"}
+}
+
+Areas = [
+{ name : "Divinity's Reach", rangeLvl : "",
+     summary : {
+         "hearts" : 0,
+         "waypoints" : 13,
+         "skillpoints" : 0,
+         "poi" : 20,
+         "dungeons" : 0 
+     },
+     "neLat" : "43.19591001164034", "neLng" : "-31.519775390625", "swLat" : "33.44977658311853", "swLng" : "-45.955810546875"
+ },
+ { name : "Queensdale",  rangeLvl : "1 - 17",
+     summary : {
+         "hearts" : 17,
+         "waypoints" : 16,
+         "skillpoints" : 7,
+         "poi" : 21,
+         "dungeons" : 1
+     },
+     "neLat" : "33.38558626887102", "neLng" : "-23.8623046875", "swLat" : "18.406654713919085", "swLng" : "-48.27392578125"
+ },
+ { name : "Kessex Hills",  rangeLvl : "15 - 25",
+     summary : {
+         "hearts" : 14,
+         "waypoints" : 18,
+         "skillpoints" : 5,
+         "poi" : 16,
+         "dungeons" : 0
+     },
+     "neLat" : "18.36495262653919", "neLng" : "-23.5546875", "swLat" : "4.598327203100929", "swLng" : "-51.17431640625"
+ },
+ { name : "Gendarran Fields",  rangeLvl : "25 - 35",
+     summary : {
+         "hearts" : 11,
+         "waypoints" : 22,
+         "skillpoints" : 7,
+         "poi" : 15,
+         "dungeons" : 0
+     },
+     "neLat" : "29.765834552626156", "neLng" : "5.685546875", "swLat" : "17.576565709783402", "swLng" : "-22.88427734375"
+ },
+ { name : "Black Citadel",  rangeLvl : "",
+     summary : {
+         "hearts" : 0,
+         "waypoints" : 12,
+         "skillpoints" : 0,
+         "poi" : 18,
+         "dungeons" : 0
+     },
+     "neLat" : "20.786930592570368", "neLng" : "57.94189453125", "swLat" : "11.081384602413175", "swLng" : "47.900390625"
+ },
+ { name : "Plains of Ashford",  rangeLvl : "1 - 15",
+     summary : {
+         "hearts" : 16,
+         "waypoints" : 18,
+         "skillpoints" : 5,
+         "poi" : 26,
+         "dungeons" : 0
+     },
+     "neLat" : "21.764601405744017", "neLng" : "85.682373046875", "swLat" : "7.983077720238533", "swLng" : "58.73291015625 "
+ },
+ { name : "Diessa Plateau",  rangeLvl : "15 - 25",
+     summary : {
+         "hearts" : 15,
+         "waypoints" : 19,
+         "skillpoints" : 8,
+         "poi" : 21,
+         "dungeons" : 0
+     },
+     "neLat" : "35.54116627999818", "neLng" : "71.47705078125", "swLat" : "21.463293441899314", "swLng" : "47.373046875"
+ },
+ { name : "Hoelbrak",  rangeLvl : "",
+     summary : {
+         "hearts" : 0,
+         "waypoints" : 14,
+         "skillpoints" : 0,
+         "poi" : 24,
+         "dungeons" : 0
+     },
+     "neLat" : "22.907803451058495", "neLng" : "34.4970703125", "swLat" : "12.747516274952828", "swLng" : "21.280517578125 "
+ },
+ { name : "Wayfarer Foothills",  rangeLvl : "1 - 15",
+     summary : {
+         "hearts" : 16,
+         "waypoints" : 17,
+         "skillpoints" : 8,
+         "poi" : 18,
+         "dungeons" : 0
+     },
+     "neLat" : "34.768691457552755", "neLng" : "46.5380859375", "swLat" : "8.265855052877273", "swLng" : "35.74951171875"
+ },
+ { name : "Snowden Drifts",  rangeLvl : "15 - 25",
+     summary : {
+         "hearts" : 13,
+         "waypoints" : 18,
+         "skillpoints" : 6,
+         "poi" : 20,
+         "dungeons" : 0
+     },
+     "neLat" : "35.89795019335764", "neLng" : "34.4970703125", "swLat" : "23.95613633396941", "swLng" : "6.61376953125 "
+ },
+ { name : "Lion's Arch",  rangeLvl : "",
+     summary : {
+         "hearts" : 0,
+         "waypoints" : 13,
+         "skillpoints" : 0,
+         "poi" : 20,
+         "dungeons" : 0
+     },
+     "neLat" : "17.025272685376905", "neLng" : "5.526123046875", "swLat" : "6.263804863758637", "swLng" : "-10.099023437500023"
+ }
 ]
 
 Markers.hearts = [

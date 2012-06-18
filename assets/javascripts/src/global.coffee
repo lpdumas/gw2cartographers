@@ -14,6 +14,8 @@ class CustomMap
     @exportBtn        = $('#export')
     @exportWindow     = $('#export-windows')
     
+    @areaSummaryBoxes = []
+    
     @canRemoveMarker = false
     @draggableMarker = false
     @visibleMarkers   = true
@@ -54,16 +56,30 @@ class CustomMap
         zoomLevel = @map.getZoom()
         if zoomLevel == 4
             @setAllMarkersVisibility(false);
+            @setAreasInformationVisibility(true)
         else if zoomLevel > 4
             @setAllMarkersVisibility(true);
+            @setAreasInformationVisibility(false)
     )
     
+# =======
+#       if @map.getZoom() == 4
+#         @visibleMarkers = false
+#         @hideAllMarker()
+#       else if @visibleMarkers == false
+#         console.log "showing marker"
+#         @visibleMarkers = true
+#         @showAllMarker()
+#     ) 
+# 
+# >>>>>>> jsilvestre/area-summary
     @devModInput.bind('click', @handleDevMod)
     
     #marker
     @gMarker = {}
 
     @setAllMarkers()
+    @initializeAreaSummaryBoxes()
 
     @markerList.find('span').bind('click', (e)=>
       this_      = $(e.currentTarget)
@@ -129,7 +145,7 @@ class CustomMap
       @addMarker(marker, type) for marker in markerArray
     
   getIconURLByType:(type)->
-    return icon.url for icon in Resources.Icons when icon.id is type
+    return Resources.Icons[icon].url for icon of Resources.Icons when icon is type
 
   setAllMarkersVisibility:(isVisible)->
     for type of Markers
@@ -218,11 +234,11 @@ class CustomMap
       @canRemoveMarker = false
 
   addMenuIcons:()->
-    for icon in Resources.Icons
+    for type, icon of Resources.Icons
       li = $("<li></li>")
-      img = $("<img>", {src: icon.url, alt: icon.id})
+      img = $("<img>", {src: icon.url, alt: type})
       li.append(img)
-      li.attr('data-type', icon.id)
+      li.attr('data-type', type)
       li.bind 'click', (e)=>
         item = e.currentTarget
         if item.getAttribute('class') == 'hidden'
@@ -232,6 +248,95 @@ class CustomMap
           @setMarkersVisibilityByType(false, item.getAttribute('data-type'))
           e.currentTarget.setAttribute('class', 'hidden')
       $('#menu-marker ul').append(li)
+      
+  initializeAreaSummaryBoxes:()->
+    for area of Areas
+        @areaSummaryBoxes[area] = new AreaSummary(@map, Areas[area])
+        
+  setAreasInformationVisibility:(isVisible)->
+    for box in @areaSummaryBoxes
+        box.setVisible(isVisible)
+      
+class AreaSummary
+    constructor:(map, area)->
+        swBound = new google.maps.LatLng(area.swLat, area.swLng)
+        neBound = new google.maps.LatLng(area.neLat, area.neLng)
+        @bounds_ = new google.maps.LatLngBounds(swBound, neBound)
+        @area_ = area
+        @div_ = null
+        @height_ = 130
+        @width_ = 150
+        
+        @setMap(map)
+    
+    
+    AreaSummary.prototype = new google.maps.OverlayView();
+    
+    onAdd:()->        
+        div = document.createElement('div')
+        div.style.borderWidth = "1px"
+        div.style.borderColor = "red"
+        div.style.backgroundColor = "#333"
+        div.style.opacity = 0.8
+        div.style.color = "#FFF"
+        div.style.position = "absolute"
+        div.style.width = @width_ + "px"
+        div.style.height = @height_ + "px"
+        
+        title = document.createElement('p')
+        title.style.margin = "0"
+        title.style.padding = "2px"
+        title.style.fontWeight = "bold"
+        title.style.fontSize = "13px"
+        if(@area_.rangeLvl != "")
+            rangeLvl = "<br>(" + @area_.rangeLvl + ")"
+        else
+            rangeLvl = ""
+        
+        title.innerHTML = @area_.name + rangeLvl
+        
+        #div.innerHTML = @area_.name
+        div.appendChild(title)
+        
+        ul = document.createElement('ul')
+        
+        for type of @area_.summary
+            if(@area_.summary[type] > 0)
+                li = document.createElement('li')
+                img = document.createElement('img')
+                img.src = Resources.Icons[type].url
+                img.alt = Resources.Icons[type].label
+                img.style.width = "15px"
+                img.style.height = "15px"
+                li.innerHTML = Resources.Icons[type].label + ": " + @area_.summary[type]
+                li.appendChild(img, li.firstChild)
+                ul.appendChild(li)
+
+        ul.style.margin = "0 0 0 25px"
+        ul.style.padding = "0px"
+        ul.style.listStyleType = "none"
+        div.appendChild(ul)        
+        
+        @div_ = div
+        panes = @getPanes()
+        panes.overlayImage.appendChild(@div_)
+        @setVisible(false)
+        
+    draw:()->
+      overlayProjection = @getProjection()
+      sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
+      ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
+
+      div = this.div_;
+      div.style.left = sw.x + ((ne.x - sw.x) - @width_) / 2 + 'px';
+      div.style.top = ne.y + ((sw.y - ne.y) - @height_) / 2 + 'px';
+    
+    setVisible:(isVisible)->
+        if @div_
+            if isVisible is true
+                @div_.style.visibility = "visible"
+            else
+                @div_.style.visibility = "hidden"
     
 $ ()->
   myCustomMap = new CustomMap('#map')
