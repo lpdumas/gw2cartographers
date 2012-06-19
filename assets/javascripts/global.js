@@ -36,7 +36,7 @@
       this.gMapOptions = {
         center: new google.maps.LatLng(25.760319754713887, -35.6396484375),
         zoom: 6,
-        minZoom: 4,
+        minZoom: 3,
         maxZoom: this.maxZoom,
         streetViewControl: false,
         mapTypeControl: false,
@@ -77,6 +77,9 @@
           return _this.setAreasInformationVisibility(true);
         } else if (zoomLevel > 4) {
           _this.setAllMarkersVisibility(true);
+          return _this.setAreasInformationVisibility(false);
+        } else if (zoomLevel < 4) {
+          _this.setAllMarkersVisibility(false);
           return _this.setAreasInformationVisibility(false);
         }
       });
