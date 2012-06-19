@@ -66,6 +66,9 @@
         _this.lngContainer.html(e.latLng.lng());
         return _this.latContainer.html(e.latLng.lat());
       });
+      google.maps.event.addListener(this.map, 'click', function(e) {
+        return console.log("Long: " + (e.latLng.lng()) + ", Lat: " + (e.latLng.lat()));
+      });
       google.maps.event.addListener(this.map, 'zoom_changed', function(e) {
         var zoomLevel;
         zoomLevel = _this.map.getZoom();
@@ -87,8 +90,8 @@
         markerType = this_.attr('data-type');
         coord = _this.map.getCenter();
         markerinfo = {
-          "lng": coord.lat(),
-          "lat": coord.lng(),
+          "lng": coord.lng(),
+          "lat": coord.lat(),
           "title": "--"
         };
         img = "" + _this.iconsPath + "/" + markerType + ".png";
@@ -109,7 +112,7 @@
       iconmid = iconsize / 2;
       image = new google.maps.MarkerImage(this.getIconURLByType(type), null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
       marker = new google.maps.Marker({
-        position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat),
+        position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng),
         map: this.map,
         icon: image,
         draggable: this.draggableMarker,
