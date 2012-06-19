@@ -264,36 +264,31 @@ class AreaSummary
     onAdd:()->        
         div = $('<div class="area-summary-overlay"></div>')
 
-        title = document.createElement('p')
-        title.style.margin = "0"
-        title.style.padding = "2px"
-        title.style.fontWeight = "bold"
-        title.style.fontSize = "13px"
+        title = $('<p class="area-summary-title"></p>')
         if(@area_.rangeLvl != "")
-            rangeLvl = "<br>(" + @area_.rangeLvl + ")"
+            rangeLvl = "<span class='lvl-range'>(#{@area_.rangeLvl})</span>"
         else
+            div.addClass('city')
             rangeLvl = ""
         
-        title.innerHTML = @area_.name + rangeLvl
-        
-        #div.innerHTML = @area_.name
+        title.html("<span class='area-title'>#{@area_.name}</span>#{rangeLvl}")
         div.append(title)
         
-        ul = document.createElement('ul')
+        ul = $('<ul class="area-summary-list"></ul>')
         
         for type of @area_.summary
             if(@area_.summary[type] > 0)
-                li = document.createElement('li')
-                img = document.createElement('img')
-                img.src = Resources.Icons[type].url
-                img.alt = Resources.Icons[type].label
-                img.style.width = "15px"
-                img.style.height = "15px"
-                li.innerHTML = @area_.summary[type]
-                li.appendChild(img, li.firstChild)
-                ul.appendChild(li)
+                li = $('<li></li>')
+                img = $('<img class="area-summary-icons">')
+                img.attr('src', Resources.Icons[type].url)
+                img.attr('alt', Resources.Icons[type].label)
+                img.attr('width', "15px")
+                img.attr('height', "15px")
+                li.append(img)
+                li.append(@area_.summary[type])
+                # li.append(img, li.firstChild)
+                ul.append(li)
 
-        ul.style.listStyleType = "none"
         div.append(ul)        
         
         @div_ = div[0]

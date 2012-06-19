@@ -67,7 +67,7 @@ Areas = [
          "waypoints" : 18,
          "skillpoints" : 5,
          "poi" : 26,
-         "dungeons" : 0
+         "dungeons" : 1
      },
      "neLat" : "21.764601405744017", "neLng" : "85.682373046875", "swLat" : "7.983077720238533", "swLng" : "58.73291015625 "
  },

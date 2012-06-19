@@ -424,33 +424,29 @@
     AreaSummary.prototype.onAdd = function() {
       var div, img, li, panes, rangeLvl, title, type, ul;
       div = $('<div class="area-summary-overlay"></div>');
-      title = document.createElement('p');
-      title.style.margin = "0";
-      title.style.padding = "2px";
-      title.style.fontWeight = "bold";
-      title.style.fontSize = "13px";
+      title = $('<p class="area-summary-title"></p>');
       if (this.area_.rangeLvl !== "") {
-        rangeLvl = "<br>(" + this.area_.rangeLvl + ")";
+        rangeLvl = "<span class='lvl-range'>(" + this.area_.rangeLvl + ")</span>";
       } else {
+        div.addClass('city');
         rangeLvl = "";
       }
-      title.innerHTML = this.area_.name + rangeLvl;
+      title.html("<span class='area-title'>" + this.area_.name + "</span>" + rangeLvl);
       div.append(title);
-      ul = document.createElement('ul');
+      ul = $('<ul class="area-summary-list"></ul>');
       for (type in this.area_.summary) {
         if (this.area_.summary[type] > 0) {
-          li = document.createElement('li');
-          img = document.createElement('img');
-          img.src = Resources.Icons[type].url;
-          img.alt = Resources.Icons[type].label;
-          img.style.width = "15px";
-          img.style.height = "15px";
-          li.innerHTML = this.area_.summary[type];
-          li.appendChild(img, li.firstChild);
-          ul.appendChild(li);
+          li = $('<li></li>');
+          img = $('<img class="area-summary-icons">');
+          img.attr('src', Resources.Icons[type].url);
+          img.attr('alt', Resources.Icons[type].label);
+          img.attr('width', "15px");
+          img.attr('height', "15px");
+          li.append(img);
+          li.append(this.area_.summary[type]);
+          ul.append(li);
         }
       }
-      ul.style.listStyleType = "none";
       div.append(ul);
       this.div_ = div[0];
       panes = this.getPanes();
