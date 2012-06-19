@@ -61,18 +61,7 @@ class CustomMap
             @setAllMarkersVisibility(true);
             @setAreasInformationVisibility(false)
     )
-    
-# =======
-#       if @map.getZoom() == 4
-#         @visibleMarkers = false
-#         @hideAllMarker()
-#       else if @visibleMarkers == false
-#         console.log "showing marker"
-#         @visibleMarkers = true
-#         @showAllMarker()
-#     ) 
-# 
-# >>>>>>> jsilvestre/area-summary
+
     @devModInput.bind('click', @handleDevMod)
     
     #marker
@@ -270,21 +259,11 @@ class AreaSummary
         @setMap(map)
     
     
-    AreaSummary.prototype = new google.maps.OverlayView();
+    AreaSummary:: = new google.maps.OverlayView();
     
     onAdd:()->        
         div = $('<div class="area-summary-overlay"></div>')
-        console.log div
-        # div.style.borderWidth = "1px"
-        # div.style.padding = "10px"
-        # div.style.borderColor = "red"
-        # div.style.backgroundColor = "#333"
-        # div.style.opacity = 0.8
-        # div.style.color = "#FFF"
-        # div.style.position = "absolute"
-        # div.style.width = @width_ + "px"
-        # div.style.height = @height_ + "px"
-        
+
         title = document.createElement('p')
         title.style.margin = "0"
         title.style.padding = "2px"

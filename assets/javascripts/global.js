@@ -424,7 +424,6 @@
     AreaSummary.prototype.onAdd = function() {
       var div, img, li, panes, rangeLvl, title, type, ul;
       div = $('<div class="area-summary-overlay"></div>');
-      console.log(div);
       title = document.createElement('p');
       title.style.margin = "0";
       title.style.padding = "2px";

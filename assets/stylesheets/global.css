@@ -279,7 +279,7 @@ div.area-summary-overlay {
  color: #fff;
  position: absolute;
  width: 130px; 
- height: 60px; 
+/* height: 60px; */
 }
 
 div.area-summary-overlay ul{
