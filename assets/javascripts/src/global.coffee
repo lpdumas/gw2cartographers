@@ -52,6 +52,11 @@ class CustomMap
       @latContainer.html e.latLng.lat()
     )
     
+    # Events
+    google.maps.event.addListener(@map, 'click', (e)=>
+      console.log "Long: #{e.latLng.lng()}, Lat: #{e.latLng.lat()}"
+    )
+    
     google.maps.event.addListener(@map, 'zoom_changed', (e)=>
         zoomLevel = @map.getZoom()
         if zoomLevel == 4
@@ -75,8 +80,8 @@ class CustomMap
       markerType = this_.attr('data-type')
       coord       = @map.getCenter()
       markerinfo = 
-        "lng" : coord.lat()
-        "lat" : coord.lng()
+        "lng" : coord.lng()
+        "lat" : coord.lat()
         "title" : "--"
       img        = "#{@iconsPath}/#{markerType}.png"
       @addMarkers(markerinfo, img, markerType)
@@ -96,7 +101,7 @@ class CustomMap
     iconmid = iconsize / 2;
     image = new google.maps.MarkerImage(@getIconURLByType(type), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
     marker = new google.maps.Marker(
-      position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat)
+      position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
       icon: image
       draggable: @draggableMarker
