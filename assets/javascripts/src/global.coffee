@@ -22,7 +22,7 @@ class CustomMap
     @gMapOptions   = 
       center: new google.maps.LatLng(25.760319754713887, -35.6396484375)
       zoom: 6
-      minZoom: 4
+      minZoom: 3
       maxZoom: @maxZoom
       streetViewControl: false
       mapTypeControl: false
@@ -65,6 +65,9 @@ class CustomMap
         else if zoomLevel > 4
             @setAllMarkersVisibility(true);
             @setAreasInformationVisibility(false)
+        else if zoomLevel < 4
+          @setAllMarkersVisibility(false);
+          @setAreasInformationVisibility(false)
     )
 
     @devModInput.bind('click', @handleDevMod)

@@ -7,7 +7,8 @@ Resources.Icons = {
     "waypoints" : {"label" : "Waypoints", "url" : Resources.Paths.icons + "waypoints.png"},
     "skillpoints" : {"label" : "Skill points", "url" : Resources.Paths.icons + "skillpoints.png"},
     "poi" : {"label" : "Points of interest", "url" : Resources.Paths.icons + "poi.png"},
-    "dungeons": {"label" : "Dungeons", "url" : Resources.Paths.icons + "dungeon.png"}
+    "dungeons": {"label" : "Dungeons", "url" : Resources.Paths.icons + "dungeon.png"},
+    "asurasgates" : {"label" : "Asuras's Gates", "url" : Resources.Paths.icons + "asuraGate.png"}
 }
 
 Areas = [
@@ -645,4 +646,28 @@ Markers.skillpoints = [
 Markers.dungeons = [
 {"lat" : "19.00499664280239", "lng" : "75.574951171875", "title" : "Ascalonian Catacombs", "desc" : ""},
 {"lat" : "32.31499127724558", "lng" : "-25.64208984375", "title" : "Caudecus Manor", "desc" : ""}
+]
+
+Markers.asurasgates = [
+  //Asura Gate (Divinity's Reach)
+  {"lat" : "37.08147564886055", "lng" : "-37.694091796875", "title" : "", "desc" : ""}, 
+  {"lat" : "37.2478212015543", "lng" : "-33.59619140625", "title" : "", "desc" : ""}, 
+  //Asura Gate (Lion's Arch)
+  {"lat" : "11.91035355577419", "lng" : "-3.746337890625", "title" : "", "desc" : ""}, 
+  {"lat" : "11.102946786877641", "lng" : "-3.856201171875", "title" : "", "desc" : ""}, 
+  {"lat" : "10.822515257716844", "lng" : "-3.394775390625", "title" : "", "desc" : ""}, 
+  {"lat" : "11.081384602413124", "lng" : "-2.96630859375", "title" : "", "desc" : ""}, 
+  {"lat" : "11.501556900932576", "lng" : "-2.87841796875", "title" : "", "desc" : ""}, 
+  //Asura Gate (Lion's Arch PVP)
+  {"lat" : "8.515835561202307", "lng" : "-1.51611328125", "title" : "", "desc" : ""}, 
+  {"lat" : "8.21149032342077", "lng" : "-1.1865234375", "title" : "", "desc" : ""}, 
+  {"lat" : "8.276727101164122", "lng" : "-0.966796875", "title" : "", "desc" : ""}, 
+  {"lat" : "8.494104537551959", "lng" : "-0.9228515625", "title" : "", "desc" : ""}, 
+  {"lat" : "8.711358875426589", "lng" : "-0.966796875", "title" : "", "desc" : ""}, 
+  //Asura Gate (Gendarran Fields)
+  {"lat" : "27.926474039865067", "lng" : "-0.5712890625", "title" : "", "desc" : ""}, 
+  //Asura Gate (Black Citadel)
+  {"lat" : "18.3440978021016", "lng" : "50.460205078125", "title" : "", "desc" : ""},
+  //Asura Gate (Hoelbrak) 
+  {"lat" : "17.014767530557872", "lng" : "25.927734375", "title" : "", "desc" : ""}
 ]
