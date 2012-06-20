@@ -136,7 +136,7 @@
     }
 
     CustomMap.prototype.addMarker = function(markerInfo, type) {
-      var iconmid, iconsize, image, infoWindow, marker,
+      var iconmid, iconsize, image, infoWindow, marker, permalink,
         _this = this;
       iconsize = 32;
       iconmid = iconsize / 2;
@@ -149,8 +149,9 @@
         cursor: this.draggableMarker ? "move" : "pointer",
         title: "" + markerInfo.title
       });
+      permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat + '&lng=' + markerInfo.lng + '">Permalink</a></p>';
       infoWindow = new google.maps.InfoWindow({
-        content: ("" + markerInfo.desc) === "" ? "More info comming soon" : "" + markerInfo.desc,
+        content: (("" + markerInfo.desc) === "" ? "More info comming soon" : "" + markerInfo.desc) + "<p>" + permalink + "</p>",
         maxWidth: 200
       });
       marker["title"] = "" + markerInfo.title;

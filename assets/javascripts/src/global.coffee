@@ -138,8 +138,10 @@ class CustomMap
       cursor : if @draggableMarker then "move" else "pointer"
       title: "#{markerInfo.title}"
     )
+    
+    permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat+ '&lng=' + markerInfo.lng + '">Permalink</a></p>'
     infoWindow = new google.maps.InfoWindow(
-      content  : if "#{markerInfo.desc}" == "" then "More info comming soon" else "#{markerInfo.desc}"
+      content  : (if "#{markerInfo.desc}" == "" then "More info comming soon" else "#{markerInfo.desc}") + "<p>" + permalink + "</p>"
       maxWidth : 200
     )
     
