@@ -24,6 +24,9 @@ class CustomMap
     @exportBtn        = $('#export')
     @exportWindow     = $('#export-windows')
     
+    @defaultLat = 25.760319754713887
+    @defaultLng = -35.6396484375
+    
     @areaSummaryBoxes = []
     
     @canRemoveMarker  = false
@@ -31,7 +34,7 @@ class CustomMap
     @visibleMarkers   = true
     @canToggleMarkers = true
     @gMapOptions   = 
-      center: new google.maps.LatLng(25.760319754713887, -35.6396484375)
+      center: new google.maps.LatLng(@getStartLat(), @getStartLng())
       zoom: 6
       minZoom: 3
       maxZoom: @maxZoom
@@ -216,6 +219,20 @@ class CustomMap
     @exportWindow.find('.content').html(jsonString)
     @exportWindow.show();
     
+  getStartLat:()->
+    params = extractUrlParams()
+    if(params['lat']?)
+        params['lat']
+    else
+        @defaultLat
+    
+  getStartLng:()->
+      params = extractUrlParams()
+      if(params['lng']?)
+          params['lng']
+      else
+          @defaultLng
+    
   removeMarker:(id)->
     for markersId, markers of @gMarker
       @gMarker[markersId] = _.reject(markers, (m)=>
@@ -345,6 +362,14 @@ class AreaSummary
                 @div_.style.visibility = "visible"
             else
                 @div_.style.visibility = "hidden"
+                
+extractUrlParams = ()->
+    parameters = location.search.substring(1).split('&')
+    f = []
+    for element in parameters
+        x = element.split('=')
+        f[x[0]]=x[1]
+    f
     
 $ ()->
   myCustomMap = new CustomMap('#map')
