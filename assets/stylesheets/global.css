@@ -254,10 +254,10 @@ html, body {
   padding: 10px 20px 10px 20px;
   background: #fff;
   opacity: 1;
-  -webkit-transition: top 250ms cubic-bezier(0.8, 0, 0.2, 1);
-  -moz-transition: top 250ms cubic-bezier(0.8, 0, 0.2, 1);
-  -ms-transition: top 250ms cubic-bezier(0.8, 0, 0.2, 1);
-  -o-transition: top 250ms cubic-bezier(0.8, 0, 0.2, 1);
+  -webkit-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
+  -moz-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
+  -ms-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
+  -o-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
 }
 #markers-options.active {
   top: 0px;
