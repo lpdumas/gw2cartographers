@@ -74,6 +74,12 @@ html, body {
     background: #EFEFEF;
     cursor: move;
 }
+#loading {
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  top: 50px;
+}
      
 #notice {
   position: absolute;
@@ -334,12 +340,9 @@ html, body {
     -o-transition: all 150ms linear;
 }
 
-#menu-marker ul li.hidden img {
-    opacity: 0.5;
-}
+#menu-marker ul li.hidden img,
 #menu-marker ul li:hover img {
     opacity: 0.5;
-    border-color: #C7C7C7;
 }
 
 
