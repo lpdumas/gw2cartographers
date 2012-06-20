@@ -10,6 +10,7 @@
 
   <meta name="viewport" content="width=device-width">
 
+  <link href='http://fonts.googleapis.com/css?family=Belgrano' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="assets/stylesheets/global.css">
 
   <!--[if lt IE 9]>
@@ -22,15 +23,23 @@
   </script>
 </head>
 <body>
-    <span id="notice">Please note that this is a pre-alpha release. So bugs, misplaced marker, missing infos and ugly UI is perfectly normal. (click to hide) <span class="close"></span></span>
+    <a id="fork" href="https://github.com/lpdumas/gw2cartographers"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 10;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+    
+    <span style="position: absolute; bottom: 5px; left: 100px; border: 0; z-index: 10; color: #fff;"><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#103;&#119;&#50;&#99;&#97;&#114;&#116;&#111;&#103;&#114;&#97;&#112;&#104;&#101;&#114;&#115;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">©gw2cartographers</a> v0.1 alpha</span>
     <div id="dev-box">
         <label>
             <span class="label">Dev mode</span>
             <input type="checkbox" name="dev-mod" id="dev-mod">
         </label>
     </div>
-    <div id="menu-marker">
-        <ul></ul>
+    
+    <div id="markers-options">
+        <div data-markerType="generic" id="menu-marker">
+            <span class="menu-title">Generic markers</span>
+            <ul></ul>
+        </div>
+        <span id="options-toggle"><strong>Markers options</strong></span>
+        <span class="decorations"></span>
     </div>
     <div id="options-box">
         <div class="subnavGroup group">
@@ -44,7 +53,7 @@
         </div>
             <a href="javascript:" id="remove-marker"><img src="assets/images/layout/remove.png"  alt="Remove" /></a>
     </div>
-    <div id="map"><img src="assets/images/loading.gif"  alt="Loading ..." /></div>
+    <div id="map"><img id="loading" src="assets/images/loading.gif"  alt="Loading ..." /></div>
     <div id="coord"><span id="long"></span><span id="lat"></span></div>
     
     

@@ -20,7 +20,7 @@ Do you want to contribute to the project by adding new markers or fixing the exi
 * Find the section you want. For example, to add a "heart" marker find the Markers.hearts section.
 * Add a line the relevant section. Make sure the marker you are going to add does not already exist.
 ```javascript
-{"lng" : "19.00499664280239", "lat" : "75.574951171875", "title" : "Ascalonian Catacombs", "desc" : ""}
+{"lat" : "19.00499664280239", "lng" : "75.574951171875", "title" : "Ascalonian Catacombs", "desc" : ""}
 ```
 * The "lng" and "lat" attributes must be filled thanks to the application. "title" and "desc" are self-explanatory.
 

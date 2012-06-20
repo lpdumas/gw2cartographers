@@ -1,3 +1,13 @@
+markersOptionsMenu = $('#markers-options')
+MapApp = {
+  toggleMarkersOptionsMenu: () ->
+    markersOptionsMenu.toggleClass('active')
+  hideMarkersOptionsMenu: () ->
+    markersOptionsMenu.addClass('off')
+  showMarkersOptionsMenu: () ->
+    markersOptionsMenu.removeClass('off')
+}
+    
 class CustomMap
   constructor: (id)->
     @blankTilePath = 'tiles/00empty.jpg'
@@ -16,9 +26,10 @@ class CustomMap
     
     @areaSummaryBoxes = []
     
-    @canRemoveMarker = false
-    @draggableMarker = false
+    @canRemoveMarker  = false
+    @draggableMarker  = false
     @visibleMarkers   = true
+    @canToggleMarkers = true
     @gMapOptions   = 
       center: new google.maps.LatLng(25.760319754713887, -35.6396484375)
       zoom: 6
@@ -28,6 +39,13 @@ class CustomMap
       mapTypeControl: false
       mapTypeControlOptions:
         mapTypeIds: ["custom", google.maps.MapTypeId.ROADMAP]
+
+      panControl: false
+      zoomControl: true
+      zoomControlOptions:
+        position: google.maps.ControlPosition.LEFT_CENTER
+        zoomControlStyle: google.maps.ZoomControlStyle.SMALL
+        
     @customMapType = new google.maps.ImageMapType(
       getTileUrl : (coord, zoom)=>
         normalizedCoord = coord
@@ -60,13 +78,19 @@ class CustomMap
     google.maps.event.addListener(@map, 'zoom_changed', (e)=>
         zoomLevel = @map.getZoom()
         if zoomLevel == 4
-            @setAllMarkersVisibility(false);
-            @setAreasInformationVisibility(true)
+          @canToggleMarkers = false
+          MapApp.hideMarkersOptionsMenu()
+          @setAllMarkersVisibility(false)
+          @setAreasInformationVisibility(true)
         else if zoomLevel > 4
-            @setAllMarkersVisibility(true);
-            @setAreasInformationVisibility(false)
+          @canToggleMarkers = true
+          MapApp.showMarkersOptionsMenu()
+          @setAllMarkersVisibility(true)
+          @setAreasInformationVisibility(false)
         else if zoomLevel < 4
-          @setAllMarkersVisibility(false);
+          @canToggleMarkers = false
+          MapApp.hideMarkersOptionsMenu()
+          @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(false)
     )
 
@@ -238,12 +262,14 @@ class CustomMap
       li.attr('data-type', type)
       li.bind 'click', (e)=>
         item = e.currentTarget
-        if item.getAttribute('class') == 'hidden'
-          @setMarkersVisibilityByType(true, item.getAttribute('data-type'))
-          e.currentTarget.setAttribute('class', '')
-        else
-          @setMarkersVisibilityByType(false, item.getAttribute('data-type'))
-          e.currentTarget.setAttribute('class', 'hidden')
+        console.log @canToggleMarkers
+        if @canToggleMarkers
+          if item.getAttribute('class') == 'hidden'
+            @setMarkersVisibilityByType(true, item.getAttribute('data-type'))
+            e.currentTarget.setAttribute('class', '')
+          else
+            @setMarkersVisibilityByType(false, item.getAttribute('data-type'))
+            e.currentTarget.setAttribute('class', 'hidden')
       $('#menu-marker ul').append(li)
       
   initializeAreaSummaryBoxes:()->
@@ -322,6 +348,7 @@ class AreaSummary
     
 $ ()->
   myCustomMap = new CustomMap('#map')
-  $('#notice').click(()->
-    $(this).hide()
+  markersOptionsMenuToggle = $('#options-toggle strong')
+  markersOptionsMenuToggle.click( () ->
+    MapApp.toggleMarkersOptionsMenu()
   )
