@@ -1,3 +1,13 @@
+markersOptionsMenu = $('#markers-options')
+MapApp = {
+  toggleMarkersOptionsMenu: () ->
+    markersOptionsMenu.toggleClass('active')
+  hideMarkersOptionsMenu: () ->
+    markersOptionsMenu.addClass('off')
+  showMarkersOptionsMenu: () ->
+    markersOptionsMenu.removeClass('off')
+}
+    
 class CustomMap
   constructor: (id)->
     @blankTilePath = 'tiles/00empty.jpg'
@@ -16,18 +26,26 @@ class CustomMap
     
     @areaSummaryBoxes = []
     
-    @canRemoveMarker = false
-    @draggableMarker = false
+    @canRemoveMarker  = false
+    @draggableMarker  = false
     @visibleMarkers   = true
+    @canToggleMarkers = true
     @gMapOptions   = 
       center: new google.maps.LatLng(25.760319754713887, -35.6396484375)
       zoom: 6
-      minZoom: 4
+      minZoom: 3
       maxZoom: @maxZoom
       streetViewControl: false
       mapTypeControl: false
       mapTypeControlOptions:
         mapTypeIds: ["custom", google.maps.MapTypeId.ROADMAP]
+
+      panControl: false
+      zoomControl: true
+      zoomControlOptions:
+        position: google.maps.ControlPosition.LEFT_CENTER
+        zoomControlStyle: google.maps.ZoomControlStyle.SMALL
+        
     @customMapType = new google.maps.ImageMapType(
       getTileUrl : (coord, zoom)=>
         normalizedCoord = coord
@@ -52,27 +70,30 @@ class CustomMap
       @latContainer.html e.latLng.lat()
     )
     
+    # Events
+    google.maps.event.addListener(@map, 'click', (e)=>
+      console.log "Long: #{e.latLng.lng()}, Lat: #{e.latLng.lat()}"
+    )
+    
     google.maps.event.addListener(@map, 'zoom_changed', (e)=>
         zoomLevel = @map.getZoom()
         if zoomLevel == 4
-            @setAllMarkersVisibility(false);
-            @setAreasInformationVisibility(true)
+          @canToggleMarkers = false
+          MapApp.hideMarkersOptionsMenu()
+          @setAllMarkersVisibility(false)
+          @setAreasInformationVisibility(true)
         else if zoomLevel > 4
-            @setAllMarkersVisibility(true);
-            @setAreasInformationVisibility(false)
+          @canToggleMarkers = true
+          MapApp.showMarkersOptionsMenu()
+          @setAllMarkersVisibility(true)
+          @setAreasInformationVisibility(false)
+        else if zoomLevel < 4
+          @canToggleMarkers = false
+          MapApp.hideMarkersOptionsMenu()
+          @setAllMarkersVisibility(false)
+          @setAreasInformationVisibility(false)
     )
-    
-# =======
-#       if @map.getZoom() == 4
-#         @visibleMarkers = false
-#         @hideAllMarker()
-#       else if @visibleMarkers == false
-#         console.log "showing marker"
-#         @visibleMarkers = true
-#         @showAllMarker()
-#     ) 
-# 
-# >>>>>>> jsilvestre/area-summary
+
     @devModInput.bind('click', @handleDevMod)
     
     #marker
@@ -86,8 +107,8 @@ class CustomMap
       markerType = this_.attr('data-type')
       coord       = @map.getCenter()
       markerinfo = 
-        "lng" : coord.lat()
-        "lat" : coord.lng()
+        "lng" : coord.lng()
+        "lat" : coord.lat()
         "title" : "--"
       img        = "#{@iconsPath}/#{markerType}.png"
       @addMarkers(markerinfo, img, markerType)
@@ -107,7 +128,7 @@ class CustomMap
     iconmid = iconsize / 2;
     image = new google.maps.MarkerImage(@getIconURLByType(type), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
     marker = new google.maps.Marker(
-      position: new google.maps.LatLng(markerInfo.lng, markerInfo.lat)
+      position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
       icon: image
       draggable: @draggableMarker
@@ -241,12 +262,14 @@ class CustomMap
       li.attr('data-type', type)
       li.bind 'click', (e)=>
         item = e.currentTarget
-        if item.getAttribute('class') == 'hidden'
-          @setMarkersVisibilityByType(true, item.getAttribute('data-type'))
-          e.currentTarget.setAttribute('class', '')
-        else
-          @setMarkersVisibilityByType(false, item.getAttribute('data-type'))
-          e.currentTarget.setAttribute('class', 'hidden')
+        console.log @canToggleMarkers
+        if @canToggleMarkers
+          if item.getAttribute('class') == 'hidden'
+            @setMarkersVisibilityByType(true, item.getAttribute('data-type'))
+            e.currentTarget.setAttribute('class', '')
+          else
+            @setMarkersVisibilityByType(false, item.getAttribute('data-type'))
+            e.currentTarget.setAttribute('class', 'hidden')
       $('#menu-marker ul').append(li)
       
   initializeAreaSummaryBoxes:()->
@@ -264,60 +287,45 @@ class AreaSummary
         @bounds_ = new google.maps.LatLngBounds(swBound, neBound)
         @area_ = area
         @div_ = null
-        @height_ = 130
+        @height_ = 80
         @width_ = 150
         
         @setMap(map)
     
     
-    AreaSummary.prototype = new google.maps.OverlayView();
+    AreaSummary:: = new google.maps.OverlayView();
     
     onAdd:()->        
-        div = document.createElement('div')
-        div.style.borderWidth = "1px"
-        div.style.borderColor = "red"
-        div.style.backgroundColor = "#333"
-        div.style.opacity = 0.8
-        div.style.color = "#FFF"
-        div.style.position = "absolute"
-        div.style.width = @width_ + "px"
-        div.style.height = @height_ + "px"
-        
-        title = document.createElement('p')
-        title.style.margin = "0"
-        title.style.padding = "2px"
-        title.style.fontWeight = "bold"
-        title.style.fontSize = "13px"
+        div = $('<div class="area-summary-overlay"></div>')
+
+        title = $('<p class="area-summary-title"></p>')
         if(@area_.rangeLvl != "")
-            rangeLvl = "<br>(" + @area_.rangeLvl + ")"
+            rangeLvl = "<span class='lvl-range'>(#{@area_.rangeLvl})</span>"
         else
+            div.addClass('city')
             rangeLvl = ""
         
-        title.innerHTML = @area_.name + rangeLvl
+        title.html("<span class='area-title'>#{@area_.name}</span>#{rangeLvl}")
+        div.append(title)
         
-        #div.innerHTML = @area_.name
-        div.appendChild(title)
-        
-        ul = document.createElement('ul')
+        ul = $('<ul class="area-summary-list"></ul>')
         
         for type of @area_.summary
             if(@area_.summary[type] > 0)
-                li = document.createElement('li')
-                img = document.createElement('img')
-                img.src = Resources.Icons[type].url
-                img.alt = Resources.Icons[type].label
-                img.style.width = "15px"
-                img.style.height = "15px"
-                li.innerHTML = Resources.Icons[type].label + ": " + @area_.summary[type]
-                li.appendChild(img, li.firstChild)
-                ul.appendChild(li)
+                li = $('<li></li>')
+                img = $('<img class="area-summary-icons">')
+                img.attr('src', Resources.Icons[type].url)
+                img.attr('alt', Resources.Icons[type].label)
+                img.attr('width', "15px")
+                img.attr('height', "15px")
+                li.append(img)
+                li.append(@area_.summary[type])
+                # li.append(img, li.firstChild)
+                ul.append(li)
 
-        ul.style.margin = "0 0 0 25px"
-        ul.style.padding = "0px"
-        ul.style.listStyleType = "none"
-        div.appendChild(ul)        
+        div.append(ul)        
         
-        @div_ = div
+        @div_ = div[0]
         panes = @getPanes()
         panes.overlayImage.appendChild(@div_)
         @setVisible(false)
@@ -340,6 +348,7 @@ class AreaSummary
     
 $ ()->
   myCustomMap = new CustomMap('#map')
-  $('#notice').click(()->
-    $(this).hide()
+  markersOptionsMenuToggle = $('#options-toggle strong')
+  markersOptionsMenuToggle.click( () ->
+    MapApp.toggleMarkersOptionsMenu()
   )

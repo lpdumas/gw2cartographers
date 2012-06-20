@@ -10,6 +10,7 @@
 
   <meta name="viewport" content="width=device-width">
 
+  <link href='http://fonts.googleapis.com/css?family=Belgrano' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="assets/stylesheets/global.css">
 
   <!--[if lt IE 9]>
@@ -22,15 +23,20 @@
   </script>
 </head>
 <body>
-    <span id="notice">Please note that this is a pre-alpha release. So bugs, misplaced marker, missing infos and ugly UI is perfectly normal. (click to hide) <span class="close"></span></span>
     <div id="dev-box">
         <label>
             <span class="label">Dev mode</span>
             <input type="checkbox" name="dev-mod" id="dev-mod">
         </label>
     </div>
-    <div id="menu-marker">
-        <ul></ul>
+    
+    <div id="markers-options">
+        <div data-markerType="generic" id="menu-marker">
+            <span class="menu-title">Generic markers</span>
+            <ul></ul>
+        </div>
+        <span id="options-toggle"><strong>Markers options</strong></span>
+        <span class="decorations"></span>
     </div>
     <div id="options-box">
         <div class="subnavGroup group">
