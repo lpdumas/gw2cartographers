@@ -136,7 +136,7 @@
     }
 
     CustomMap.prototype.addMarker = function(markerInfo, type) {
-      var iconmid, iconsize, image, infoWindow, marker,
+      var iconmid, iconsize, image, infoWindow, marker, permalink, test,
         _this = this;
       iconsize = 32;
       iconmid = iconsize / 2;
@@ -149,13 +149,19 @@
         cursor: this.draggableMarker ? "move" : "pointer",
         title: "" + markerInfo.title
       });
+      permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat + '&lng=' + markerInfo.lng + '">Permalink</a></p>';
       infoWindow = new google.maps.InfoWindow({
-        content: ("" + markerInfo.desc) === "" ? "More info comming soon" : "" + markerInfo.desc,
+        content: (("" + markerInfo.desc) === "" ? "More info comming soon" : "" + markerInfo.desc) + "<p>" + permalink + "</p>",
         maxWidth: 200
       });
       marker["title"] = "" + markerInfo.title;
       marker["desc"] = "" + markerInfo.desc;
       marker["infoWindow"] = infoWindow;
+      test = this.getMarkerByCoordinates(this.getStartLat(), this.getStartLng());
+      if (test === markerInfo) {
+        marker.infoWindow.open(this.map, marker);
+        this.currentOpenedInfoWindow = marker.infoWindow;
+      }
       google.maps.event.addListener(marker, 'dragend', function(e) {
         return console.log("" + (e.latLng.lat()) + ", " + (e.latLng.lng()));
       });
@@ -400,6 +406,20 @@
         this.optionsBox.removeClass('red');
         return this.canRemoveMarker = false;
       }
+    };
+
+    CustomMap.prototype.getMarkerByCoordinates = function(lat, lng) {
+      var marker, markerType, type, _i, _len;
+      for (type in Markers) {
+        markerType = Markers[type];
+        for (_i = 0, _len = markerType.length; _i < _len; _i++) {
+          marker = markerType[_i];
+          if (lat === marker.lat && lng === marker.lng) {
+            return marker;
+          }
+        }
+      }
+      return false;
     };
 
     CustomMap.prototype.addMenuIcons = function() {

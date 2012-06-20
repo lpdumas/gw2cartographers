@@ -409,3 +409,5 @@ div.area-summary-overlay ul.area-summary-list li .area-summary-icons {
   position: relative;
   top: 4px;
 }
+
+p.marker-permalink { text-align: right; }

@@ -138,14 +138,21 @@ class CustomMap
       cursor : if @draggableMarker then "move" else "pointer"
       title: "#{markerInfo.title}"
     )
+    
+    permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat+ '&lng=' + markerInfo.lng + '">Permalink</a></p>'
     infoWindow = new google.maps.InfoWindow(
-      content  : if "#{markerInfo.desc}" == "" then "More info comming soon" else "#{markerInfo.desc}"
+      content  : (if "#{markerInfo.desc}" == "" then "More info comming soon" else "#{markerInfo.desc}") + "<p>" + permalink + "</p>"
       maxWidth : 200
     )
     
     marker["title"] = "#{markerInfo.title}"
     marker["desc"]  = "#{markerInfo.desc}"
     marker["infoWindow"] = infoWindow
+    
+    test = @getMarkerByCoordinates(@getStartLat(), @getStartLng())
+    if (test == markerInfo)
+        marker.infoWindow.open(@map, marker)
+        @currentOpenedInfoWindow = marker.infoWindow
     
     google.maps.event.addListener(marker, 'dragend', (e)=>
       console.log "#{e.latLng.lat()}, #{e.latLng.lng()}"
@@ -270,6 +277,14 @@ class CustomMap
       @removeMarkerLink.removeClass('active')
       @optionsBox.removeClass('red')
       @canRemoveMarker = false
+
+  getMarkerByCoordinates:(lat, lng)->
+    for type, markerType of Markers
+        for marker in markerType
+            if(lat == marker.lat && lng == marker.lng)
+                return marker
+    
+    return false
 
   addMenuIcons:()->
     for type, icon of Resources.Icons
