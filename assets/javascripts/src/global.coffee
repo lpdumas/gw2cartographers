@@ -1,3 +1,13 @@
+markersOptionsMenu = $('#markers-options')
+MapApp = {
+  toggleMarkersOptionsMenu: () ->
+    markersOptionsMenu.toggleClass('active')
+  hideMarkersOptionsMenu: () ->
+    markersOptionsMenu.addClass('off')
+  showMarkersOptionsMenu: () ->
+    markersOptionsMenu.removeClass('off')
+}
+    
 class CustomMap
   constructor: (id)->
     @blankTilePath = 'tiles/00empty.jpg'
@@ -29,6 +39,13 @@ class CustomMap
       mapTypeControl: false
       mapTypeControlOptions:
         mapTypeIds: ["custom", google.maps.MapTypeId.ROADMAP]
+
+      panControl: false
+      zoomControl: true
+      zoomControlOptions:
+        position: google.maps.ControlPosition.LEFT_CENTER
+        zoomControlStyle: google.maps.ZoomControlStyle.SMALL
+        
     @customMapType = new google.maps.ImageMapType(
       getTileUrl : (coord, zoom)=>
         normalizedCoord = coord
@@ -62,15 +79,18 @@ class CustomMap
         zoomLevel = @map.getZoom()
         if zoomLevel == 4
           @canToggleMarkers = false
-          @setAllMarkersVisibility(false);
+          MapApp.hideMarkersOptionsMenu()
+          @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(true)
         else if zoomLevel > 4
           @canToggleMarkers = true
-          @setAllMarkersVisibility(true);
+          MapApp.showMarkersOptionsMenu()
+          @setAllMarkersVisibility(true)
           @setAreasInformationVisibility(false)
         else if zoomLevel < 4
           @canToggleMarkers = false
-          @setAllMarkersVisibility(false);
+          MapApp.hideMarkersOptionsMenu()
+          @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(false)
     )
 
@@ -328,6 +348,7 @@ class AreaSummary
     
 $ ()->
   myCustomMap = new CustomMap('#map')
-  $('#notice').click(()->
-    $(this).hide()
+  markersOptionsMenuToggle = $('#options-toggle strong')
+  markersOptionsMenuToggle.click( () ->
+    MapApp.toggleMarkersOptionsMenu()
   )
