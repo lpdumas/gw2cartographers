@@ -24,6 +24,9 @@ class CustomMap
     @exportBtn        = $('#export')
     @exportWindow     = $('#export-windows')
     
+    @defaultLat = 25.760319754713887
+    @defaultLng = -35.6396484375
+    
     @areaSummaryBoxes = []
     
     @canRemoveMarker  = false
@@ -31,7 +34,7 @@ class CustomMap
     @visibleMarkers   = true
     @canToggleMarkers = true
     @gMapOptions   = 
-      center: new google.maps.LatLng(25.760319754713887, -35.6396484375)
+      center: new google.maps.LatLng(@getStartLat(), @getStartLng())
       zoom: 6
       minZoom: 3
       maxZoom: @maxZoom
@@ -135,14 +138,21 @@ class CustomMap
       cursor : if @draggableMarker then "move" else "pointer"
       title: "#{markerInfo.title}"
     )
+    
+    permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat+ '&lng=' + markerInfo.lng + '">Permalink</a></p>'
     infoWindow = new google.maps.InfoWindow(
-      content  : if "#{markerInfo.desc}" == "" then "More info comming soon" else "#{markerInfo.desc}"
+      content  : (if "#{markerInfo.desc}" == "" then "More info comming soon" else "#{markerInfo.desc}") + "<p>" + permalink + "</p>"
       maxWidth : 200
     )
     
     marker["title"] = "#{markerInfo.title}"
     marker["desc"]  = "#{markerInfo.desc}"
     marker["infoWindow"] = infoWindow
+    
+    test = @getMarkerByCoordinates(@getStartLat(), @getStartLng())
+    if (test == markerInfo)
+        marker.infoWindow.open(@map, marker)
+        @currentOpenedInfoWindow = marker.infoWindow
     
     google.maps.event.addListener(marker, 'dragend', (e)=>
       console.log "#{e.latLng.lat()}, #{e.latLng.lng()}"
@@ -216,6 +226,20 @@ class CustomMap
     @exportWindow.find('.content').html(jsonString)
     @exportWindow.show();
     
+  getStartLat:()->
+    params = extractUrlParams()
+    if(params['lat']?)
+        params['lat']
+    else
+        @defaultLat
+    
+  getStartLng:()->
+      params = extractUrlParams()
+      if(params['lng']?)
+          params['lng']
+      else
+          @defaultLng
+    
   removeMarker:(id)->
     for markersId, markers of @gMarker
       @gMarker[markersId] = _.reject(markers, (m)=>
@@ -253,6 +277,14 @@ class CustomMap
       @removeMarkerLink.removeClass('active')
       @optionsBox.removeClass('red')
       @canRemoveMarker = false
+
+  getMarkerByCoordinates:(lat, lng)->
+    for type, markerType of Markers
+        for marker in markerType
+            if(lat == marker.lat && lng == marker.lng)
+                return marker
+    
+    return false
 
   addMenuIcons:()->
     for type, icon of Resources.Icons
@@ -345,6 +377,14 @@ class AreaSummary
                 @div_.style.visibility = "visible"
             else
                 @div_.style.visibility = "hidden"
+                
+extractUrlParams = ()->
+    parameters = location.search.substring(1).split('&')
+    f = []
+    for element in parameters
+        x = element.split('=')
+        f[x[0]]=x[1]
+    f
     
 $ ()->
   myCustomMap = new CustomMap('#map')
