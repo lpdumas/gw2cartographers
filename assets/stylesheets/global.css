@@ -196,10 +196,9 @@ html, body {
   text-align: center;
 }
 #export {
-/*  display: inline-block;*/
   display: none;
   position: absolute;
-  z-index: 5;
+  z-index: 10;
   bottom: 10px;
   left: 50%;
   width: 50px;

@@ -104,7 +104,7 @@ class CustomMap
 
     @setAllMarkers()
     @initializeAreaSummaryBoxes()
-    console.log @gMarker
+    
     @markerList.find('span').bind('click', (e)=>
       this_      = $(e.currentTarget)
       markerType = this_.attr('data-type')
@@ -215,19 +215,24 @@ class CustomMap
       @addMarkerLink.removeClass('active')
     
   handleExport:(e)=>
-    markerObject = {}
-    for markersId, markers of @gMarker
-      if !markerObject[markersId]
-        markerObject[markersId] = []
-      for marker in markers
-        nm = 
-          "lng" : marker.getPosition().lng()
-          "lat" : marker.getPosition().lat()
-          "title" : marker.title
-          "desc"  : marker.desc
-        markerObject[markersId].push(nm)
+    newMarkerObject = {}
+    for markersCat, markersObject of @gMarker
+      if !newMarkerObject[markersCat]
+        newMarkerObject[markersCat] = {}
+      for markerType, markers of markersObject
+        
+        if !newMarkerObject[markersCat][markerType]
+          newMarkerObject[markersCat][markerType] = []
+        
+        for marker in markers
+          nm = 
+            "lng" : marker.getPosition().lng()
+            "lat" : marker.getPosition().lat()
+            "title" : marker.title
+            "desc"  : marker.desc
+          newMarkerObject[markersCat][markerType].push(nm)
     
-    jsonString = JSON.stringify(markerObject)
+    jsonString = JSON.stringify(newMarkerObject)
     @exportWindow.find('.content').html(jsonString)
     @exportWindow.show();
     
