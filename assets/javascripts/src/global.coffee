@@ -1,13 +1,3 @@
-markersOptionsMenu = $('#markers-options')
-MapApp = {
-  toggleMarkersOptionsMenu: () ->
-    markersOptionsMenu.toggleClass('active')
-  hideMarkersOptionsMenu: () ->
-    markersOptionsMenu.addClass('off')
-  showMarkersOptionsMenu: () ->
-    markersOptionsMenu.removeClass('off')
-}
-    
 class CustomMap
   constructor: (id)->
     @blankTilePath = 'tiles/00empty.jpg'
@@ -23,6 +13,7 @@ class CustomMap
     @markerList       = $('#marker-list')
     @exportBtn        = $('#export')
     @exportWindow     = $('#export-windows')
+    @markersOptionsMenu = $('#markers-options')
     
     @defaultLat = 25.760319754713887
     @defaultLng = -35.6396484375
@@ -82,17 +73,17 @@ class CustomMap
         zoomLevel = @map.getZoom()
         if zoomLevel == 4
           @canToggleMarkers = false
-          MapApp.hideMarkersOptionsMenu()
+          @hideMarkersOptionsMenu()
           @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(true)
         else if zoomLevel > 4
           @canToggleMarkers = true
-          MapApp.showMarkersOptionsMenu()
+          @showMarkersOptionsMenu()
           @setAllMarkersVisibility(true)
           @setAreasInformationVisibility(false)
         else if zoomLevel < 4
           @canToggleMarkers = false
-          MapApp.hideMarkersOptionsMenu()
+          @hideMarkersOptionsMenu()
           @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(false)
     )
@@ -297,23 +288,21 @@ class CustomMap
     return false
 
   addMenuIcons:()->
-    for cat, object of Resources.Icons
-      for type, icon of object
-        li = $("<li></li>")
-        img = $("<img>", {src: icon.url, alt: type})
-        li.append(img)
-        li.attr('data-type', type)
-        li.attr('data-cat', cat)
-        li.bind 'click', (e)=>
-          item = $(e.currentTarget)
-          if @canToggleMarkers
-            if item.hasClass('hidden')
-              @setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'))
-              item.removeClass('hidden')
-            else
-              @setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'))
-              item.addClass('hidden')
-        $('#menu-marker ul').append(li)
+    markersOptions = $.get('assets/javascripts/templates/markersOptions._', (e)=>
+      template = _.template(e);
+      html = $(template(Resources))
+      html.find(".trigger").bind 'click', (e) =>
+        item = $(e.currentTarget)
+        if @canToggleMarkers
+          if item.hasClass('hidden')
+            @setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'))
+            item.removeClass('hidden')
+          else
+            @setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'))
+            item.addClass('hidden')
+            
+      @markersOptionsMenu.prepend(html)
+    )
       
   initializeAreaSummaryBoxes:()->
     for area of Areas
@@ -322,6 +311,12 @@ class CustomMap
   setAreasInformationVisibility:(isVisible)->
     for box in @areaSummaryBoxes
         box.setVisible(isVisible)
+  toggleMarkersOptionsMenu: () ->
+    @markersOptionsMenu.toggleClass('active')
+  hideMarkersOptionsMenu: () ->
+    @markersOptionsMenu.addClass('off')
+  showMarkersOptionsMenu: () ->
+    @markersOptionsMenu.removeClass('off')
       
 class AreaSummary
     constructor:(map, area)->
@@ -401,5 +396,5 @@ $ ()->
   myCustomMap = new CustomMap('#map')
   markersOptionsMenuToggle = $('#options-toggle strong')
   markersOptionsMenuToggle.click( () ->
-    MapApp.toggleMarkersOptionsMenu()
+    myCustomMap.toggleMarkersOptionsMenu()
   )

@@ -1,0 +1,13 @@
+//Underscore template
+<% _.each(Icons, function(iconsTypeObject, cat) { %>
+<div data-markerCat="<%= cat %>" class="menu-marker">
+  <span class="menu-title"><%= cat %> markers</span>
+  <ul class="group">
+    <% _.each(iconsTypeObject, function(iconsObject, type) { %>
+    <li class="trigger" data-type="<%= type %>" data-cat="<%= cat %>">
+        <img src="<%= iconsObject.url %>" alt="<%= type %>" />
+    </li> 
+    <% }); %>
+  </ul>
+</div>
+<% }); %>
