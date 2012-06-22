@@ -88,7 +88,7 @@
         return _this.latContainer.html(e.latLng.lat());
       });
       google.maps.event.addListener(this.map, 'click', function(e) {
-        return console.log("Long: " + (e.latLng.lng()) + ", Lat: " + (e.latLng.lat()));
+        return console.log('{"lat" : "' + e.latLng.lat() + '", "lng" : "' + e.latLng.lng() + '", "title" : "", "desc" : ""},');
       });
       google.maps.event.addListener(this.map, 'zoom_changed', function(e) {
         var zoomLevel;
@@ -114,6 +114,7 @@
       this.gMarker = {};
       this.setAllMarkers();
       this.initializeAreaSummaryBoxes();
+      console.log(this.gMarker);
       this.markerList.find('span').bind('click', function(e) {
         var coord, img, markerType, markerinfo, this_;
         this_ = $(e.currentTarget);
@@ -135,12 +136,12 @@
       });
     }
 
-    CustomMap.prototype.addMarker = function(markerInfo, type) {
+    CustomMap.prototype.addMarker = function(markerInfo, markersType, markersCat) {
       var iconmid, iconsize, image, infoWindow, marker, permalink, test,
         _this = this;
       iconsize = 32;
       iconmid = iconsize / 2;
-      image = new google.maps.MarkerImage(this.getIconURLByType(type), null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
+      image = new google.maps.MarkerImage(this.getIconURLByType(markersType, markersCat), null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
       marker = new google.maps.Marker({
         position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng),
         map: this.map,
@@ -163,7 +164,7 @@
         this.currentOpenedInfoWindow = marker.infoWindow;
       }
       google.maps.event.addListener(marker, 'dragend', function(e) {
-        return console.log("" + (e.latLng.lat()) + ", " + (e.latLng.lng()));
+        return console.log('{"lat" : "' + e.latLng.lat()(+'", "lng" : "' + e.latLng.lng()(+'", "title" : "", "desc" : ""},')));
       });
       google.maps.event.addListener(marker, 'click', function(e) {
         if (_this.canRemoveMarker && _this.draggableMarker) {
@@ -176,23 +177,34 @@
           return _this.currentOpenedInfoWindow = marker.infoWindow;
         }
       });
-      if (!this.gMarker[type]) {
-        this.gMarker[type] = [];
+      if (!this.gMarker[markersCat]) {
+        this.gMarker[markersCat] = {};
       }
-      return this.gMarker[type].push(marker);
+      if (!this.gMarker[markersCat][markersType]) {
+        this.gMarker[markersCat][markersType] = [];
+      }
+      return this.gMarker[markersCat][markersType].push(marker);
     };
 
     CustomMap.prototype.setAllMarkers = function() {
-      var marker, markerArray, type, _results;
+      var marker, markersArray, markersCat, markersObjects, markersType, _results;
       _results = [];
-      for (type in Markers) {
-        markerArray = Markers[type];
+      for (markersCat in Markers) {
+        markersObjects = Markers[markersCat];
         _results.push((function() {
-          var _i, _len, _results1;
+          var _results1;
           _results1 = [];
-          for (_i = 0, _len = markerArray.length; _i < _len; _i++) {
-            marker = markerArray[_i];
-            _results1.push(this.addMarker(marker, type));
+          for (markersType in markersObjects) {
+            markersArray = markersObjects[markersType];
+            _results1.push((function() {
+              var _i, _len, _results2;
+              _results2 = [];
+              for (_i = 0, _len = markersArray.length; _i < _len; _i++) {
+                marker = markersArray[_i];
+                _results2.push(this.addMarker(marker, markersType, markersCat));
+              }
+              return _results2;
+            }).call(this));
           }
           return _results1;
         }).call(this));
@@ -200,31 +212,40 @@
       return _results;
     };
 
-    CustomMap.prototype.getIconURLByType = function(type) {
+    CustomMap.prototype.getIconURLByType = function(type, markersCat) {
       var icon;
-      for (icon in Resources.Icons) {
+      for (icon in Resources.Icons[markersCat]) {
         if (icon === type) {
-          return Resources.Icons[icon].url;
+          return Resources.Icons[markersCat][icon].url;
         }
       }
     };
 
     CustomMap.prototype.setAllMarkersVisibility = function(isVisible) {
-      var type, _results;
+      var cat, marker, markersObject, type, _results;
       _results = [];
-      for (type in Markers) {
-        if (!$("[data-type='" + type + "']").hasClass('hidden')) {
-          _results.push(this.setMarkersVisibilityByType(isVisible, type));
-        } else {
-          _results.push(void 0);
-        }
+      for (cat in Markers) {
+        markersObject = Markers[cat];
+        _results.push((function() {
+          var _results1;
+          _results1 = [];
+          for (type in markersObject) {
+            marker = markersObject[type];
+            if (!$("[data-type='" + type + "']").hasClass('hidden')) {
+              _results1.push(this.setMarkersVisibilityByType(isVisible, type, cat));
+            } else {
+              _results1.push(void 0);
+            }
+          }
+          return _results1;
+        }).call(this));
       }
       return _results;
     };
 
-    CustomMap.prototype.setMarkersVisibilityByType = function(isVisible, type) {
+    CustomMap.prototype.setMarkersVisibilityByType = function(isVisible, type, cat) {
       var marker, _i, _len, _ref, _results;
-      _ref = this.gMarker[type];
+      _ref = this.gMarker[cat][type];
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         marker = _ref[_i];
@@ -423,34 +444,42 @@
     };
 
     CustomMap.prototype.addMenuIcons = function() {
-      var icon, img, li, type, _ref, _results,
-        _this = this;
+      var cat, icon, img, li, object, type, _ref, _results;
       _ref = Resources.Icons;
       _results = [];
-      for (type in _ref) {
-        icon = _ref[type];
-        li = $("<li></li>");
-        img = $("<img>", {
-          src: icon.url,
-          alt: type
-        });
-        li.append(img);
-        li.attr('data-type', type);
-        li.bind('click', function(e) {
-          var item;
-          item = e.currentTarget;
-          console.log(_this.canToggleMarkers);
-          if (_this.canToggleMarkers) {
-            if (item.getAttribute('class') === 'hidden') {
-              _this.setMarkersVisibilityByType(true, item.getAttribute('data-type'));
-              return e.currentTarget.setAttribute('class', '');
-            } else {
-              _this.setMarkersVisibilityByType(false, item.getAttribute('data-type'));
-              return e.currentTarget.setAttribute('class', 'hidden');
-            }
+      for (cat in _ref) {
+        object = _ref[cat];
+        _results.push((function() {
+          var _results1,
+            _this = this;
+          _results1 = [];
+          for (type in object) {
+            icon = object[type];
+            li = $("<li></li>");
+            img = $("<img>", {
+              src: icon.url,
+              alt: type
+            });
+            li.append(img);
+            li.attr('data-type', type);
+            li.attr('data-cat', cat);
+            li.bind('click', function(e) {
+              var item;
+              item = $(e.currentTarget);
+              if (_this.canToggleMarkers) {
+                if (item.hasClass('hidden')) {
+                  _this.setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'));
+                  return item.removeClass('hidden');
+                } else {
+                  _this.setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'));
+                  return item.addClass('hidden');
+                }
+              }
+            });
+            _results1.push($('#menu-marker ul').append(li));
           }
-        });
-        _results.push($('#menu-marker ul').append(li));
+          return _results1;
+        }).call(this));
       }
       return _results;
     };
@@ -512,8 +541,8 @@
         if (this.area_.summary[type] > 0) {
           li = $('<li></li>');
           img = $('<img class="area-summary-icons">');
-          img.attr('src', Resources.Icons[type].url);
-          img.attr('alt', Resources.Icons[type].label);
+          img.attr('src', Resources.Icons['generic'][type].url);
+          img.attr('alt', Resources.Icons['generic'][type].label);
           img.attr('width', "15px");
           img.attr('height', "15px");
           li.append(img);

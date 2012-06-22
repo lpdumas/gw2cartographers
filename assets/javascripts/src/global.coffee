@@ -75,7 +75,7 @@ class CustomMap
     
     # Events
     google.maps.event.addListener(@map, 'click', (e)=>
-      console.log "Long: #{e.latLng.lng()}, Lat: #{e.latLng.lat()}"
+      console.log '{"lat" : "'+e.latLng.lat()+'", "lng" : "'+e.latLng.lng()+'", "title" : "", "desc" : ""},'
     )
     
     google.maps.event.addListener(@map, 'zoom_changed', (e)=>
@@ -104,7 +104,7 @@ class CustomMap
 
     @setAllMarkers()
     @initializeAreaSummaryBoxes()
-
+    console.log @gMarker
     @markerList.find('span').bind('click', (e)=>
       this_      = $(e.currentTarget)
       markerType = this_.attr('data-type')
@@ -126,10 +126,10 @@ class CustomMap
       @exportWindow.hide()
     )
     
-  addMarker:(markerInfo, type)->
+  addMarker:(markerInfo, markersType, markersCat)->
     iconsize = 32;
     iconmid = iconsize / 2;
-    image = new google.maps.MarkerImage(@getIconURLByType(type), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
+    image = new google.maps.MarkerImage(@getIconURLByType(markersType, markersCat), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
@@ -155,7 +155,7 @@ class CustomMap
         @currentOpenedInfoWindow = marker.infoWindow
     
     google.maps.event.addListener(marker, 'dragend', (e)=>
-      console.log "#{e.latLng.lat()}, #{e.latLng.lng()}"
+      console.log '{"lat" : "'+ e.latLng.lat() +'", "lng" : "'+ e.latLng.lng() +'", "title" : "", "desc" : ""},'
     )
     google.maps.event.addListener(marker, 'click', (e)=>
       if @canRemoveMarker && @draggableMarker
@@ -166,25 +166,30 @@ class CustomMap
         @currentOpenedInfoWindow = marker.infoWindow
     )
 
-    if !@gMarker[type]
-      @gMarker[type] = []
+    if !@gMarker[markersCat]
+      @gMarker[markersCat] = {}
+      
+    if !@gMarker[markersCat][markersType]
+      @gMarker[markersCat][markersType] = []
     
-    @gMarker[type].push(marker)
+    @gMarker[markersCat][markersType].push(marker)
 
   setAllMarkers:()->
-    for type, markerArray of Markers
-      @addMarker(marker, type) for marker in markerArray
+    for markersCat, markersObjects of Markers
+      for markersType, markersArray of markersObjects
+        @addMarker(marker, markersType, markersCat) for marker in markersArray
     
-  getIconURLByType:(type)->
-    return Resources.Icons[icon].url for icon of Resources.Icons when icon is type
+  getIconURLByType:(type, markersCat)->
+    return Resources.Icons[markersCat][icon].url for icon of Resources.Icons[markersCat] when icon is type
 
   setAllMarkersVisibility:(isVisible)->
-    for type of Markers
-      if !$("[data-type='#{type}']").hasClass('hidden')
-        @setMarkersVisibilityByType(isVisible, type) 
+    for cat, markersObject of Markers
+      for type, marker of markersObject
+        if !$("[data-type='#{type}']").hasClass('hidden')
+          @setMarkersVisibilityByType(isVisible, type, cat) 
 
-  setMarkersVisibilityByType:(isVisible, type)->
-    marker.setVisible(isVisible) for marker in @gMarker[type]
+  setMarkersVisibilityByType:(isVisible, type, cat)->
+    marker.setVisible(isVisible) for marker in @gMarker[cat][type]
 
   handleDevMod:(e)=>
     this_ = $(e.currentTarget)
@@ -287,22 +292,23 @@ class CustomMap
     return false
 
   addMenuIcons:()->
-    for type, icon of Resources.Icons
-      li = $("<li></li>")
-      img = $("<img>", {src: icon.url, alt: type})
-      li.append(img)
-      li.attr('data-type', type)
-      li.bind 'click', (e)=>
-        item = e.currentTarget
-        console.log @canToggleMarkers
-        if @canToggleMarkers
-          if item.getAttribute('class') == 'hidden'
-            @setMarkersVisibilityByType(true, item.getAttribute('data-type'))
-            e.currentTarget.setAttribute('class', '')
-          else
-            @setMarkersVisibilityByType(false, item.getAttribute('data-type'))
-            e.currentTarget.setAttribute('class', 'hidden')
-      $('#menu-marker ul').append(li)
+    for cat, object of Resources.Icons
+      for type, icon of object
+        li = $("<li></li>")
+        img = $("<img>", {src: icon.url, alt: type})
+        li.append(img)
+        li.attr('data-type', type)
+        li.attr('data-cat', cat)
+        li.bind 'click', (e)=>
+          item = $(e.currentTarget)
+          if @canToggleMarkers
+            if item.hasClass('hidden')
+              @setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'))
+              item.removeClass('hidden')
+            else
+              @setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'))
+              item.addClass('hidden')
+        $('#menu-marker ul').append(li)
       
   initializeAreaSummaryBoxes:()->
     for area of Areas
@@ -346,8 +352,8 @@ class AreaSummary
             if(@area_.summary[type] > 0)
                 li = $('<li></li>')
                 img = $('<img class="area-summary-icons">')
-                img.attr('src', Resources.Icons[type].url)
-                img.attr('alt', Resources.Icons[type].label)
+                img.attr('src', Resources.Icons['generic'][type].url)
+                img.attr('alt', Resources.Icons['generic'][type].label)
                 img.attr('width', "15px")
                 img.attr('height', "15px")
                 li.append(img)
