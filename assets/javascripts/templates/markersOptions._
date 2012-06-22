@@ -1,4 +1,3 @@
-//Underscore template
 <% _.each(Icons, function(iconsTypeObject, cat) { %>
 <div data-markerCat="<%= cat %>" class="menu-marker">
   <span class="menu-title"><%= cat %> markers</span>

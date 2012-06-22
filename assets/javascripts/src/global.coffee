@@ -157,10 +157,10 @@ class CustomMap
         @currentOpenedInfoWindow = marker.infoWindow
     )
 
-    if !@gMarker[markersCat]
+    if not @gMarker[markersCat]?
       @gMarker[markersCat] = {}
       
-    if !@gMarker[markersCat][markersType]
+    if not @gMarker[markersCat][markersType]?
       @gMarker[markersCat][markersType] = []
     
     @gMarker[markersCat][markersType].push(marker)
@@ -176,7 +176,7 @@ class CustomMap
   setAllMarkersVisibility:(isVisible)->
     for cat, markersObject of Markers
       for type, marker of markersObject
-        if !$("[data-type='#{type}']").hasClass('hidden')
+        if not $("[data-type='#{type}']").hasClass('hidden')
           @setMarkersVisibilityByType(isVisible, type, cat) 
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
@@ -208,11 +208,11 @@ class CustomMap
   handleExport:(e)=>
     newMarkerObject = {}
     for markersCat, markersObject of @gMarker
-      if !newMarkerObject[markersCat]
+      if not newMarkerObject[markersCat]?
         newMarkerObject[markersCat] = {}
       for markerType, markers of markersObject
         
-        if !newMarkerObject[markersCat][markerType]
+        if not newMarkerObject[markersCat][markerType]?
           newMarkerObject[markersCat][markerType] = []
         
         for marker in markers
@@ -229,14 +229,14 @@ class CustomMap
     
   getStartLat:()->
     params = extractUrlParams()
-    if(params['lat']?)
+    if params['lat']?
         params['lat']
     else
         @defaultLat
     
   getStartLng:()->
       params = extractUrlParams()
-      if(params['lng']?)
+      if params['lng']?
           params['lng']
       else
           @defaultLng
@@ -247,7 +247,7 @@ class CustomMap
         return m.__gm_id == id
       )
       for marker in markers
-        if marker.__gm_id == id
+        if marker.__gm_id is id
           marker.setMap(null)
   
   setDraggableMarker:(val)->
@@ -282,7 +282,7 @@ class CustomMap
   getMarkerByCoordinates:(lat, lng)->
     for type, markerType of Markers
         for marker in markerType
-            if(lat == marker.lat && lng == marker.lng)
+            if(lat is marker.lat and lng is marker.lng)
                 return marker
     
     return false
@@ -327,43 +327,17 @@ class AreaSummary
         @div_ = null
         @height_ = 80
         @width_ = 150
-        
-        @setMap(map)
-    
+        @template = ""
+        $.get('assets/javascripts/templates/areasSummary._', (e)=>
+          @template = _.template(e)
+          @setMap(map)
+        )
     
     AreaSummary:: = new google.maps.OverlayView();
     
-    onAdd:()->        
-        div = $('<div class="area-summary-overlay"></div>')
-
-        title = $('<p class="area-summary-title"></p>')
-        if(@area_.rangeLvl != "")
-            rangeLvl = "<span class='lvl-range'>(#{@area_.rangeLvl})</span>"
-        else
-            div.addClass('city')
-            rangeLvl = ""
-        
-        title.html("<span class='area-title'>#{@area_.name}</span>#{rangeLvl}")
-        div.append(title)
-        
-        ul = $('<ul class="area-summary-list"></ul>')
-        
-        for type of @area_.summary
-            if(@area_.summary[type] > 0)
-                li = $('<li></li>')
-                img = $('<img class="area-summary-icons">')
-                img.attr('src', Resources.Icons['generic'][type].url)
-                img.attr('alt', Resources.Icons['generic'][type].label)
-                img.attr('width', "15px")
-                img.attr('height', "15px")
-                li.append(img)
-                li.append(@area_.summary[type])
-                # li.append(img, li.firstChild)
-                ul.append(li)
-
-        div.append(ul)        
-        
-        @div_ = div[0]
+    onAdd:()->
+        content = @template(@area_)
+        @div_ = $(content)[0]
         panes = @getPanes()
         panes.overlayImage.appendChild(@div_)
         @setVisible(false)

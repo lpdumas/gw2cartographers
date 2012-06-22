@@ -165,10 +165,10 @@
           return _this.currentOpenedInfoWindow = marker.infoWindow;
         }
       });
-      if (!this.gMarker[markersCat]) {
+      if (!(this.gMarker[markersCat] != null)) {
         this.gMarker[markersCat] = {};
       }
-      if (!this.gMarker[markersCat][markersType]) {
+      if (!(this.gMarker[markersCat][markersType] != null)) {
         this.gMarker[markersCat][markersType] = [];
       }
       return this.gMarker[markersCat][markersType].push(marker);
@@ -276,12 +276,12 @@
       _ref = this.gMarker;
       for (markersCat in _ref) {
         markersObject = _ref[markersCat];
-        if (!newMarkerObject[markersCat]) {
+        if (!(newMarkerObject[markersCat] != null)) {
           newMarkerObject[markersCat] = {};
         }
         for (markerType in markersObject) {
           markers = markersObject[markerType];
-          if (!newMarkerObject[markersCat][markerType]) {
+          if (!(newMarkerObject[markersCat][markerType] != null)) {
             newMarkerObject[markersCat][markerType] = [];
           }
           for (_i = 0, _len = markers.length; _i < _len; _i++) {
@@ -304,7 +304,7 @@
     CustomMap.prototype.getStartLat = function() {
       var params;
       params = extractUrlParams();
-      if ((params['lat'] != null)) {
+      if (params['lat'] != null) {
         return params['lat'];
       } else {
         return this.defaultLat;
@@ -314,7 +314,7 @@
     CustomMap.prototype.getStartLng = function() {
       var params;
       params = extractUrlParams();
-      if ((params['lng'] != null)) {
+      if (params['lng'] != null) {
         return params['lng'];
       } else {
         return this.defaultLng;
@@ -502,7 +502,8 @@
     AreaSummary.name = 'AreaSummary';
 
     function AreaSummary(map, area) {
-      var neBound, swBound;
+      var neBound, swBound,
+        _this = this;
       swBound = new google.maps.LatLng(area.swLat, area.swLng);
       neBound = new google.maps.LatLng(area.neLat, area.neLng);
       this.bounds_ = new google.maps.LatLngBounds(swBound, neBound);
@@ -510,39 +511,19 @@
       this.div_ = null;
       this.height_ = 80;
       this.width_ = 150;
-      this.setMap(map);
+      this.template = "";
+      $.get('assets/javascripts/templates/areasSummary._', function(e) {
+        _this.template = _.template(e);
+        return _this.setMap(map);
+      });
     }
 
     AreaSummary.prototype = new google.maps.OverlayView();
 
     AreaSummary.prototype.onAdd = function() {
-      var div, img, li, panes, rangeLvl, title, type, ul;
-      div = $('<div class="area-summary-overlay"></div>');
-      title = $('<p class="area-summary-title"></p>');
-      if (this.area_.rangeLvl !== "") {
-        rangeLvl = "<span class='lvl-range'>(" + this.area_.rangeLvl + ")</span>";
-      } else {
-        div.addClass('city');
-        rangeLvl = "";
-      }
-      title.html("<span class='area-title'>" + this.area_.name + "</span>" + rangeLvl);
-      div.append(title);
-      ul = $('<ul class="area-summary-list"></ul>');
-      for (type in this.area_.summary) {
-        if (this.area_.summary[type] > 0) {
-          li = $('<li></li>');
-          img = $('<img class="area-summary-icons">');
-          img.attr('src', Resources.Icons['generic'][type].url);
-          img.attr('alt', Resources.Icons['generic'][type].label);
-          img.attr('width', "15px");
-          img.attr('height', "15px");
-          li.append(img);
-          li.append(this.area_.summary[type]);
-          ul.append(li);
-        }
-      }
-      div.append(ul);
-      this.div_ = div[0];
+      var content, panes;
+      content = this.template(this.area_);
+      this.div_ = $(content)[0];
       panes = this.getPanes();
       panes.overlayImage.appendChild(this.div_);
       return this.setVisible(false);
