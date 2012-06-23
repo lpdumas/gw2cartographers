@@ -126,6 +126,7 @@ class CustomMap
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
       icon: image
+      visible: if markersCat is @defaultCat then yes else no
       draggable: @draggableMarker
       cursor : if @draggableMarker then "move" else "pointer"
       title: "#{markerInfo.title}"
@@ -177,7 +178,7 @@ class CustomMap
   setAllMarkersVisibility:(isVisible)->
     for cat, markersObject of Markers
       for type, marker of markersObject
-        if not $("[data-type='#{type}']").hasClass('hidden')
+        if not $("[data-type='#{type}']").hasClass('off')
           @setMarkersVisibilityByType(isVisible, type, cat) 
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
@@ -291,26 +292,31 @@ class CustomMap
                 return marker
     
     return false
-
+  
+  turnOfMenuIconsFromCat:(markerCat)->
+    menu = $(".menu-marker[data-markerCat='#{markerCat}']")
+    menu.find('.group-toggling').addClass('off')
+    menu.find('.trigger').addClass('off')
+  
   addMenuIcons:()->
     markersOptions = $.get('assets/javascripts/templates/markersOptions._', (e)=>
-      test = "testing"
       template = _.template(e);
       html = $(template(Resources))
       
+
       html.find(".trigger").bind 'click', (e) =>
         item = $(e.currentTarget)
         myGroupTrigger =item.closest(".menu-marker").find('.group-toggling')
         
         if @canToggleMarkers
-          if item.hasClass('hidden')
+          if item.hasClass('off')
             @setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'))
-            item.removeClass('hidden')
+            item.removeClass('off')
             console.log myGroupTrigger
             myGroupTrigger.removeClass('off')
           else
             @setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'))
-            item.addClass('hidden')
+            item.addClass('off')
       
       html.find('.group-toggling').bind 'click', (e)=>
         this_ = $(e.currentTarget)
@@ -319,13 +325,14 @@ class CustomMap
         if this_.hasClass('off')
           this_.removeClass('off')
           @setMarkersVisibilityByCat(on, markerCat)
-          parent.find('.trigger').removeClass('hidden')
+          parent.find('.trigger').removeClass('off')
         else
           this_.addClass('off')
           @setMarkersVisibilityByCat(off, markerCat)
-          parent.find('.trigger').addClass('hidden')
+          parent.find('.trigger').addClass('off')
             
       @markersOptionsMenu.prepend(html)
+      @turnOfMenuIconsFromCat(markerCat) for markerCat of Markers when markerCat isnt @defaultCat
     )
       
   initializeAreaSummaryBoxes:()->

@@ -367,7 +367,7 @@ html, body {
   -o-transition: all 150ms linear;
 }
 
-.menu-marker ul li.hidden img,
+.menu-marker ul li.off img,
 .menu-marker ul li:hover img {
     opacity: 0.5;
 }

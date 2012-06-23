@@ -133,6 +133,7 @@
         position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng),
         map: this.map,
         icon: image,
+        visible: markersCat === this.defaultCat ? true : false,
         draggable: this.draggableMarker,
         cursor: this.draggableMarker ? "move" : "pointer",
         title: "" + markerInfo.title
@@ -218,7 +219,7 @@
           _results1 = [];
           for (type in markersObject) {
             marker = markersObject[type];
-            if (!$("[data-type='" + type + "']").hasClass('hidden')) {
+            if (!$("[data-type='" + type + "']").hasClass('off')) {
               _results1.push(this.setMarkersVisibilityByType(isVisible, type, cat));
             } else {
               _results1.push(void 0);
@@ -455,12 +456,18 @@
       return false;
     };
 
+    CustomMap.prototype.turnOfMenuIconsFromCat = function(markerCat) {
+      var menu;
+      menu = $(".menu-marker[data-markerCat='" + markerCat + "']");
+      menu.find('.group-toggling').addClass('off');
+      return menu.find('.trigger').addClass('off');
+    };
+
     CustomMap.prototype.addMenuIcons = function() {
       var markersOptions,
         _this = this;
       return markersOptions = $.get('assets/javascripts/templates/markersOptions._', function(e) {
-        var html, template, test;
-        test = "testing";
+        var html, markerCat, template, _results;
         template = _.template(e);
         html = $(template(Resources));
         html.find(".trigger").bind('click', function(e) {
@@ -468,14 +475,14 @@
           item = $(e.currentTarget);
           myGroupTrigger = item.closest(".menu-marker").find('.group-toggling');
           if (_this.canToggleMarkers) {
-            if (item.hasClass('hidden')) {
+            if (item.hasClass('off')) {
               _this.setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'));
-              item.removeClass('hidden');
+              item.removeClass('off');
               console.log(myGroupTrigger);
               return myGroupTrigger.removeClass('off');
             } else {
               _this.setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'));
-              return item.addClass('hidden');
+              return item.addClass('off');
             }
           }
         });
@@ -487,14 +494,21 @@
           if (this_.hasClass('off')) {
             this_.removeClass('off');
             _this.setMarkersVisibilityByCat(true, markerCat);
-            return parent.find('.trigger').removeClass('hidden');
+            return parent.find('.trigger').removeClass('off');
           } else {
             this_.addClass('off');
             _this.setMarkersVisibilityByCat(false, markerCat);
-            return parent.find('.trigger').addClass('hidden');
+            return parent.find('.trigger').addClass('off');
           }
         });
-        return _this.markersOptionsMenu.prepend(html);
+        _this.markersOptionsMenu.prepend(html);
+        _results = [];
+        for (markerCat in Markers) {
+          if (markerCat !== _this.defaultCat) {
+            _results.push(_this.turnOfMenuIconsFromCat(markerCat));
+          }
+        }
+        return _results;
       });
     };
 
