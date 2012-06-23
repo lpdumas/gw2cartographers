@@ -17,6 +17,7 @@ class CustomMap
     
     @defaultLat = 25.760319754713887
     @defaultLng = -35.6396484375
+    @defaultCat = "generic"
     
     @areaSummaryBoxes = []
     
@@ -181,6 +182,10 @@ class CustomMap
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
     marker.setVisible(isVisible) for marker in @gMarker[cat][type]
+  
+  setMarkersVisibilityByCat:(isVisible, cat)->
+    for type, markers of @gMarker[cat]
+      marker.setVisible(isVisible) for marker in markers
 
   handleDevMod:(e)=>
     this_ = $(e.currentTarget)
@@ -289,17 +294,36 @@ class CustomMap
 
   addMenuIcons:()->
     markersOptions = $.get('assets/javascripts/templates/markersOptions._', (e)=>
+      test = "testing"
       template = _.template(e);
       html = $(template(Resources))
+      
       html.find(".trigger").bind 'click', (e) =>
         item = $(e.currentTarget)
+        myGroupTrigger =item.closest(".menu-marker").find('.group-toggling')
+        
         if @canToggleMarkers
           if item.hasClass('hidden')
             @setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'))
             item.removeClass('hidden')
+            console.log myGroupTrigger
+            myGroupTrigger.removeClass('off')
           else
             @setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'))
             item.addClass('hidden')
+      
+      html.find('.group-toggling').bind 'click', (e)=>
+        this_ = $(e.currentTarget)
+        parent = this_.closest('.menu-marker')
+        markerCat = parent.attr('data-markerCat')
+        if this_.hasClass('off')
+          this_.removeClass('off')
+          @setMarkersVisibilityByCat(on, markerCat)
+          parent.find('.trigger').removeClass('hidden')
+        else
+          this_.addClass('off')
+          @setMarkersVisibilityByCat(off, markerCat)
+          parent.find('.trigger').addClass('hidden')
             
       @markersOptionsMenu.prepend(html)
     )

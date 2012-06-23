@@ -314,12 +314,36 @@ html, body {
 }
 
 .menu-marker span.menu-title {
+  position: relative;
   display: inline-block;
   color: #333;
   font-size: 15px;
   font-size: 1.5rem;
   padding: 0 6px 4px 0;
   border-bottom: 1px solid #D4D4D4;
+}
+
+.menu-marker span.group-toggling {
+  position: absolute;
+  z-index: 10;
+  top: 0px;
+  right: -30px;
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  background: url('../images/layout/eyes.png') center top no-repeat;
+  cursor: pointer;
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
+}
+.menu-marker span.group-toggling:hover {
+  opacity: 0.4;
+}
+.menu-marker span.group-toggling.off {
+  opacity: 0.4;
+  background-position: center bottom;
 }
 
 .menu-marker ul {
@@ -332,8 +356,8 @@ html, body {
   margin-left: 5px;
 }
 .menu-marker ul li img {
-  width: 32px;
-  height: 32px;
+  width: 25px;
+  height: 25px;
   cursor: pointer;
   border: 1px solid #fff;
   padding: 1px;
