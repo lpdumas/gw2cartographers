@@ -1,13 +1,6 @@
-markersOptionsMenu = $('#markers-options')
-MapApp = {
-  toggleMarkersOptionsMenu: () ->
-    markersOptionsMenu.toggleClass('active')
-  hideMarkersOptionsMenu: () ->
-    markersOptionsMenu.addClass('off')
-  showMarkersOptionsMenu: () ->
-    markersOptionsMenu.removeClass('off')
-}
-    
+###
+# classCustomMap {{{
+###
 class CustomMap
   constructor: (id)->
     @blankTilePath = 'tiles/00empty.jpg'
@@ -23,9 +16,11 @@ class CustomMap
     @markerList       = $('#marker-list')
     @exportBtn        = $('#export')
     @exportWindow     = $('#export-windows')
+    @markersOptionsMenu = $('#markers-options')
     
     @defaultLat = 25.760319754713887
     @defaultLng = -35.6396484375
+    @defaultCat = "generic"
     
     @areaSummaryBoxes = []
     
@@ -75,24 +70,24 @@ class CustomMap
     
     # Events
     google.maps.event.addListener(@map, 'click', (e)=>
-      console.log "Long: #{e.latLng.lng()}, Lat: #{e.latLng.lat()}"
+      console.log '{"lat" : "'+e.latLng.lat()+'", "lng" : "'+e.latLng.lng()+'", "title" : "", "desc" : ""},'
     )
     
     google.maps.event.addListener(@map, 'zoom_changed', (e)=>
         zoomLevel = @map.getZoom()
         if zoomLevel == 4
           @canToggleMarkers = false
-          MapApp.hideMarkersOptionsMenu()
+          @hideMarkersOptionsMenu()
           @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(true)
         else if zoomLevel > 4
           @canToggleMarkers = true
-          MapApp.showMarkersOptionsMenu()
+          @showMarkersOptionsMenu()
           @setAllMarkersVisibility(true)
           @setAreasInformationVisibility(false)
         else if zoomLevel < 4
           @canToggleMarkers = false
-          MapApp.hideMarkersOptionsMenu()
+          @hideMarkersOptionsMenu()
           @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(false)
     )
@@ -104,7 +99,7 @@ class CustomMap
 
     @setAllMarkers()
     @initializeAreaSummaryBoxes()
-
+    
     @markerList.find('span').bind('click', (e)=>
       this_      = $(e.currentTarget)
       markerType = this_.attr('data-type')
@@ -126,14 +121,15 @@ class CustomMap
       @exportWindow.hide()
     )
     
-  addMarker:(markerInfo, type)->
+  addMarker:(markerInfo, markersType, markersCat)->
     iconsize = 32;
     iconmid = iconsize / 2;
-    image = new google.maps.MarkerImage(@getIconURLByType(type), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
+    image = new google.maps.MarkerImage(@getIconURLByType(markersType, markersCat), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
       icon: image
+      visible: if markersCat is @defaultCat then yes else no
       draggable: @draggableMarker
       cursor : if @draggableMarker then "move" else "pointer"
       title: "#{markerInfo.title}"
@@ -155,7 +151,7 @@ class CustomMap
         @currentOpenedInfoWindow = marker.infoWindow
     
     google.maps.event.addListener(marker, 'dragend', (e)=>
-      console.log "#{e.latLng.lat()}, #{e.latLng.lng()}"
+      console.log '{"lat" : "'+ e.latLng.lat() +'", "lng" : "'+ e.latLng.lng() +'", "title" : "", "desc" : ""},'
     )
     google.maps.event.addListener(marker, 'click', (e)=>
       if @canRemoveMarker && @draggableMarker
@@ -166,25 +162,34 @@ class CustomMap
         @currentOpenedInfoWindow = marker.infoWindow
     )
 
-    if !@gMarker[type]
-      @gMarker[type] = []
+    if not @gMarker[markersCat]?
+      @gMarker[markersCat] = {}
+      
+    if not @gMarker[markersCat][markersType]?
+      @gMarker[markersCat][markersType] = []
     
-    @gMarker[type].push(marker)
+    @gMarker[markersCat][markersType].push(marker)
 
   setAllMarkers:()->
-    for type, markerArray of Markers
-      @addMarker(marker, type) for marker in markerArray
+    for markersCat, markersObjects of Markers
+      for markersType, markersArray of markersObjects
+        @addMarker(marker, markersType, markersCat) for marker in markersArray
     
-  getIconURLByType:(type)->
-    return Resources.Icons[icon].url for icon of Resources.Icons when icon is type
+  getIconURLByType:(type, markersCat)->
+    return Resources.Icons[markersCat][icon].url for icon of Resources.Icons[markersCat] when icon is type
 
   setAllMarkersVisibility:(isVisible)->
-    for type of Markers
-      if !$("[data-type='#{type}']").hasClass('hidden')
-        @setMarkersVisibilityByType(isVisible, type) 
+    for cat, markersObject of Markers
+      for type, marker of markersObject
+        if not $("[data-type='#{type}']").hasClass('off')
+          @setMarkersVisibilityByType(isVisible, type, cat) 
 
-  setMarkersVisibilityByType:(isVisible, type)->
-    marker.setVisible(isVisible) for marker in @gMarker[type]
+  setMarkersVisibilityByType:(isVisible, type, cat)->
+    marker.setVisible(isVisible) for marker in @gMarker[cat][type]
+  
+  setMarkersVisibilityByCat:(isVisible, cat)->
+    for type, markers of @gMarker[cat]
+      marker.setVisible(isVisible) for marker in markers
 
   handleDevMod:(e)=>
     this_ = $(e.currentTarget)
@@ -210,32 +215,37 @@ class CustomMap
       @addMarkerLink.removeClass('active')
     
   handleExport:(e)=>
-    markerObject = {}
-    for markersId, markers of @gMarker
-      if !markerObject[markersId]
-        markerObject[markersId] = []
-      for marker in markers
-        nm = 
-          "lng" : marker.getPosition().lng()
-          "lat" : marker.getPosition().lat()
-          "title" : marker.title
-          "desc"  : marker.desc
-        markerObject[markersId].push(nm)
+    newMarkerObject = {}
+    for markersCat, markersObject of @gMarker
+      if not newMarkerObject[markersCat]?
+        newMarkerObject[markersCat] = {}
+      for markerType, markers of markersObject
+        
+        if not newMarkerObject[markersCat][markerType]?
+          newMarkerObject[markersCat][markerType] = []
+        
+        for marker in markers
+          nm = 
+            "lng" : marker.getPosition().lng()
+            "lat" : marker.getPosition().lat()
+            "title" : marker.title
+            "desc"  : marker.desc
+          newMarkerObject[markersCat][markerType].push(nm)
     
-    jsonString = JSON.stringify(markerObject)
+    jsonString = JSON.stringify(newMarkerObject)
     @exportWindow.find('.content').html(jsonString)
     @exportWindow.show();
     
   getStartLat:()->
     params = extractUrlParams()
-    if(params['lat']?)
+    if params['lat']?
         params['lat']
     else
         @defaultLat
     
   getStartLng:()->
       params = extractUrlParams()
-      if(params['lng']?)
+      if params['lng']?
           params['lng']
       else
           @defaultLng
@@ -246,7 +256,7 @@ class CustomMap
         return m.__gm_id == id
       )
       for marker in markers
-        if marker.__gm_id == id
+        if marker.__gm_id is id
           marker.setMap(null)
   
   setDraggableMarker:(val)->
@@ -281,28 +291,52 @@ class CustomMap
   getMarkerByCoordinates:(lat, lng)->
     for type, markerType of Markers
         for marker in markerType
-            if(lat == marker.lat && lng == marker.lng)
+            if(lat is marker.lat and lng is marker.lng)
                 return marker
     
     return false
-
+  
+  turnOfMenuIconsFromCat:(markerCat)->
+    menu = $(".menu-marker[data-markerCat='#{markerCat}']")
+    menu.find('.group-toggling').addClass('off')
+    menu.find('.trigger').addClass('off')
+  
   addMenuIcons:()->
-    for type, icon of Resources.Icons
-      li = $("<li></li>")
-      img = $("<img>", {src: icon.url, alt: type})
-      li.append(img)
-      li.attr('data-type', type)
-      li.bind 'click', (e)=>
-        item = e.currentTarget
-        console.log @canToggleMarkers
+    markersOptions = $.get('assets/javascripts/templates/markersOptions._', (e)=>
+      template = _.template(e);
+      html = $(template(Resources))
+      
+
+      html.find(".trigger").bind 'click', (e) =>
+        item = $(e.currentTarget)
+        myGroupTrigger =item.closest(".menu-marker").find('.group-toggling')
+        
         if @canToggleMarkers
-          if item.getAttribute('class') == 'hidden'
-            @setMarkersVisibilityByType(true, item.getAttribute('data-type'))
-            e.currentTarget.setAttribute('class', '')
+          if item.hasClass('off')
+            @setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'))
+            item.removeClass('off')
+            console.log myGroupTrigger
+            myGroupTrigger.removeClass('off')
           else
-            @setMarkersVisibilityByType(false, item.getAttribute('data-type'))
-            e.currentTarget.setAttribute('class', 'hidden')
-      $('#menu-marker ul').append(li)
+            @setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'))
+            item.addClass('off')
+      
+      html.find('.group-toggling').bind 'click', (e)=>
+        this_ = $(e.currentTarget)
+        parent = this_.closest('.menu-marker')
+        markerCat = parent.attr('data-markerCat')
+        if this_.hasClass('off')
+          this_.removeClass('off')
+          @setMarkersVisibilityByCat(on, markerCat)
+          parent.find('.trigger').removeClass('off')
+        else
+          this_.addClass('off')
+          @setMarkersVisibilityByCat(off, markerCat)
+          parent.find('.trigger').addClass('off')
+            
+      @markersOptionsMenu.prepend(html)
+      @turnOfMenuIconsFromCat(markerCat) for markerCat of Markers when markerCat isnt @defaultCat
+    )
       
   initializeAreaSummaryBoxes:()->
     for area of Areas
@@ -311,7 +345,20 @@ class CustomMap
   setAreasInformationVisibility:(isVisible)->
     for box in @areaSummaryBoxes
         box.setVisible(isVisible)
-      
+  toggleMarkersOptionsMenu: () ->
+    @markersOptionsMenu.toggleClass('active')
+  hideMarkersOptionsMenu: () ->
+    @markersOptionsMenu.addClass('off')
+  showMarkersOptionsMenu: () ->
+    @markersOptionsMenu.removeClass('off')
+
+###
+# }}}
+###
+ 
+###
+# class AreaSummary {{{
+###
 class AreaSummary
     constructor:(map, area)->
         swBound = new google.maps.LatLng(area.swLat, area.swLng)
@@ -321,43 +368,17 @@ class AreaSummary
         @div_ = null
         @height_ = 80
         @width_ = 150
-        
-        @setMap(map)
-    
+        @template = ""
+        $.get('assets/javascripts/templates/areasSummary._', (e)=>
+          @template = _.template(e)
+          @setMap(map)
+        )
     
     AreaSummary:: = new google.maps.OverlayView();
     
-    onAdd:()->        
-        div = $('<div class="area-summary-overlay"></div>')
-
-        title = $('<p class="area-summary-title"></p>')
-        if(@area_.rangeLvl != "")
-            rangeLvl = "<span class='lvl-range'>(#{@area_.rangeLvl})</span>"
-        else
-            div.addClass('city')
-            rangeLvl = ""
-        
-        title.html("<span class='area-title'>#{@area_.name}</span>#{rangeLvl}")
-        div.append(title)
-        
-        ul = $('<ul class="area-summary-list"></ul>')
-        
-        for type of @area_.summary
-            if(@area_.summary[type] > 0)
-                li = $('<li></li>')
-                img = $('<img class="area-summary-icons">')
-                img.attr('src', Resources.Icons[type].url)
-                img.attr('alt', Resources.Icons[type].label)
-                img.attr('width', "15px")
-                img.attr('height', "15px")
-                li.append(img)
-                li.append(@area_.summary[type])
-                # li.append(img, li.firstChild)
-                ul.append(li)
-
-        div.append(ul)        
-        
-        @div_ = div[0]
+    onAdd:()->
+        content = @template(@area_)
+        @div_ = $(content)[0]
         panes = @getPanes()
         panes.overlayImage.appendChild(@div_)
         @setVisible(false)
@@ -377,7 +398,10 @@ class AreaSummary
                 @div_.style.visibility = "visible"
             else
                 @div_.style.visibility = "hidden"
-                
+###
+# }}}
+###                
+
 extractUrlParams = ()->
     parameters = location.search.substring(1).split('&')
     f = []
@@ -390,5 +414,5 @@ $ ()->
   myCustomMap = new CustomMap('#map')
   markersOptionsMenuToggle = $('#options-toggle strong')
   markersOptionsMenuToggle.click( () ->
-    MapApp.toggleMarkersOptionsMenu()
+    myCustomMap.toggleMarkersOptionsMenu()
   )

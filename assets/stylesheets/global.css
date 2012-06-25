@@ -196,10 +196,9 @@ html, body {
   text-align: center;
 }
 #export {
-/*  display: inline-block;*/
   display: none;
   position: absolute;
-  z-index: 5;
+  z-index: 10;
   bottom: 10px;
   left: 50%;
   width: 50px;
@@ -247,7 +246,7 @@ html, body {
 #markers-options {
   position: fixed;
   z-index: 5;
-  top: -100px;
+  top: -135px;
 /*  top: 0px;*/
   min-height: 60px;
   width: 100%;
@@ -304,13 +303,18 @@ html, body {
   background: url('../images/layout/decorations.png') center top repeat-x;
 }
 
-#menu-marker {
+.menu-marker {
     z-index: 10;
     position: relative;
     color: #333;
+    display: block;
+    width: 170px;
+    padding-right: 30px;
+    float: left;
 }
 
-#menu-marker span.menu-title {
+.menu-marker span.menu-title {
+  position: relative;
   display: inline-block;
   color: #333;
   font-size: 15px;
@@ -319,29 +323,52 @@ html, body {
   border-bottom: 1px solid #D4D4D4;
 }
 
-#menu-marker ul {
+.menu-marker span.group-toggling {
+  position: absolute;
+  z-index: 10;
+  top: 0px;
+  right: -30px;
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  background: url('../images/layout/eyes.png') center top no-repeat;
+  cursor: pointer;
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
+}
+.menu-marker span.group-toggling:hover {
+  opacity: 0.4;
+}
+.menu-marker span.group-toggling.off {
+  opacity: 0.4;
+  background-position: center bottom;
+}
+
+.menu-marker ul {
   margin: 10px 0 0 -5px;
   padding: 0;
   list-style-type: none;
 }
-#menu-marker ul li {
-    float: left;
-    margin-left: 5px;
+.menu-marker ul li {
+  display: inline-block;
+  margin-left: 5px;
 }
-#menu-marker ul li img {
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
-    border: 1px solid #fff;
-    padding: 1px;
-    -webkit-transition: all 150ms linear;
-    -moz-transition: all 150ms linear;
-    -ms-transition: all 150ms linear;
-    -o-transition: all 150ms linear;
+.menu-marker ul li img {
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  border: 1px solid #fff;
+  padding: 1px;
+  -webkit-transition: all 150ms linear;
+  -moz-transition: all 150ms linear;
+  -ms-transition: all 150ms linear;
+  -o-transition: all 150ms linear;
 }
 
-#menu-marker ul li.hidden img,
-#menu-marker ul li:hover img {
+.menu-marker ul li.off img,
+.menu-marker ul li:hover img {
     opacity: 0.5;
 }
 
@@ -352,12 +379,9 @@ div.area-summary-overlay {
  padding: 10px 4px;
  border: none;
  background: #F9F9F9;
-/* background: rgba(249, 249, 249, 0.9);*/
  color: #333;
  min-width: 160px; 
-/* border-radius: 6px;*/
  border: 1px solid #8e8e8e;
-/* height: 60px; */
 }
 
 div.area-summary-overlay.city {
