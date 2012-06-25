@@ -11,10 +11,11 @@ Resources.Icons = {
     "dungeons": {"label" : "Dungeons", "url" : Resources.Paths.icons + "dungeon.png"},
     "asurasgates" : {"label" : "Asuras's Gates", "url" : Resources.Paths.icons + "asuraGate.png"},
     "scouts" : {"label" : "Scouts", "url" : Resources.Paths.icons + "scout.png"}
-  },
-  "merchants" : {
-    "rangerSkillBooks" : {"label" : "Ranger's skill book vendor", "url" : Resources.Paths.icons + "skillBookRanger.png"}
   }
+  // ,
+  // "merchants" : {
+  //   "rangerSkillBooks" : {"label" : "Ranger's skill book vendor", "url" : Resources.Paths.icons + "skillBookRanger.png"}
+  // }
 }
 
 Areas = [
@@ -129,11 +130,13 @@ Areas = [
      "neLat" : "17.025272685376905", "neLng" : "5.526123046875", "swLat" : "6.263804863758637", "swLng" : "-10.099023437500023"
  }
 ]
-Markers.merchants = {
-  "rangerSkillBooks" : [
-    {"lat" : "29.78344945682068", "lng" : "-40.71533203125", "title" : "", "desc" : ""}
-  ]
-}
+
+// Markers.merchants = {
+//   "rangerSkillBooks" : [
+//     {"lat" : "29.78344945682068", "lng" : "-40.71533203125", "title" : "", "desc" : ""}
+//   ]
+// }
+
 Markers.generic = {
   "hearts" : [
     //Queensdale
