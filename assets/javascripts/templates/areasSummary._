@@ -7,7 +7,9 @@
     </p>
     <ul class="area-summary-list">
         <% _.each(summary, function(val, type, list) { %>
+            <% if(val != 0) { %>
             <li><img class="area-summary-icons" src="<%= Resources.Icons['generic'][type].url %>" alt="<%= Resources.Icons['generic'][type].label %>" width="15" height="15"><%= val %></li>
+            <% } %>
         <% }); %>
     </ul>
 </div>

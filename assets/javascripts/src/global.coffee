@@ -1,3 +1,6 @@
+###
+# classCustomMap {{{
+###
 class CustomMap
   constructor: (id)->
     @blankTilePath = 'tiles/00empty.jpg'
@@ -348,7 +351,14 @@ class CustomMap
     @markersOptionsMenu.addClass('off')
   showMarkersOptionsMenu: () ->
     @markersOptionsMenu.removeClass('off')
-      
+
+###
+# }}}
+###
+ 
+###
+# class AreaSummary {{{
+###
 class AreaSummary
     constructor:(map, area)->
         swBound = new google.maps.LatLng(area.swLat, area.swLng)
@@ -388,7 +398,10 @@ class AreaSummary
                 @div_.style.visibility = "visible"
             else
                 @div_.style.visibility = "hidden"
-                
+###
+# }}}
+###                
+
 extractUrlParams = ()->
     parameters = location.search.substring(1).split('&')
     f = []
