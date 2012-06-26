@@ -4,15 +4,6 @@ class CustomMap
     @iconsPath     = 'assets/images/icons/32x32'
     @maxZoom       = 7
     # HTML element
-    @lngContainer     = $('#long')
-    @latContainer     = $('#lat')
-    @devModInput      = $('#dev-mod')
-    @optionsBox       = $('#options-box')
-    @addMarkerLink    = $('#add-marker')
-    @removeMarkerLink = $('#remove-marker')
-    @markerList       = $('#marker-list')
-    @exportBtn        = $('#export')
-    @exportWindow     = $('#export-windows')
     @markersOptionsMenu = $('#markers-options')
     
     @defaultLat = 25.760319754713887
@@ -60,12 +51,6 @@ class CustomMap
     @addMenuIcons()
     
     # Events
-    google.maps.event.addListener(@map, 'mousemove', (e)=>
-      @lngContainer.html e.latLng.lng()
-      @latContainer.html e.latLng.lat()
-    )
-    
-    # Events
     google.maps.event.addListener(@map, 'click', (e)=>
       console.log '{"lat" : "'+e.latLng.lat()+'", "lng" : "'+e.latLng.lng()+'", "title" : "", "desc" : ""},'
     )
@@ -89,34 +74,11 @@ class CustomMap
           @setAreasInformationVisibility(false)
     )
 
-    @devModInput.bind('click', @handleDevMod)
-    
     #marker
     @gMarker = {}
 
     @setAllMarkers()
     @initializeAreaSummaryBoxes()
-    
-    @markerList.find('span').bind('click', (e)=>
-      this_      = $(e.currentTarget)
-      markerType = this_.attr('data-type')
-      coord       = @map.getCenter()
-      markerinfo = 
-        "lng" : coord.lng()
-        "lat" : coord.lat()
-        "title" : "--"
-      img        = "#{@iconsPath}/#{markerType}.png"
-      @addMarkers(markerinfo, img, markerType)
-    )
-    
-    # UI
-    @addMarkerLink.bind('click', @toggleMarkerList)
-    @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
-    @exportBtn.bind('click', @handleExport)
-    
-    @exportWindow.find('.close').click(()=>
-      @exportWindow.hide()
-    )
     
   addMarker:(markerInfo, markersType, markersCat)->
     iconsize = 32;
@@ -147,16 +109,10 @@ class CustomMap
         marker.infoWindow.open(@map, marker)
         @currentOpenedInfoWindow = marker.infoWindow
     
-    google.maps.event.addListener(marker, 'dragend', (e)=>
-      console.log '{"lat" : "'+ e.latLng.lat() +'", "lng" : "'+ e.latLng.lng() +'", "title" : "", "desc" : ""},'
-    )
     google.maps.event.addListener(marker, 'click', (e)=>
-      if @canRemoveMarker && @draggableMarker
-        @removeMarker(marker.__gm_id)
-      else
-        if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-        marker.infoWindow.open(@map, marker)
-        @currentOpenedInfoWindow = marker.infoWindow
+      if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+      marker.infoWindow.open(@map, marker)
+      @currentOpenedInfoWindow = marker.infoWindow
     )
 
     if not @gMarker[markersCat]?
@@ -187,52 +143,7 @@ class CustomMap
   setMarkersVisibilityByCat:(isVisible, cat)->
     for type, markers of @gMarker[cat]
       marker.setVisible(isVisible) for marker in markers
-
-  handleDevMod:(e)=>
-    this_ = $(e.currentTarget)
-    if this_.prop('checked')
-      @setDraggableMarker(true)
-      @optionsBox.addClass('active')
-    else
-      @setDraggableMarker(false)
-      @optionsBox.removeClass('active')
-      @markerList.removeClass('active')
-      @addMarkerLink.removeClass('active')
-
-  handleMarkerRemovalTool:(e)=>
-    if @removeMarkerLink.hasClass('active')
-      @removeMarkerLink.removeClass('active')
-      @optionsBox.removeClass('red')
-      @canRemoveMarker = false
-    else
-      @removeMarkerLink.addClass('active')
-      @optionsBox.addClass('red')
-      @canRemoveMarker = true
-      @markerList.removeClass('active')
-      @addMarkerLink.removeClass('active')
-    
-  handleExport:(e)=>
-    newMarkerObject = {}
-    for markersCat, markersObject of @gMarker
-      if not newMarkerObject[markersCat]?
-        newMarkerObject[markersCat] = {}
-      for markerType, markers of markersObject
-        
-        if not newMarkerObject[markersCat][markerType]?
-          newMarkerObject[markersCat][markerType] = []
-        
-        for marker in markers
-          nm = 
-            "lng" : marker.getPosition().lng()
-            "lat" : marker.getPosition().lat()
-            "title" : marker.title
-            "desc"  : marker.desc
-          newMarkerObject[markersCat][markerType].push(nm)
-    
-    jsonString = JSON.stringify(newMarkerObject)
-    @exportWindow.find('.content').html(jsonString)
-    @exportWindow.show();
-    
+              
   getStartLat:()->
     params = extractUrlParams()
     if params['lat']?
@@ -246,25 +157,6 @@ class CustomMap
           params['lng']
       else
           @defaultLng
-    
-  removeMarker:(id)->
-    for markersId, markers of @gMarker
-      @gMarker[markersId] = _.reject(markers, (m)=>
-        return m.__gm_id == id
-      )
-      for marker in markers
-        if marker.__gm_id is id
-          marker.setMap(null)
-  
-  setDraggableMarker:(val)->
-    @draggableMarker = val
-    for markersId, markers of @gMarker
-      for marker in markers
-        marker.setDraggable(val)
-        if val
-          marker.setCursor('move')
-        else
-          marker.setCursor('pointer')
 
   hideAllMarker:()->
     for markersId, markers of @gMarker
