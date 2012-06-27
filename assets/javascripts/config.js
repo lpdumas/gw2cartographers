@@ -10,7 +10,8 @@ Resources.Icons = {
     "poi" : {"label" : "Points of interest", "url" : Resources.Paths.icons + "poi.png"},
     "dungeons": {"label" : "Dungeons", "url" : Resources.Paths.icons + "dungeon.png"},
     "asurasgates" : {"label" : "Asuras's Gates", "url" : Resources.Paths.icons + "asuraGate.png"},
-    "scouts" : {"label" : "Scouts", "url" : Resources.Paths.icons + "scout.png"}
+    "scouts" : {"label" : "Scouts", "url" : Resources.Paths.icons + "scout.png"},
+    "jumpingpuzzles" : {"label" : "Jumping puzzles", "url" : Resources.Paths.icons + "puzzle.png"}
   }
   // ,
   // "merchants" : {
@@ -138,6 +139,14 @@ Areas = [
 // }
 
 Markers.generic = {
+  "jumpingpuzzles" : [
+    //Queensdale
+    {"lat" : "20.786930592570315", "lng" : "-25.191650390625", "title" : "Demongrub Pits", "desc" : "Demongrub Pits is an underground Jumping Puzzle located in southeast Queensdale."},
+    {"lat" : "29.907329376851603", "lng" : "58.216552734375", "title" : "Grendich Gamble", "desc" : "Grendich Gamble is a jumping puzzle in the west part of the Diessa Plateau It is located on a building next to a Skillpoint with Cannons and Trebuchets as well as Ascalonian Ghosts on it."},
+    {"lat" : "8.537565350804067", "lng" : "80.9912109375", "title" : "Loreclaw Expanse", "desc" : "The Loreclaw Expanse is the southeastern section of the Plains of Ashford and includes the seperatist camp in the area."}, 
+    {"lat" : "21.30984614108724", "lng" : "36.639404296875", "title" : "Shamans Rookery", "desc" : ""},
+    {"lat" : "6.26069737295141", "lng" : "-27.850341796875", "title" : "The Collapsed Observatory", "desc" : "The Collapsed Observatory is a jumping puzzle in the southeast part of Kessex Hills. The entrance is straight south of Cereboth Canyon and the cave eventually leads to Isgarren's View."}
+  ],
   "hearts" : [
     //Queensdale
     {"lat" : "29.19053283229458", "lng" : "-44.384765625", "title" : "Help Farmer Diah", "desc" : "Help Diah by watering corn, stomping wurm mounds, feeding cattle, and defending the fields."},
