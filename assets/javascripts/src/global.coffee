@@ -1,3 +1,6 @@
+###
+# classCustomMap {{{
+###
 class CustomMap
   constructor: (id)->
     @blankTilePath = 'tiles/00empty.jpg'
@@ -142,8 +145,8 @@ class CustomMap
     marker["desc"]  = "#{markerInfo.desc}"
     marker["infoWindow"] = infoWindow
     
-    test = @getMarkerByCoordinates(@getStartLat(), @getStartLng())
-    if (test == markerInfo)
+    markerThatMatchUrl = @getMarkerByCoordinates(@getStartLat(), @getStartLng())
+    if (markerThatMatchUrl == markerInfo)
         marker.infoWindow.open(@map, marker)
         @currentOpenedInfoWindow = marker.infoWindow
     
@@ -158,35 +161,40 @@ class CustomMap
         marker.infoWindow.open(@map, marker)
         @currentOpenedInfoWindow = marker.infoWindow
     )
-
-    if not @gMarker[markersCat]?
-      @gMarker[markersCat] = {}
-      
-    if not @gMarker[markersCat][markersType]?
-      @gMarker[markersCat][markersType] = []
     
-    @gMarker[markersCat][markersType].push(marker)
+    markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["markerGroup"] when markerType.slug is markersType
 
   setAllMarkers:()->
     for markersCat, markersObjects of Markers
-      for markersType, markersArray of markersObjects
-        @addMarker(marker, markersType, markersCat) for marker in markersArray
+      if not @gMarker[markersCat]?
+        @gMarker[markersCat] = {}
+        @gMarker[markersCat]["name"] = markersObjects.name
+        @gMarker[markersCat]["markerGroup"] = []
+        
+      for markerTypeObject, key in markersObjects.markerGroup
+        newmarkerTypeObject = {}
+        newmarkerTypeObject["name"] = markerTypeObject.name
+        newmarkerTypeObject["slug"] = markerTypeObject.slug
+        newmarkerTypeObject["markers"] = []
+        @gMarker[markersCat]["markerGroup"].push(newmarkerTypeObject)
+        
+        @addMarker(marker, markerTypeObject.slug, markersCat) for marker in markerTypeObject.markers
     
   getIconURLByType:(type, markersCat)->
     return Resources.Icons[markersCat][icon].url for icon of Resources.Icons[markersCat] when icon is type
 
   setAllMarkersVisibility:(isVisible)->
-    for cat, markersObject of Markers
-      for type, marker of markersObject
-        if not $("[data-type='#{type}']").hasClass('off')
-          @setMarkersVisibilityByType(isVisible, type, cat) 
+    for cat, markersObjects of Markers
+      @setMarkersVisibilityByType(isVisible, markerTypeObject.slug, cat) for markerTypeObject in markersObjects.markerGroup when not $("[data-type='#{markerTypeObject.slug}']").hasClass('off')
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
-    marker.setVisible(isVisible) for marker in @gMarker[cat][type]
+    for markerTypeObject in @gMarker[cat]["markerGroup"] when markerTypeObject.slug is type
+      marker.setVisible(isVisible) for marker in markerTypeObject.markers
+
   
   setMarkersVisibilityByCat:(isVisible, cat)->
-    for type, markers of @gMarker[cat]
-      marker.setVisible(isVisible) for marker in markers
+    for markerTypeObject in @gMarker[cat]["markerGroup"]
+      marker.setVisible(isVisible) for marker in markerTypeObject.markers
 
   handleDevMod:(e)=>
     this_ = $(e.currentTarget)
@@ -265,16 +273,6 @@ class CustomMap
           marker.setCursor('move')
         else
           marker.setCursor('pointer')
-
-  hideAllMarker:()->
-    for markersId, markers of @gMarker
-      for marker in markers
-        marker.setVisible(false)
-    
-  showAllMarker:()->
-    for markersId, markers of @gMarker
-      for marker in markers
-        marker.setVisible(true)
         
   toggleMarkerList: (e)=>
     this_ = $(e.currentTarget)
@@ -286,11 +284,9 @@ class CustomMap
       @canRemoveMarker = false
 
   getMarkerByCoordinates:(lat, lng)->
-    for type, markerType of Markers
-        for marker in markerType
-            if(lat is marker.lat and lng is marker.lng)
-                return marker
-    
+    for type, markersObjects of Markers
+      for markerTypeObject, key in markersObjects.markerGroup
+        return marker for marker in markerTypeObject.markers when marker.lat is lat and marker.lng is lng
     return false
   
   turnOfMenuIconsFromCat:(markerCat)->
@@ -348,7 +344,14 @@ class CustomMap
     @markersOptionsMenu.addClass('off')
   showMarkersOptionsMenu: () ->
     @markersOptionsMenu.removeClass('off')
-      
+
+###
+# }}}
+###
+ 
+###
+# class AreaSummary {{{
+###
 class AreaSummary
     constructor:(map, area)->
         swBound = new google.maps.LatLng(area.swLat, area.swLng)
@@ -388,7 +391,10 @@ class AreaSummary
                 @div_.style.visibility = "visible"
             else
                 @div_.style.visibility = "hidden"
-                
+###
+# }}}
+###                
+
 extractUrlParams = ()->
     parameters = location.search.substring(1).split('&')
     f = []
