@@ -220,24 +220,28 @@ class CustomMap
       @addMarkerLink.removeClass('active')
     
   handleExport:(e)=>
-    newMarkerObject = {}
-    for markersCat, markersObject of @gMarker
-      if not newMarkerObject[markersCat]?
-        newMarkerObject[markersCat] = {}
-      for markerType, markers of markersObject
+    exportMarkerObject = {}
+    for markersCat, markersObjects of @gMarker
+      if not exportMarkerObject[markersCat]?
+        exportMarkerObject[markersCat] = {}
+        exportMarkerObject[markersCat]["name"] = markersObjects.name
+        exportMarkerObject[markersCat]["markerGroup"] = []
         
-        if not newMarkerObject[markersCat][markerType]?
-          newMarkerObject[markersCat][markerType] = []
-        
-        for marker in markers
+      for markerTypeObject, key in markersObjects.markerGroup
+        newmarkerTypeObject = {}
+        newmarkerTypeObject["name"] = markerTypeObject.name
+        newmarkerTypeObject["slug"] = markerTypeObject.slug
+        newmarkerTypeObject["markers"] = []
+        exportMarkerObject[markersCat]["markerGroup"].push(newmarkerTypeObject)
+        for marker in markerTypeObject.markers
           nm = 
             "lng" : marker.getPosition().lng()
             "lat" : marker.getPosition().lat()
             "title" : marker.title
             "desc"  : marker.desc
-          newMarkerObject[markersCat][markerType].push(nm)
-    
-    jsonString = JSON.stringify(newMarkerObject)
+          exportMarkerObject[markersCat]["markerGroup"][key]["markers"].push(nm)
+
+    jsonString = JSON.stringify(exportMarkerObject)
     @exportWindow.find('.content').html(jsonString)
     @exportWindow.show();
     

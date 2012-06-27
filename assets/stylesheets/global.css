@@ -197,6 +197,7 @@ html, body {
 }
 #export {
   display: none;
+/*  display: inline-block;*/
   position: absolute;
   z-index: 10;
   bottom: 10px;
