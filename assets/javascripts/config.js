@@ -12,10 +12,11 @@ Resources.Icons = {
     "asurasgates" : {"label" : "Asura gates", "url" : Resources.Paths.icons + "asuraGate.png"},
     "scouts" : {"label" : "Scouts", "url" : Resources.Paths.icons + "scout.png"},
     "jumpingpuzzles" : {"label" : "Jumping puzzles", "url" : Resources.Paths.icons + "puzzle.png"}
-  },
-  "merchants" : {
-    "rangerSkillBooks" : {"label" : "Ranger's skill book vendor", "url" : Resources.Paths.icons + "skillBookRanger.png"}
   }
+  // ,
+  // "merchants" : {
+  //   "rangerSkillBooks" : {"label" : "Ranger's skill book vendor", "url" : Resources.Paths.icons + "skillBookRanger.png"}
+  // }
 }
 
 Areas = [
@@ -131,16 +132,16 @@ Areas = [
  }
 ]
 
-Markers.merchants = {
-  name : "Merchants",
-  markerGroup : [{
-    name : "Rangers skill books vendor",
-    slug : "rangerSkillBooks",
-    markers : [
-    {"lat" : "29.78344945682068", "lng" : "-40.71533203125", "title" : "", "desc" : ""}
-    ]
-  }]
-}
+// Markers.merchants = {
+//   name : "Merchants",
+//   markerGroup : [{
+//     name : "Rangers skill books vendor",
+//     slug : "rangerSkillBooks",
+//     markers : [
+//     {"lat" : "29.78344945682068", "lng" : "-40.71533203125", "title" : "", "desc" : ""}
+//     ]
+//   }]
+// }
 
 Markers.generic = {
   name : "Generic",
