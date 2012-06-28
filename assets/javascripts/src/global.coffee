@@ -7,6 +7,7 @@ class CustomMap
     @iconsPath     = 'assets/images/icons/32x32'
     @maxZoom       = 7
     # HTML element
+    @html             = $('html')
     @lngContainer     = $('#long')
     @latContainer     = $('#lat')
     @devModInput      = $('#dev-mod')
@@ -251,6 +252,9 @@ class CustomMap
     this_ = $(e.currentTarget)
     $(elements).removeClass('active') for elements in @editionsTools when elements isnt e.currentTarget
     this_.toggleClass('active')
+    @html.removeClass('add remove move send')
+    if this_.hasClass('active')
+      @html.addClass(this_.attr('id'))
     
   getStartLat:()->
     params = extractUrlParams()

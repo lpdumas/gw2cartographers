@@ -429,8 +429,28 @@ html, body {
   list-style-type: none;
 }
 .menu-marker ul li {
+  position: relative;
   display: inline-block;
   margin-left: 5px;
+}
+.menu-marker ul li:after {
+  opacity: 0;
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
+}
+html.add .menu-marker ul li:after{
+  content: "";
+  position: absolute;
+  display: block;
+  z-index: 6;
+  bottom: 0;
+  right: 0;
+  height: 13px;
+  width: 13px;
+  opacity: 1;
+  background: url('../images/layout/little-add.png') center center no-repeat;
 }
 .menu-marker ul li img {
   width: 25px;
