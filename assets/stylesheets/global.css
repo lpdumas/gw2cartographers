@@ -435,12 +435,11 @@ html, body {
 }
 .menu-marker ul li:after {
   opacity: 0;
+  -webkit-backface-visibility: hidden;
   -webkit-transition: opacity 150ms linear;
   -moz-transition: opacity 150ms linear;
   -ms-transition: opacity 150ms linear;
   -o-transition: opacity 150ms linear;
-}
-html.add .menu-marker ul li:after{
   content: "";
   position: absolute;
   display: block;
@@ -449,8 +448,15 @@ html.add .menu-marker ul li:after{
   right: 0;
   height: 13px;
   width: 13px;
+  background: url('../images/layout/little-add-remove.png') center center no-repeat;
+}
+html.add .menu-marker ul li:after{
   opacity: 1;
-  background: url('../images/layout/little-add.png') center center no-repeat;
+  background-position: top left;
+}
+html.remove .menu-marker ul li:after{
+  opacity: 1;
+  background-position: bottom left;
 }
 .menu-marker ul li img {
   width: 25px;
@@ -458,6 +464,7 @@ html.add .menu-marker ul li:after{
   cursor: pointer;
   border: 1px solid #fff;
   padding: 1px;
+  -webkit-backface-visibility: hidden;
   -webkit-transition: all 150ms linear;
   -moz-transition: all 150ms linear;
   -ms-transition: all 150ms linear;
