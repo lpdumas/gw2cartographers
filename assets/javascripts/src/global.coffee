@@ -17,6 +17,7 @@ class CustomMap
     @exportBtn        = $('#export')
     @exportWindow     = $('#export-windows')
     @markersOptionsMenu = $('#markers-options')
+    @editionsTools    = $('#edition-tools a')
     
     @defaultLat = 25.760319754713887
     @defaultLng = -35.6396484375
@@ -63,10 +64,10 @@ class CustomMap
     @addMenuIcons()
     
     # Events
-    google.maps.event.addListener(@map, 'mousemove', (e)=>
-      @lngContainer.html e.latLng.lng()
-      @latContainer.html e.latLng.lat()
-    )
+    # google.maps.event.addListener(@map, 'mousemove', (e)=>
+    #   @lngContainer.html e.latLng.lng()
+    #   @latContainer.html e.latLng.lat()
+    # )
     
     # Events
     google.maps.event.addListener(@map, 'click', (e)=>
@@ -116,6 +117,7 @@ class CustomMap
     @addMarkerLink.bind('click', @toggleMarkerList)
     @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
     @exportBtn.bind('click', @handleExport)
+    @editionsTools.bind('click', @handleEdition)
     
     @exportWindow.find('.close').click(()=>
       @exportWindow.hide()
@@ -245,6 +247,11 @@ class CustomMap
     @exportWindow.find('.content').html(jsonString)
     @exportWindow.show();
     
+  handleEdition:(e)=>
+    this_ = $(e.currentTarget)
+    $(elements).removeClass('active') for elements in @editionsTools when elements isnt e.currentTarget
+    this_.toggleClass('active')
+    
   getStartLat:()->
     params = extractUrlParams()
     if params['lat']?
@@ -331,7 +338,7 @@ class CustomMap
           @setMarkersVisibilityByCat(off, markerCat)
           parent.find('.trigger').addClass('off')
             
-      @markersOptionsMenu.prepend(html)
+      @markersOptionsMenu.find('.padding').prepend(html)
       @turnOfMenuIconsFromCat(markerCat) for markerCat of Markers when markerCat isnt @defaultCat
     )
       
