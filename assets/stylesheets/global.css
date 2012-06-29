@@ -76,11 +76,42 @@ html, body {
   position: absolute;
   top: -9999em;
 }
+
+#map-container {
+  position: relative;
+  width:100%;
+  height:100%;
+}
+#map-mask {
+  position: absolute;
+  z-index: 3;
+  display: block;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+html.add #map-mask {
+  -webkit-box-shadow: inset 0px 0px 100px 0px #00A71E;
+  box-shadow: inset 0px 0px 100px 0px #00A71E;
+}
+html.remove #map-mask {
+  -webkit-box-shadow: inset 0px 0px 100px 0px #A70001;
+  box-shadow: inset 0px 0px 100px 0px #A70001;
+}
 #map {
-    width:100%;
-    height:100%;
-    background: #EFEFEF;
-    cursor: move;
+  position: relative;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width:100%;
+  height:100%;
+  background: #EFEFEF;
+  cursor: move;
 }
 #loading {
   position: relative;
@@ -116,93 +147,6 @@ html, body {
     margin-right: 10px;
 }
 
-#dev-box {
-  z-index: 10;
-  display: block;
-  position: absolute;
-  bottom: 10px;
-  left: 70px;
-  width: 75px;
-  background: #fff;
-  color: #000;
-  padding: 5px 10px;
-  text-align: center;
-}
-
-#options-box {
-  position:fixed;
-  z-index: 5;
-  top: 0;
-  right: -40px;
-  bottom: 0;
-  width: 40px;
-  background: #ffffff;
-  -webkit-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
-  -moz-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
-  -ms-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
-  -o-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
-}
-
-#options-box.active {
-  right: 0;
-}
-
-#options-box.red {
-  background: red;
-}
-
-#add-marker,
-#remove-marker {
-  display: block;
-  color: #fff;
-  text-decoration: none;
-  -webkit-transition: color 150ms linear;
-  -moz-transition: color 150ms linear;
-  -ms-transition: color 150ms linear;
-  -o-transition: color 150ms linear;
-  line-height: normal;
-}
-#add-marker:hover,
-#add-marker.active {
-  cursor: pointer;
-  color: #666666;
-}
-#options-box #marker-list {
-  position: absolute;
-  display: block;
-  z-index:5;
-  margin: 0;
-  padding: 10px;
-  list-style:none;
-  width: 160px;
-  height: auto;
-  left: -190px;
-  top: -9999em;
-  opacity: 0;
-  background: rgba(0, 0, 0, 1);
-  -webkit-transition: opacity 150ms linear;
-  -moz-transition: opacity 150ms linear;
-  -ms-transition: opacity 150ms linear;
-  -o-transition: opacity 150ms linear;
-}
-#options-box #marker-list.active {
-  top: 10px;
-  opacity: 1;
-}
-#options-box #marker-list li {
-  float: left;
-}
-#options-box #marker-list li + li {
-  margin-left: 10px;
-}
-#options-box #marker-list li + li span{ position: relative; top: 5px }
-
-#options-box #marker-list li span{
-  display: inline-block;
-  width: 32px;
-  cursor: pointer;
-  text-align: center;
-}
 #export {
   display: none;
 /*  display: inline-block;*/
