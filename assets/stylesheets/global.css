@@ -84,18 +84,22 @@ html, body {
 }
 #map-mask {
   position: absolute;
-  z-index: 3;
+  z-index: 50;
   display: block;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   pointer-events: none;
+  -webkit-transition: all 150ms linear;
+  -moz-transition: all 150ms linear;
+  -ms-transition: all 150ms linear;
+  -o-transition: all 150ms linear;
 }
 
 html.add #map-mask {
-  -webkit-box-shadow: inset 0px 0px 100px 0px #00A71E;
-  box-shadow: inset 0px 0px 100px 0px #00A71E;
+  -webkit-box-shadow: inset 0px 0px 50px 0px #00A71E;
+  box-shadow: inset 0px 0px 50px 0px #00A71E;
 }
 html.remove #map-mask {
   -webkit-box-shadow: inset 0px 0px 100px 0px #A70001;
