@@ -257,14 +257,22 @@ class CustomMap
       else
           @defaultLng
     
-  removeMarker:(id, type, cat)->
-    for markerType, typeKey in @gMarker[cat]["markerGroup"] when markerType.slug is type
+  removeMarkerFromType:(mType, mCat)->
+    for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
+      for marker, markerKey in markerType.markers
+        marker.setMap(null)
+        @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
+          return m == marker
+        )
+  
+  removeMarker:(id, mType, mCat)->
+    for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
       for marker, markerKey in markerType.markers when marker.__gm_id is id
         marker.setMap(null)
-        @gMarker[cat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
-          return m.__gm_id == id
+        @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
+          return m == marker
+          # return m.__gm_id == id
         )
-        console.log @gMarker
         return true
   
   setDraggableMarker:(val)->
@@ -306,6 +314,8 @@ class CustomMap
       html.find(".trigger").bind 'click', (e) =>
         item           = $(e.currentTarget)
         myGroupTrigger = item.closest(".menu-marker").find('.group-toggling')
+        markerType     = item.attr('data-type')
+        markerCat      = item.attr('data-cat')
         
         # Binding different action to the click considering @appState
         # read   -> Toggle on/off marker on map
@@ -315,15 +325,13 @@ class CustomMap
           when "read"
             if @canToggleMarkers
               if item.hasClass('off')
-                @setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'))
+                @setMarkersVisibilityByType(true, markerType, markerCat)
                 item.removeClass('off')
                 myGroupTrigger.removeClass('off')
               else
-                @setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'))
+                @setMarkersVisibilityByType(false, markerType, markerCat)
                 item.addClass('off')
           when "add"
-            type      = item.attr('data-type')
-            cat       = item.attr('data-cat')
             coord     = @map.getCenter()
             newMarkerInfo =
               desc      : ""
@@ -331,7 +339,9 @@ class CustomMap
               lat       : coord.lat()
               lng       : coord.lng()
               draggable : true
-            @addMarker(newMarkerInfo, type, cat)
+            @addMarker(newMarkerInfo, markerType, markerCat)
+          when "remove"
+            @removeMarkerFromType(markerType, markerCat)
       
       html.find('.group-toggling').bind 'click', (e)=>
         this_ = $(e.currentTarget)

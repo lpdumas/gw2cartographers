@@ -69,10 +69,6 @@ html, body {
     font-family: 'Belgrano', serif;
 }
 
-html.add #map {
-  -webkit-box-shadow: inset 0px 0px 50px 0px #00BA0C;
-  box-shadow: inset 0px 0px 50px 0px #00BA0C;
-}
 .padding {
   padding: 0 20px;
 }

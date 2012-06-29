@@ -383,13 +383,39 @@
       }
     };
 
-    CustomMap.prototype.removeMarker = function(id, type, cat) {
-      var marker, markerKey, markerType, typeKey, _i, _j, _len, _len1, _ref, _ref1,
-        _this = this;
-      _ref = this.gMarker[cat]["markerGroup"];
+    CustomMap.prototype.removeMarkerFromType = function(mType, mCat) {
+      var marker, markerKey, markerType, typeKey, _i, _len, _ref, _results;
+      _ref = this.gMarker[mCat]["markerGroup"];
+      _results = [];
       for (typeKey = _i = 0, _len = _ref.length; _i < _len; typeKey = ++_i) {
         markerType = _ref[typeKey];
-        if (markerType.slug === type) {
+        if (markerType.slug === mType) {
+          _results.push((function() {
+            var _j, _len1, _ref1, _results1,
+              _this = this;
+            _ref1 = markerType.markers;
+            _results1 = [];
+            for (markerKey = _j = 0, _len1 = _ref1.length; _j < _len1; markerKey = ++_j) {
+              marker = _ref1[markerKey];
+              marker.setMap(null);
+              _results1.push(this.gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
+                return m === marker;
+              }));
+            }
+            return _results1;
+          }).call(this));
+        }
+      }
+      return _results;
+    };
+
+    CustomMap.prototype.removeMarker = function(id, mType, mCat) {
+      var marker, markerKey, markerType, typeKey, _i, _j, _len, _len1, _ref, _ref1,
+        _this = this;
+      _ref = this.gMarker[mCat]["markerGroup"];
+      for (typeKey = _i = 0, _len = _ref.length; _i < _len; typeKey = ++_i) {
+        markerType = _ref[typeKey];
+        if (markerType.slug === mType) {
           _ref1 = markerType.markers;
           for (markerKey = _j = 0, _len1 = _ref1.length; _j < _len1; markerKey = ++_j) {
             marker = _ref1[markerKey];
@@ -397,10 +423,9 @@
               continue;
             }
             marker.setMap(null);
-            this.gMarker[cat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
-              return m.__gm_id === id;
+            this.gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
+              return m === marker;
             });
-            console.log(this.gMarker);
             return true;
           }
         }
@@ -478,25 +503,25 @@
         template = _.template(e);
         html = $(template(Resources));
         html.find(".trigger").bind('click', function(e) {
-          var cat, coord, item, myGroupTrigger, newMarkerInfo, type;
+          var coord, item, markerCat, markerType, myGroupTrigger, newMarkerInfo;
           item = $(e.currentTarget);
           myGroupTrigger = item.closest(".menu-marker").find('.group-toggling');
+          markerType = item.attr('data-type');
+          markerCat = item.attr('data-cat');
           switch (_this.appState) {
             case "read":
               if (_this.canToggleMarkers) {
                 if (item.hasClass('off')) {
-                  _this.setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'));
+                  _this.setMarkersVisibilityByType(true, markerType, markerCat);
                   item.removeClass('off');
                   return myGroupTrigger.removeClass('off');
                 } else {
-                  _this.setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'));
+                  _this.setMarkersVisibilityByType(false, markerType, markerCat);
                   return item.addClass('off');
                 }
               }
               break;
             case "add":
-              type = item.attr('data-type');
-              cat = item.attr('data-cat');
               coord = _this.map.getCenter();
               newMarkerInfo = {
                 desc: "",
@@ -505,7 +530,9 @@
                 lng: coord.lng(),
                 draggable: true
               };
-              return _this.addMarker(newMarkerInfo, type, cat);
+              return _this.addMarker(newMarkerInfo, markerType, markerCat);
+            case "remove":
+              return _this.removeMarkerFromType(markerType, markerCat);
           }
         });
         html.find('.group-toggling').bind('click', function(e) {
