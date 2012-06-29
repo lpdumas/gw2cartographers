@@ -128,6 +128,7 @@
       this.exportWindow.find('.close').click(function() {
         return _this.exportWindow.hide();
       });
+      console.log(this.gMarker);
     }
 
     CustomMap.prototype.addMarker = function(markerInfo, markersType, markersCat) {
@@ -159,9 +160,6 @@
         marker.infoWindow.open(this.map, marker);
         this.currentOpenedInfoWindow = marker.infoWindow;
       }
-      google.maps.event.addListener(marker, 'dragend', function(e) {
-        return console.log('{"lat" : "' + e.latLng.lat()(+'", "lng" : "' + e.latLng.lng()(+'", "title" : "", "desc" : ""},')));
-      });
       google.maps.event.addListener(marker, 'click', function(e) {
         switch (_this.appState) {
           case "remove":
@@ -386,32 +384,27 @@
     };
 
     CustomMap.prototype.removeMarker = function(id, type, cat) {
-      var marker, markerKey, markerType, typeKey, _i, _len, _ref, _results;
+      var marker, markerKey, markerType, typeKey, _i, _j, _len, _len1, _ref, _ref1,
+        _this = this;
       _ref = this.gMarker[cat]["markerGroup"];
-      _results = [];
       for (typeKey = _i = 0, _len = _ref.length; _i < _len; typeKey = ++_i) {
         markerType = _ref[typeKey];
         if (markerType.slug === type) {
-          _results.push((function() {
-            var _j, _len1, _ref1, _results1,
-              _this = this;
-            _ref1 = markerType.markers;
-            _results1 = [];
-            for (markerKey = _j = 0, _len1 = _ref1.length; _j < _len1; markerKey = ++_j) {
-              marker = _ref1[markerKey];
-              if (!(marker.__gm_id === id)) {
-                continue;
-              }
-              marker.setMap(null);
-              _results1.push(this.gMarker[cat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
-                return m.__gm_id === id;
-              }));
+          _ref1 = markerType.markers;
+          for (markerKey = _j = 0, _len1 = _ref1.length; _j < _len1; markerKey = ++_j) {
+            marker = _ref1[markerKey];
+            if (!(marker.__gm_id === id)) {
+              continue;
             }
-            return _results1;
-          }).call(this));
+            marker.setMap(null);
+            this.gMarker[cat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
+              return m.__gm_id === id;
+            });
+            console.log(this.gMarker);
+            return true;
+          }
         }
       }
-      return _results;
     };
 
     CustomMap.prototype.setDraggableMarker = function(val) {
@@ -494,7 +487,6 @@
                 if (item.hasClass('off')) {
                   _this.setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'));
                   item.removeClass('off');
-                  console.log(myGroupTrigger);
                   return myGroupTrigger.removeClass('off');
                 } else {
                   _this.setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'));

@@ -718,6 +718,11 @@ Markers.generic = {
     {"lat" : "21.30984614108724", "lng" : "36.639404296875", "title" : "Shamans Rookery", "desc" : ""},
     {"lat" : "6.26069737295141", "lng" : "-27.850341796875", "title" : "The Collapsed Observatory", "desc" : "The Collapsed Observatory is a jumping puzzle in the southeast part of Kessex Hills. The entrance is straight south of Cereboth Canyon and the cave eventually leads to Isgarren's View."}
     ]
+  },
+  {
+    name: "Scouts",
+    slug: "scouts",
+    markers: []
   }
   ]
   // "jumpingpuzzles" : [

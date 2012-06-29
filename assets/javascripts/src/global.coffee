@@ -117,6 +117,8 @@ class CustomMap
       @exportWindow.hide()
     )
     
+    console.log @gMarker
+    
   addMarker:(markerInfo, markersType, markersCat)->
     iconsize = 32;
     iconmid = iconsize / 2;
@@ -147,9 +149,9 @@ class CustomMap
         marker.infoWindow.open(@map, marker)
         @currentOpenedInfoWindow = marker.infoWindow
     
-    google.maps.event.addListener(marker, 'dragend', (e)=>
-      console.log '{"lat" : "'+ e.latLng.lat() +'", "lng" : "'+ e.latLng.lng() +'", "title" : "", "desc" : ""},'
-    )
+    # google.maps.event.addListener(marker, 'dragend', (e)=>
+    #   console.log '{"lat" : "'+ e.latLng.lat() +'", "lng" : "'+ e.latLng.lng() +'", "title" : "", "desc" : ""},'
+    # )
     google.maps.event.addListener(marker, 'click', (e)=>
       switch @appState
         when "remove"
@@ -161,7 +163,6 @@ class CustomMap
     )
     
     markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["markerGroup"] when markerType.slug is markersType
-
   setAllMarkers:()->
     for markersCat, markersObjects of Markers
       if not @gMarker[markersCat]?
@@ -263,6 +264,8 @@ class CustomMap
         @gMarker[cat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
           return m.__gm_id == id
         )
+        console.log @gMarker
+        return true
   
   setDraggableMarker:(val)->
     @draggableMarker = val
@@ -314,7 +317,6 @@ class CustomMap
               if item.hasClass('off')
                 @setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'))
                 item.removeClass('off')
-                console.log myGroupTrigger
                 myGroupTrigger.removeClass('off')
               else
                 @setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'))
