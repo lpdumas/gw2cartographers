@@ -6,6 +6,7 @@ class CustomMap
     @blankTilePath = 'tiles/00empty.jpg'
     @iconsPath     = 'assets/images/icons/32x32'
     @maxZoom       = 7
+    @appState      = "read"
     # HTML element
     @html             = $('html')
     @lngContainer     = $('#long')
@@ -93,8 +94,6 @@ class CustomMap
           @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(false)
     )
-
-    @devModInput.bind('click', @handleDevMod)
     
     #marker
     @gMarker = {}
@@ -128,13 +127,14 @@ class CustomMap
     iconsize = 32;
     iconmid = iconsize / 2;
     image = new google.maps.MarkerImage(@getIconURLByType(markersType, markersCat), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
+    isMarkerDraggable = if markerInfo.draggable? then markerInfo.draggable else false
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
       icon: image
       visible: if markersCat is @defaultCat then yes else no
-      draggable: @draggableMarker
-      cursor : if @draggableMarker then "move" else "pointer"
+      draggable: isMarkerDraggable
+      cursor : if isMarkerDraggable then "move" else "pointer"
       title: "#{markerInfo.title}"
     )
     
@@ -199,17 +199,6 @@ class CustomMap
     for markerTypeObject in @gMarker[cat]["markerGroup"]
       marker.setVisible(isVisible) for marker in markerTypeObject.markers
 
-  handleDevMod:(e)=>
-    this_ = $(e.currentTarget)
-    if this_.prop('checked')
-      @setDraggableMarker(true)
-      @optionsBox.addClass('active')
-    else
-      @setDraggableMarker(false)
-      @optionsBox.removeClass('active')
-      @markerList.removeClass('active')
-      @addMarkerLink.removeClass('active')
-
   handleMarkerRemovalTool:(e)=>
     if @removeMarkerLink.hasClass('active')
       @removeMarkerLink.removeClass('active')
@@ -253,7 +242,9 @@ class CustomMap
     $(elements).removeClass('active') for elements in @editionsTools when elements isnt e.currentTarget
     this_.toggleClass('active')
     @html.removeClass('add remove move send')
+    @appState = "read"
     if this_.hasClass('active')
+      @appState = this_.attr('id')
       @html.addClass(this_.attr('id'))
     
   getStartLat:()->
@@ -314,20 +305,37 @@ class CustomMap
       template = _.template(e);
       html = $(template(Resources))
       
-
+      # Binding click on marker icon in markers option list
       html.find(".trigger").bind 'click', (e) =>
-        item = $(e.currentTarget)
-        myGroupTrigger =item.closest(".menu-marker").find('.group-toggling')
+        item           = $(e.currentTarget)
+        myGroupTrigger = item.closest(".menu-marker").find('.group-toggling')
         
-        if @canToggleMarkers
-          if item.hasClass('off')
-            @setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'))
-            item.removeClass('off')
-            console.log myGroupTrigger
-            myGroupTrigger.removeClass('off')
-          else
-            @setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'))
-            item.addClass('off')
+        # Binding different action to the click considering @appState
+        # read   -> Toggle on/off marker on map
+        # add    -> Add a draggable marker on center of map
+        # remove -> Delete all marker from clicked marker type
+        switch @appState
+          when "read"
+            if @canToggleMarkers
+              if item.hasClass('off')
+                @setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'))
+                item.removeClass('off')
+                console.log myGroupTrigger
+                myGroupTrigger.removeClass('off')
+              else
+                @setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'))
+                item.addClass('off')
+          when "add"
+            type      = item.attr('data-type')
+            cat       = item.attr('data-cat')
+            coord     = @map.getCenter()
+            newMarkerInfo =
+              desc      : ""
+              title     : ""
+              lat       : coord.lat()
+              lng       : coord.lng()
+              draggable : true
+            @addMarker(newMarkerInfo, type, cat)
       
       html.find('.group-toggling').bind 'click', (e)=>
         this_ = $(e.currentTarget)
