@@ -161,14 +161,15 @@
         return console.log('{"lat" : "' + e.latLng.lat()(+'", "lng" : "' + e.latLng.lng()(+'", "title" : "", "desc" : ""},')));
       });
       google.maps.event.addListener(marker, 'click', function(e) {
-        if (_this.canRemoveMarker && _this.draggableMarker) {
-          return _this.removeMarker(marker.__gm_id);
-        } else {
-          if (_this.currentOpenedInfoWindow) {
-            _this.currentOpenedInfoWindow.close();
-          }
-          marker.infoWindow.open(_this.map, marker);
-          return _this.currentOpenedInfoWindow = marker.infoWindow;
+        switch (_this.appState) {
+          case "remove":
+            return _this.removeMarker(marker.__gm_id, type, cat);
+          default:
+            if (_this.currentOpenedInfoWindow) {
+              _this.currentOpenedInfoWindow.close();
+            }
+            marker.infoWindow.open(_this.map, marker);
+            return _this.currentOpenedInfoWindow = marker.infoWindow;
         }
       });
       _ref = this.gMarker[markersCat]["markerGroup"];
@@ -383,30 +384,7 @@
     };
 
     CustomMap.prototype.removeMarker = function(id) {
-      var marker, markers, markersId, _ref, _results,
-        _this = this;
-      _ref = this.gMarker;
-      _results = [];
-      for (markersId in _ref) {
-        markers = _ref[markersId];
-        this.gMarker[markersId] = _.reject(markers, function(m) {
-          return m.__gm_id === id;
-        });
-        _results.push((function() {
-          var _i, _len, _results1;
-          _results1 = [];
-          for (_i = 0, _len = markers.length; _i < _len; _i++) {
-            marker = markers[_i];
-            if (marker.__gm_id === id) {
-              _results1.push(marker.setMap(null));
-            } else {
-              _results1.push(void 0);
-            }
-          }
-          return _results1;
-        })());
-      }
-      return _results;
+      return console.log(this.gMarker);
     };
 
     CustomMap.prototype.setDraggableMarker = function(val) {

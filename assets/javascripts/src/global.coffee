@@ -157,12 +157,13 @@ class CustomMap
       console.log '{"lat" : "'+ e.latLng.lat() +'", "lng" : "'+ e.latLng.lng() +'", "title" : "", "desc" : ""},'
     )
     google.maps.event.addListener(marker, 'click', (e)=>
-      if @canRemoveMarker && @draggableMarker
-        @removeMarker(marker.__gm_id)
-      else
-        if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-        marker.infoWindow.open(@map, marker)
-        @currentOpenedInfoWindow = marker.infoWindow
+      switch @appState
+        when "remove"
+          @removeMarker(marker.__gm_id, type, cat)
+        else
+          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+          marker.infoWindow.open(@map, marker)
+          @currentOpenedInfoWindow = marker.infoWindow
     )
     
     markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["markerGroup"] when markerType.slug is markersType
@@ -262,13 +263,14 @@ class CustomMap
           @defaultLng
     
   removeMarker:(id)->
-    for markersId, markers of @gMarker
-      @gMarker[markersId] = _.reject(markers, (m)=>
-        return m.__gm_id == id
-      )
-      for marker in markers
-        if marker.__gm_id is id
-          marker.setMap(null)
+    console.log @gMarker
+    # for markersId, markers of @gMarker
+    #   @gMarker[markersId] = _.reject(markers, (m)=>
+    #     return m.__gm_id == id
+    #   )
+    #   for marker in markers
+    #     if marker.__gm_id is id
+    #       marker.setMap(null)
   
   setDraggableMarker:(val)->
     @draggableMarker = val
