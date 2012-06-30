@@ -1,3 +1,65 @@
+html = document.documentElement
+attToCheck = ["pointerEvents", "opacity"]
+for att in attToCheck 
+  if html.style["pointerEvents"]?
+    $(html).addClass(att) 
+  else
+    $(html).addClass("no-#{att}") 
+###
+# class ModalBox {{{
+###
+class Modalbox
+  constructor: () ->
+    @modal   = $('<div class="modal"><div class="padding"></div></div>')
+    @overlay = $('<span class="overlay"></span>') 
+    $('body').append(@modal)
+    $('body').append(@overlay)
+    
+    @overlay.bind('click', @close)
+    
+  open: ()->
+    @modal.addClass('visible')
+    @overlay.addClass('visible')
+    
+  close: () =>
+    @modal.addClass('fadding')
+    @overlay.addClass('fadding')
+    t = setTimeout(()=>
+      @modal.removeClass('visible fadding')
+      @overlay.removeClass('visible fadding')
+    , 150)
+    
+###
+#}}} 
+###
+
+###
+# class Confirmbox {{{
+###
+class Confirmbox extends Modalbox
+  constructor: (template) ->
+    super
+    @modal.addClass('confirm-box')
+    @template = template
+  
+  initConfirmation: (contentString, callback)->
+    confirmMessage = { confirmMessage : contentString}
+    confirmBoxContent = $(@template(confirmMessage))
+    acceptBtn = confirmBoxContent.find('#accept')
+    deniedBtn = confirmBoxContent.find('#denied')
+    @modal.find('.padding').html(confirmBoxContent)
+    
+    acceptBtn.bind('click', ()=>
+      callback()
+      @close()
+    )
+    deniedBtn.bind('click', @close)
+    
+    @open();
+###
+#}}} 
+###
+
 ###
 # classCustomMap {{{
 ###
@@ -6,7 +68,9 @@ class CustomMap
     @blankTilePath = 'tiles/00empty.jpg'
     @iconsPath     = 'assets/images/icons/32x32'
     @maxZoom       = 7
+    @appState      = "read"
     # HTML element
+    @html             = $('html')
     @lngContainer     = $('#long')
     @latContainer     = $('#lat')
     @devModInput      = $('#dev-mod')
@@ -17,11 +81,16 @@ class CustomMap
     @exportBtn        = $('#export')
     @exportWindow     = $('#export-windows')
     @markersOptionsMenu = $('#markers-options')
-    
+    @editionsTools    = $('#edition-tools a')
+
     @defaultLat = 25.760319754713887
     @defaultLng = -35.6396484375
     @defaultCat = "generic"
     
+    $.get('assets/javascripts/templates/confirmBox._', (e)=>
+      template = _.template(e);
+      @confirmBox = new Confirmbox(template)
+    )
     @areaSummaryBoxes = []
     
     @canRemoveMarker  = false
@@ -63,12 +132,6 @@ class CustomMap
     @addMenuIcons()
     
     # Events
-    google.maps.event.addListener(@map, 'mousemove', (e)=>
-      @lngContainer.html e.latLng.lng()
-      @latContainer.html e.latLng.lat()
-    )
-    
-    # Events
     google.maps.event.addListener(@map, 'click', (e)=>
       console.log '{"lat" : "'+e.latLng.lat()+'", "lng" : "'+e.latLng.lng()+'", "title" : "", "desc" : ""},'
     )
@@ -91,8 +154,6 @@ class CustomMap
           @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(false)
     )
-
-    @devModInput.bind('click', @handleDevMod)
     
     #marker
     @gMarker = {}
@@ -116,6 +177,7 @@ class CustomMap
     @addMarkerLink.bind('click', @toggleMarkerList)
     @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
     @exportBtn.bind('click', @handleExport)
+    @editionsTools.bind('click', @handleEdition)
     
     @exportWindow.find('.close').click(()=>
       @exportWindow.hide()
@@ -125,13 +187,14 @@ class CustomMap
     iconsize = 32;
     iconmid = iconsize / 2;
     image = new google.maps.MarkerImage(@getIconURLByType(markersType, markersCat), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
+    isMarkerDraggable = if markerInfo.draggable? then markerInfo.draggable else false
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
       icon: image
       visible: if markersCat is @defaultCat then yes else no
-      draggable: @draggableMarker
-      cursor : if @draggableMarker then "move" else "pointer"
+      draggable: isMarkerDraggable
+      cursor : if isMarkerDraggable then "move" else "pointer"
       title: "#{markerInfo.title}"
     )
     
@@ -145,62 +208,63 @@ class CustomMap
     marker["desc"]  = "#{markerInfo.desc}"
     marker["infoWindow"] = infoWindow
     
-    test = @getMarkerByCoordinates(@getStartLat(), @getStartLng())
-    if (test == markerInfo)
+    markerThatMatchUrl = @getMarkerByCoordinates(@getStartLat(), @getStartLng())
+    if (markerThatMatchUrl == markerInfo)
         marker.infoWindow.open(@map, marker)
         @currentOpenedInfoWindow = marker.infoWindow
     
-    google.maps.event.addListener(marker, 'dragend', (e)=>
-      console.log '{"lat" : "'+ e.latLng.lat() +'", "lng" : "'+ e.latLng.lng() +'", "title" : "", "desc" : ""},'
-    )
+    # google.maps.event.addListener(marker, 'dragend', (e)=>
+    #   console.log '{"lat" : "'+ e.latLng.lat() +'", "lng" : "'+ e.latLng.lng() +'", "title" : "", "desc" : ""},'
+    # )
     google.maps.event.addListener(marker, 'click', (e)=>
-      if @canRemoveMarker && @draggableMarker
-        @removeMarker(marker.__gm_id)
-      else
-        if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-        marker.infoWindow.open(@map, marker)
-        @currentOpenedInfoWindow = marker.infoWindow
+      switch @appState
+        when "remove"
+          @removeMarker(marker.__gm_id, markersType, markersCat)
+        when "move"
+          if marker.getDraggable()
+            marker.setDraggable(false)
+            marker.setCursor("pointer")
+          else
+            marker.setDraggable(true)
+            marker.setCursor("move")
+        else
+          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+          marker.infoWindow.open(@map, marker)
+          @currentOpenedInfoWindow = marker.infoWindow
     )
-
-    if not @gMarker[markersCat]?
-      @gMarker[markersCat] = {}
-      
-    if not @gMarker[markersCat][markersType]?
-      @gMarker[markersCat][markersType] = []
     
-    @gMarker[markersCat][markersType].push(marker)
-
+    markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["markerGroup"] when markerType.slug is markersType
   setAllMarkers:()->
     for markersCat, markersObjects of Markers
-      for markersType, markersArray of markersObjects
-        @addMarker(marker, markersType, markersCat) for marker in markersArray
+      if not @gMarker[markersCat]?
+        @gMarker[markersCat] = {}
+        @gMarker[markersCat]["name"] = markersObjects.name
+        @gMarker[markersCat]["markerGroup"] = []
+        
+      for markerTypeObject, key in markersObjects.markerGroup
+        newmarkerTypeObject = {}
+        newmarkerTypeObject["name"] = markerTypeObject.name
+        newmarkerTypeObject["slug"] = markerTypeObject.slug
+        newmarkerTypeObject["markers"] = []
+        @gMarker[markersCat]["markerGroup"].push(newmarkerTypeObject)
+        
+        @addMarker(marker, markerTypeObject.slug, markersCat) for marker in markerTypeObject.markers
     
   getIconURLByType:(type, markersCat)->
     return Resources.Icons[markersCat][icon].url for icon of Resources.Icons[markersCat] when icon is type
 
   setAllMarkersVisibility:(isVisible)->
-    for cat, markersObject of Markers
-      for type, marker of markersObject
-        if not $("[data-type='#{type}']").hasClass('off')
-          @setMarkersVisibilityByType(isVisible, type, cat) 
+    for cat, markersObjects of Markers
+      @setMarkersVisibilityByType(isVisible, markerTypeObject.slug, cat) for markerTypeObject in markersObjects.markerGroup when not $("[data-type='#{markerTypeObject.slug}']").hasClass('off')
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
-    marker.setVisible(isVisible) for marker in @gMarker[cat][type]
+    for markerTypeObject in @gMarker[cat]["markerGroup"] when markerTypeObject.slug is type
+      marker.setVisible(isVisible) for marker in markerTypeObject.markers
+
   
   setMarkersVisibilityByCat:(isVisible, cat)->
-    for type, markers of @gMarker[cat]
-      marker.setVisible(isVisible) for marker in markers
-
-  handleDevMod:(e)=>
-    this_ = $(e.currentTarget)
-    if this_.prop('checked')
-      @setDraggableMarker(true)
-      @optionsBox.addClass('active')
-    else
-      @setDraggableMarker(false)
-      @optionsBox.removeClass('active')
-      @markerList.removeClass('active')
-      @addMarkerLink.removeClass('active')
+    for markerTypeObject in @gMarker[cat]["markerGroup"]
+      marker.setVisible(isVisible) for marker in markerTypeObject.markers
 
   handleMarkerRemovalTool:(e)=>
     if @removeMarkerLink.hasClass('active')
@@ -215,26 +279,44 @@ class CustomMap
       @addMarkerLink.removeClass('active')
     
   handleExport:(e)=>
-    newMarkerObject = {}
-    for markersCat, markersObject of @gMarker
-      if not newMarkerObject[markersCat]?
-        newMarkerObject[markersCat] = {}
-      for markerType, markers of markersObject
+    exportMarkerObject = {}
+    for markersCat, markersObjects of @gMarker
+      if not exportMarkerObject[markersCat]?
+        exportMarkerObject[markersCat] = {}
+        exportMarkerObject[markersCat]["name"] = markersObjects.name
+        exportMarkerObject[markersCat]["markerGroup"] = []
         
-        if not newMarkerObject[markersCat][markerType]?
-          newMarkerObject[markersCat][markerType] = []
-        
-        for marker in markers
+      for markerTypeObject, key in markersObjects.markerGroup
+        newmarkerTypeObject = {}
+        newmarkerTypeObject["name"] = markerTypeObject.name
+        newmarkerTypeObject["slug"] = markerTypeObject.slug
+        newmarkerTypeObject["markers"] = []
+        exportMarkerObject[markersCat]["markerGroup"].push(newmarkerTypeObject)
+        for marker in markerTypeObject.markers
           nm = 
             "lng" : marker.getPosition().lng()
             "lat" : marker.getPosition().lat()
             "title" : marker.title
             "desc"  : marker.desc
-          newMarkerObject[markersCat][markerType].push(nm)
-    
-    jsonString = JSON.stringify(newMarkerObject)
+          exportMarkerObject[markersCat]["markerGroup"][key]["markers"].push(nm)
+
+    jsonString = JSON.stringify(exportMarkerObject)
     @exportWindow.find('.content').html(jsonString)
     @exportWindow.show();
+    
+  handleEdition:(e)=>
+    this_ = $(e.currentTarget)
+    $(elements).removeClass('active') for elements in @editionsTools when elements isnt e.currentTarget
+    this_.toggleClass('active')
+    @html.removeClass('add remove move send')
+
+    @appState = "read"
+    if this_.hasClass('active')
+      @appState = this_.attr('id')
+      @html.addClass(this_.attr('id'))
+    
+    if @appState is "read"
+      @setDraggableMarker()
     
   getStartLat:()->
     params = extractUrlParams()
@@ -250,34 +332,37 @@ class CustomMap
       else
           @defaultLng
     
-  removeMarker:(id)->
-    for markersId, markers of @gMarker
-      @gMarker[markersId] = _.reject(markers, (m)=>
-        return m.__gm_id == id
-      )
-      for marker in markers
-        if marker.__gm_id is id
+  removeMarkerFromType:(mType, mCat)->
+    confirmMessage = "Delete all «#{mType}» markers on the map?"
+    @confirmBox.initConfirmation(confirmMessage, ()=>
+      for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
+      
+        console.log markerType.markers
+        for marker, markerKey in markerType.markers
           marker.setMap(null)
+          @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
+            return m == marker
+          )
+    )
+  
+  removeMarker:(id, mType, mCat)->
+    for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
+      for marker, markerKey in markerType.markers when marker.__gm_id is id
+        marker.setMap(null)
+        @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
+          return m == marker
+          # return m.__gm_id == id
+        )
+        return true
   
   setDraggableMarker:(val)->
-    @draggableMarker = val
-    for markersId, markers of @gMarker
-      for marker in markers
-        marker.setDraggable(val)
-        if val
-          marker.setCursor('move')
-        else
-          marker.setCursor('pointer')
-
-  hideAllMarker:()->
-    for markersId, markers of @gMarker
-      for marker in markers
-        marker.setVisible(false)
-    
-  showAllMarker:()->
-    for markersId, markers of @gMarker
-      for marker in markers
-        marker.setVisible(true)
+    unDrag = (marker)->
+      marker.setDraggable(false)
+      marker.setCursor('pointer')
+      
+    for type, markersObjects of @gMarker
+      for markerTypeObject, key in markersObjects.markerGroup
+        unDrag(marker) for marker in markerTypeObject.markers
         
   toggleMarkerList: (e)=>
     this_ = $(e.currentTarget)
@@ -289,11 +374,9 @@ class CustomMap
       @canRemoveMarker = false
 
   getMarkerByCoordinates:(lat, lng)->
-    for type, markerType of Markers
-        for marker in markerType
-            if(lat is marker.lat and lng is marker.lng)
-                return marker
-    
+    for type, markersObjects of Markers
+      for markerTypeObject, key in markersObjects.markerGroup
+        return marker for marker in markerTypeObject.markers when marker.lat is lat and marker.lng is lng
     return false
   
   turnOfMenuIconsFromCat:(markerCat)->
@@ -306,20 +389,38 @@ class CustomMap
       template = _.template(e);
       html = $(template(Resources))
       
-
+      # Binding click on marker icon in markers option list
       html.find(".trigger").bind 'click', (e) =>
-        item = $(e.currentTarget)
-        myGroupTrigger =item.closest(".menu-marker").find('.group-toggling')
+        item           = $(e.currentTarget)
+        myGroupTrigger = item.closest(".menu-marker").find('.group-toggling')
+        markerType     = item.attr('data-type')
+        markerCat      = item.attr('data-cat')
         
-        if @canToggleMarkers
-          if item.hasClass('off')
-            @setMarkersVisibilityByType(true, item.attr('data-type'), item.attr('data-cat'))
-            item.removeClass('off')
-            console.log myGroupTrigger
-            myGroupTrigger.removeClass('off')
-          else
-            @setMarkersVisibilityByType(false, item.attr('data-type'), item.attr('data-cat'))
-            item.addClass('off')
+        # Binding different action to the click considering @appState
+        # read   -> Toggle on/off marker on map
+        # add    -> Add a draggable marker on center of map
+        # remove -> Delete all marker from clicked marker type
+        switch @appState
+          when "read", "move"
+            if @canToggleMarkers
+              if item.hasClass('off')
+                @setMarkersVisibilityByType(true, markerType, markerCat)
+                item.removeClass('off')
+                myGroupTrigger.removeClass('off')
+              else
+                @setMarkersVisibilityByType(false, markerType, markerCat)
+                item.addClass('off')
+          when "add"
+            coord     = @map.getCenter()
+            newMarkerInfo =
+              desc      : ""
+              title     : ""
+              lat       : coord.lat()
+              lng       : coord.lng()
+              draggable : true
+            @addMarker(newMarkerInfo, markerType, markerCat)
+          when "remove"
+            @removeMarkerFromType(markerType, markerCat)
       
       html.find('.group-toggling').bind 'click', (e)=>
         this_ = $(e.currentTarget)
@@ -334,7 +435,7 @@ class CustomMap
           @setMarkersVisibilityByCat(off, markerCat)
           parent.find('.trigger').addClass('off')
             
-      @markersOptionsMenu.prepend(html)
+      @markersOptionsMenu.find('.padding').prepend(html)
       @turnOfMenuIconsFromCat(markerCat) for markerCat of Markers when markerCat isnt @defaultCat
     )
       

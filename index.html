@@ -5,8 +5,8 @@
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <title>Guild Wars 2 Map</title>
-  <meta name="description" content="A simple guildwars 2 map">
+  <title>Guild Wars 2 interactive Map - Guild Wars 2 cartographers</title>
+  <meta name="description" content="A guildwars 2 interactive map">
 
   <meta name="viewport" content="width=device-width">
 
@@ -23,33 +23,23 @@
   </script>
 </head>
 <body>
-    <a id="fork" href="https://github.com/lpdumas/gw2cartographers"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 10;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
-    
-    <span style="position: absolute; bottom: 5px; left: 100px; border: 0; z-index: 10; color: #fff;"><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#103;&#119;&#50;&#99;&#97;&#114;&#116;&#111;&#103;&#114;&#97;&#112;&#104;&#101;&#114;&#115;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">©gw2cartographers</a> v0.2 alpha</span>
-    <div id="dev-box">
-        <label>
-            <span class="label">Dev mode</span>
-            <input type="checkbox" name="dev-mod" id="dev-mod">
-        </label>
-    </div>
-    
+    <div id="map-mask"></div>
+
     <div id="markers-options" class="group">
         <span id="options-toggle"><strong>Markers options</strong></span>
-        <span class="decorations"></span>
-    </div>
-    <div id="options-box">
-        <div class="subnavGroup group">
-            <a href="javascript:" id="add-marker"><img src="assets/images/layout/add.png"  alt="Add" /></a>
-            <ul id="marker-list">
-                <li><span data-type="waypoints"><img src="assets/images/icons/32x32/waypoints.png"  alt="Waypoint" /></span></li>
-                <li><span data-type="poi"><img src="assets/images/icons/32x32/poi.png"  alt="Point of interest" /></span></li>
-                <li><span data-type="hearts"><img src="assets/images/icons/32x32/hearts.png"  alt="Heart" /></span></li>
-                <li><span data-type="skillpoints"><img src="assets/images/icons/32x32/skillpoints.png"  alt="Skill point" /></span></li>
+        <div class="padding">
+            <ul id="edition-tools">
+                <li><a href="javascript:" id="add" class="button" title="Add marker"></a></li>
+                <li><a href="javascript:" id="remove" class="button" title="Remove marker"/></a></li>
+                <li><a href="javascript:" id="move" class="button" title="Move markers"/></a></li>
             </ul>
         </div>
-            <a href="javascript:" id="remove-marker"><img src="assets/images/layout/remove.png"  alt="Remove" /></a>
+        <span class="decorations"></span>
     </div>
-    <div id="map"><img id="loading" src="assets/images/loading.gif"  alt="Loading ..." /></div>
+
+    <div id="map-container">
+        <div id="map"><img id="loading" src="assets/images/loading.gif"  alt="Loading ..." /></div>
+    </div>
     <div id="coord"><span id="lat"></span><span id="long"></span></div>
     
     
@@ -59,6 +49,8 @@
         <textarea name="export-content" class="content">
         </textarea>
     </div>
+    
+    <span style="position: absolute; bottom: 5px; left: 100px; border: 0; z-index: 10; color: #fff;"><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#103;&#119;&#50;&#99;&#97;&#114;&#116;&#111;&#103;&#114;&#97;&#112;&#104;&#101;&#114;&#115;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">gw2cartographers@gmail.com</a> | v0.5 alpha | © 2011 ArenaNet, Inc. <a target="blank_" href="http://www.guildwars2.com/en/media/asset-kit/terms-of-use.html">Term of use</a></span>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="assets/javascripts/libs/jquery-latest.js"><\/script>')</script>
