@@ -76,6 +76,8 @@ html, body {
   position: absolute;
   top: -9999em;
 }
+.left { float: left}
+.right { float: right}
 
 #map-container {
   position: relative;
@@ -273,10 +275,8 @@ html.remove #map-mask {
 #markers-options #edition-tools li + li {
   margin-top: 3px;
 }
-#markers-options #edition-tools li a{
-  display: block;
-  width: 32px;
-  height: 32px;
+
+.button {
   -webkit-backface-visibility: hidden;
   -webkit-transform: scale(0.8);
   -moz-transform: scale(0.8);
@@ -290,6 +290,25 @@ html.remove #map-mask {
   -moz-transition-duration: 150ms;
   -ms-transition-duration: 150ms;
   -o-transition-duration: 150ms;
+}
+
+.button:hover{
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+}
+.button.active {
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  opacity: 0.6;
+}
+#markers-options #edition-tools li a{
+  display: block;
+  width: 32px;
+  height: 32px;
   background: url('../images/layout/edit-options.png') 0 0 no-repeat;
 }
 #markers-options #edition-tools li a#add {
@@ -312,20 +331,6 @@ html.remove #map-mask {
 #markers-options #edition-tools li #send:hover,
 #markers-options #edition-tools li #send.active {
   background-position: 0px -32px;
-}
-
-#markers-options #edition-tools li a:hover{
-  -webkit-transform: scale(1);
-  -moz-transform: scale(1);
-  -ms-transform: scale(1);
-  -o-transform: scale(1);
-}
-#markers-options #edition-tools li a.active {
-  -webkit-transform: scale(1);
-  -moz-transform: scale(1);
-  -ms-transform: scale(1);
-  -o-transform: scale(1);
-  opacity: 0.6;
 }
 
 .menu-marker {
@@ -487,3 +492,98 @@ div.area-summary-overlay ul.area-summary-list li .area-summary-icons {
 }
 
 p.marker-permalink { text-align: right; }
+
+.confirm-box {
+  position: absolute;
+  display: block;
+  z-index: 10;
+  font-size: 12px;
+  font-size: 1.2rem;
+  width: 350px;
+  top: -9999em;
+  opacity: 0;
+  left: 50%;
+  margin-left: -175px;
+  background: #fff;
+  border-radius: 15px;
+  border: 10px solid rgba(0, 0, 0, 0.7);
+  -webkit-box-shadow: 0px 0px 50px 0px #ffffff;
+  box-shadow: 0px 0px 50px 0px #ffffff;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
+}
+
+
+.confirm-box.visible {
+  top: 20%;
+  opacity: 1;
+}
+
+.confirm-box.fadding {
+  opacity: 0;
+}
+.overlay {
+  position: fixed;
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 9;
+  top: -9999em;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
+}
+
+.overlay.visible {
+  opacity: 1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.overlay.fadding {
+  opacity: 0;
+}
+
+.confirm-box .padding {
+  padding: 10px;
+}
+.confirm-box p.confirm-message {
+  margin: 0 0 12px 0;
+}
+.confirm-box img {
+/*  margin-top: 20px;*/
+}
+.confirm-box .right {
+  position: relative;
+  width: 233px;
+  display: block;
+}
+.confirm-box .right a {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('../images/layout/yes-no.png') top left no-repeat;
+}
+.confirm-box .right a#accept:hover {
+  background-position: left bottom;
+}
+.confirm-box .right a#denied {
+  margin-left: 40px;
+  background-position: right top;
+}
+.confirm-box .right a#denied:hover {
+  background-position: right bottom;
+  
+}
+.confirm-box h1 { 
+  margin-top: 0
+}

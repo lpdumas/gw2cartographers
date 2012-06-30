@@ -1,4 +1,59 @@
 ###
+# class ModalBox {{{
+###
+class Modalbox
+  constructor: () ->
+    @modal   = $('<div class="modal"><div class="padding"></div></div>')
+    @overlay = $('<span class="overlay"></span>') 
+    $('body').append(@modal)
+    $('body').append(@overlay)
+    
+    @overlay.bind('click', @close)
+    
+  open: ()->
+    @modal.addClass('visible')
+    @overlay.addClass('visible')
+    
+  close: () =>
+    @modal.addClass('fadding')
+    @overlay.addClass('fadding')
+    t = setTimeout(()=>
+      @modal.removeClass('visible fadding')
+      @overlay.removeClass('visible fadding')
+    , 150)
+    
+###
+#}}} 
+###
+
+###
+# class Confirmbox {{{
+###
+class Confirmbox extends Modalbox
+  constructor: (template) ->
+    super
+    @modal.addClass('confirm-box')
+    @template = template
+  
+  initConfirmation: (contentString, callback)->
+    confirmMessage = { confirmMessage : contentString}
+    confirmBoxContent = $(@template(confirmMessage))
+    acceptBtn = confirmBoxContent.find('#accept')
+    deniedBtn = confirmBoxContent.find('#denied')
+    @modal.find('.padding').html(confirmBoxContent)
+    
+    acceptBtn.bind('click', ()=>
+      callback()
+      @close()
+    )
+    deniedBtn.bind('click', @close)
+    
+    @open();
+###
+#}}} 
+###
+
+###
 # classCustomMap {{{
 ###
 class CustomMap
@@ -20,11 +75,15 @@ class CustomMap
     @exportWindow     = $('#export-windows')
     @markersOptionsMenu = $('#markers-options')
     @editionsTools    = $('#edition-tools a')
-    
+
     @defaultLat = 25.760319754713887
     @defaultLng = -35.6396484375
     @defaultCat = "generic"
     
+    $.get('assets/javascripts/templates/confirmBox._', (e)=>
+      template = _.template(e);
+      @confirmBox = new Confirmbox(template)
+    )
     @areaSummaryBoxes = []
     
     @canRemoveMarker  = false
@@ -116,8 +175,6 @@ class CustomMap
     @exportWindow.find('.close').click(()=>
       @exportWindow.hide()
     )
-    
-    console.log @gMarker
     
   addMarker:(markerInfo, markersType, markersCat)->
     iconsize = 32;
@@ -258,12 +315,17 @@ class CustomMap
           @defaultLng
     
   removeMarkerFromType:(mType, mCat)->
-    for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
-      for marker, markerKey in markerType.markers
-        marker.setMap(null)
-        @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
-          return m == marker
-        )
+    confirmMessage = "Delete all «#{mType}» markers on the map?"
+    @confirmBox.initConfirmation(confirmMessage, ()=>
+      for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
+      
+        console.log markerType.markers
+        for marker, markerKey in markerType.markers
+          marker.setMap(null)
+          @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
+            return m == marker
+          )
+    )
   
   removeMarker:(id, mType, mCat)->
     for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
