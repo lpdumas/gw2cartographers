@@ -99,13 +99,22 @@ html, body {
   -o-transition: all 150ms linear;
 }
 
+html.no-pointerEvents #map-mask {
+  display: none;
+}
+
 html.add #map-mask {
   -webkit-box-shadow: inset 0px 0px 50px 0px #00A71E;
   box-shadow: inset 0px 0px 50px 0px #00A71E;
 }
 html.remove #map-mask {
-  -webkit-box-shadow: inset 0px 0px 100px 0px #A70001;
-  box-shadow: inset 0px 0px 100px 0px #A70001;
+  -webkit-box-shadow: inset 0px 0px 50px 0px #A70001;
+  box-shadow: inset 0px 0px 50px 0px #A70001;
+}
+
+html.move #map-mask {
+  -webkit-box-shadow: inset 0px 0px 50px 0px #f25b00;
+  box-shadow: inset 0px 0px 50px 0px #f25b00;
 }
 #map {
   position: relative;
@@ -317,8 +326,8 @@ html.remove #map-mask {
 #markers-options #edition-tools li a#remove {
   background-position: -64px 0px;
 }
-#markers-options #edition-tools li a#send {
-  background-position: 0px 0px;
+#markers-options #edition-tools li a#move {
+  background-position: -96px 0px;
 }
 #markers-options #edition-tools li #add:hover,
 #markers-options #edition-tools li #add.active {
@@ -328,9 +337,9 @@ html.remove #map-mask {
 #markers-options #edition-tools li #remove.active {
   background-position: -64px -32px;
 }
-#markers-options #edition-tools li #send:hover,
-#markers-options #edition-tools li #send.active {
-  background-position: 0px -32px;
+#markers-options #edition-tools li #move:hover,
+#markers-options #edition-tools li #move.active {
+  background-position: -96px -32px;
 }
 
 .menu-marker {

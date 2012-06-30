@@ -1,3 +1,10 @@
+html = document.documentElement
+attToCheck = ["pointerEvents", "opacity"]
+for att in attToCheck 
+  if html.style["pointerEvents"]?
+    $(html).addClass(att) 
+  else
+    $(html).addClass("no-#{att}") 
 ###
 # class ModalBox {{{
 ###
@@ -213,6 +220,13 @@ class CustomMap
       switch @appState
         when "remove"
           @removeMarker(marker.__gm_id, markersType, markersCat)
+        when "move"
+          if marker.getDraggable()
+            marker.setDraggable(false)
+            marker.setCursor("pointer")
+          else
+            marker.setDraggable(true)
+            marker.setCursor("move")
         else
           if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
           marker.infoWindow.open(@map, marker)
@@ -295,10 +309,14 @@ class CustomMap
     $(elements).removeClass('active') for elements in @editionsTools when elements isnt e.currentTarget
     this_.toggleClass('active')
     @html.removeClass('add remove move send')
+
     @appState = "read"
     if this_.hasClass('active')
       @appState = this_.attr('id')
       @html.addClass(this_.attr('id'))
+    
+    if @appState is "read"
+      @setDraggableMarker()
     
   getStartLat:()->
     params = extractUrlParams()
@@ -338,14 +356,13 @@ class CustomMap
         return true
   
   setDraggableMarker:(val)->
-    @draggableMarker = val
-    for markersId, markers of @gMarker
-      for marker in markers
-        marker.setDraggable(val)
-        if val
-          marker.setCursor('move')
-        else
-          marker.setCursor('pointer')
+    unDrag = (marker)->
+      marker.setDraggable(false)
+      marker.setCursor('pointer')
+      
+    for type, markersObjects of @gMarker
+      for markerTypeObject, key in markersObjects.markerGroup
+        unDrag(marker) for marker in markerTypeObject.markers
         
   toggleMarkerList: (e)=>
     this_ = $(e.currentTarget)
@@ -384,7 +401,7 @@ class CustomMap
         # add    -> Add a draggable marker on center of map
         # remove -> Delete all marker from clicked marker type
         switch @appState
-          when "read"
+          when "read", "move"
             if @canToggleMarkers
               if item.hasClass('off')
                 @setMarkersVisibilityByType(true, markerType, markerCat)
