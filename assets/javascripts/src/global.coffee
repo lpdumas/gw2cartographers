@@ -207,9 +207,8 @@ class CustomMap
 
     marker["title"] = "#{markerInfo.title}"
     marker["desc"]  = "#{markerInfo.desc}"
-
     templateInfo = 
-      id : marker._gm_id
+      id : marker.__gm_id
       title : markerInfo.title
       desc  : markerInfo.desc
       wikiLink  : markerInfo.wikiLink
@@ -222,7 +221,10 @@ class CustomMap
       maxWidth : 200
     )
     
+    test = new CustomInfoWindow(marker, editInfoWindowContent)
+    
     marker["infoWindow"] = infoWindow
+    marker["test"] = test
     
     markerThatMatchUrl = @getMarkerByCoordinates(@getStartLat(), @getStartLng())
     if (markerThatMatchUrl == markerInfo)
@@ -244,10 +246,12 @@ class CustomMap
             marker.setDraggable(true)
             marker.setCursor("move")
         else
-          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-          marker.infoWindow.open(@map, marker)
+          console.log marker.test
+          marker.test.setVisible(true)
+          # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+          # marker.infoWindow.open(@map, marker)
           # marker.infoWindow.show()
-          @currentOpenedInfoWindow = marker.infoWindow
+          # @currentOpenedInfoWindow = marker.infoWindow
     )
     
     markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["markerGroup"] when markerType.slug is markersType
@@ -523,6 +527,52 @@ class AreaSummary
 ###
 # }}}
 ###                
+
+###
+# class AreaSummary {{{
+###
+class CustomInfoWindow
+  constructor: (marker, content) ->
+    @content = content
+    @marker  = marker
+    @wrap = $('<div class="customInfoWindow"><div class="padding"></div></div>')
+    @setMap(marker.map)
+
+  CustomInfoWindow:: = new google.maps.OverlayView()
+  
+  
+  onAdd:()->
+      @wrap.find('.padding').append(@content)
+      @wrap.css(
+        position: "absolute"
+      )
+      panes = @getPanes()
+      panes.overlayImage.appendChild(@wrap[0])
+      @setVisible(false)
+  
+  draw:()->
+    overlayProjection = @getProjection()
+    pos = overlayProjection.fromLatLngToDivPixel(@marker.position);
+    @wrap.css(
+      left: pos.x
+      top: pos.y
+    )
+    # div.style.left = sw.x + ((ne.x - sw.x) - @width_) / 2 + 'px';
+    # div.style.top = ne.y + ((sw.y - ne.y) - @height_) / 2 + 'px';
+  
+  setVisible:(isVisible)->
+    if @wrap
+        if isVisible is true
+            @wrap.css(
+              visibility : "visible"
+            )
+        else
+            @wrap.css(
+              visibility : "hidden"
+            )
+###
+# }}}
+###
 
 extractUrlParams = ()->
     parameters = location.search.substring(1).split('&')
