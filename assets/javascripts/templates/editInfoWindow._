@@ -1,0 +1,15 @@
+<form action="javacript:" id="edit-form-<%= id %>">
+    <label>
+        <span class="label">Title</span>
+        <input type="text" name="marker-title" value="<%= title %>" >
+    </label>
+    <label>
+        <span class="label">Description</span>
+        <textarea name="marker-description" rows="8" cols="40"><%= desc %></textarea>
+    </label>
+    <label>
+        <span class="label">Wiki link</span>
+        <input type="text" name="marker-wiki" value="<%= wikiLink %>" >
+    </label>
+    <button type='submit'>Envoyer</button>
+</form>

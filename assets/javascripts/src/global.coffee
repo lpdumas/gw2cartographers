@@ -93,6 +93,8 @@ class CustomMap
     )
     @areaSummaryBoxes = []
     
+    @editInfowindowTemapl
+    
     @canRemoveMarker  = false
     @draggableMarker  = false
     @visibleMarkers   = true
@@ -158,29 +160,34 @@ class CustomMap
     #marker
     @gMarker = {}
 
-    @setAllMarkers()
-    @initializeAreaSummaryBoxes()
+    @editInfoWindowTemplate = ""
+    $.get('assets/javascripts/templates/editInfoWindow._', (e)=>
+      @editInfoWindowTemplate = _.template(e)
+      
+      @setAllMarkers()  
+      @initializeAreaSummaryBoxes()
     
-    @markerList.find('span').bind('click', (e)=>
-      this_      = $(e.currentTarget)
-      markerType = this_.attr('data-type')
-      coord       = @map.getCenter()
-      markerinfo = 
-        "lng" : coord.lng()
-        "lat" : coord.lat()
-        "title" : "--"
-      img        = "#{@iconsPath}/#{markerType}.png"
-      @addMarkers(markerinfo, img, markerType)
-    )
+      @markerList.find('span').bind('click', (e)=>
+        this_      = $(e.currentTarget)
+        markerType = this_.attr('data-type')
+        coord       = @map.getCenter()
+        markerinfo = 
+          "lng" : coord.lng()
+          "lat" : coord.lat()
+          "title" : "--"
+        img        = "#{@iconsPath}/#{markerType}.png"
+        @addMarkers(markerinfo, img, markerType)
+      )
     
-    # UI
-    @addMarkerLink.bind('click', @toggleMarkerList)
-    @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
-    @exportBtn.bind('click', @handleExport)
-    @editionsTools.bind('click', @handleEdition)
+      # UI
+      @addMarkerLink.bind('click', @toggleMarkerList)
+      @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
+      @exportBtn.bind('click', @handleExport)
+      @editionsTools.bind('click', @handleEdition)
     
-    @exportWindow.find('.close').click(()=>
-      @exportWindow.hide()
+      @exportWindow.find('.close').click(()=>
+        @exportWindow.hide()
+      )
     )
     
   addMarker:(markerInfo, markersType, markersCat)->
@@ -197,15 +204,24 @@ class CustomMap
       cursor : if isMarkerDraggable then "move" else "pointer"
       title: "#{markerInfo.title}"
     )
+
+    marker["title"] = "#{markerInfo.title}"
+    marker["desc"]  = "#{markerInfo.desc}"
+
+    templateInfo = 
+      id : marker._gm_id
+      title : markerInfo.title
+      desc  : markerInfo.desc
+      wikiLink  : markerInfo.wikiLink
+      
+    editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
     
     permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat+ '&lng=' + markerInfo.lng + '">Permalink</a></p>'
     infoWindow = new google.maps.InfoWindow(
-      content  : (if "#{markerInfo.desc}" == "" then "More info comming soon" else "#{markerInfo.desc}") + "<p>" + permalink + "</p>"
+      content  : editInfoWindowContent
       maxWidth : 200
     )
     
-    marker["title"] = "#{markerInfo.title}"
-    marker["desc"]  = "#{markerInfo.desc}"
     marker["infoWindow"] = infoWindow
     
     markerThatMatchUrl = @getMarkerByCoordinates(@getStartLat(), @getStartLng())
@@ -230,6 +246,7 @@ class CustomMap
         else
           if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
           marker.infoWindow.open(@map, marker)
+          # marker.infoWindow.show()
           @currentOpenedInfoWindow = marker.infoWindow
     )
     

@@ -143,6 +143,7 @@
         return _this.confirmBox = new Confirmbox(template);
       });
       this.areaSummaryBoxes = [];
+      this.editInfowindowTemapl;
       this.canRemoveMarker = false;
       this.draggableMarker = false;
       this.visibleMarkers = true;
@@ -206,32 +207,36 @@
         }
       });
       this.gMarker = {};
-      this.setAllMarkers();
-      this.initializeAreaSummaryBoxes();
-      this.markerList.find('span').bind('click', function(e) {
-        var coord, img, markerType, markerinfo, this_;
-        this_ = $(e.currentTarget);
-        markerType = this_.attr('data-type');
-        coord = _this.map.getCenter();
-        markerinfo = {
-          "lng": coord.lng(),
-          "lat": coord.lat(),
-          "title": "--"
-        };
-        img = "" + _this.iconsPath + "/" + markerType + ".png";
-        return _this.addMarkers(markerinfo, img, markerType);
-      });
-      this.addMarkerLink.bind('click', this.toggleMarkerList);
-      this.removeMarkerLink.bind('click', this.handleMarkerRemovalTool);
-      this.exportBtn.bind('click', this.handleExport);
-      this.editionsTools.bind('click', this.handleEdition);
-      this.exportWindow.find('.close').click(function() {
-        return _this.exportWindow.hide();
+      this.editInfoWindowTemplate = "";
+      $.get('assets/javascripts/templates/editInfoWindow._', function(e) {
+        _this.editInfoWindowTemplate = _.template(e);
+        _this.setAllMarkers();
+        _this.initializeAreaSummaryBoxes();
+        _this.markerList.find('span').bind('click', function(e) {
+          var coord, img, markerType, markerinfo, this_;
+          this_ = $(e.currentTarget);
+          markerType = this_.attr('data-type');
+          coord = _this.map.getCenter();
+          markerinfo = {
+            "lng": coord.lng(),
+            "lat": coord.lat(),
+            "title": "--"
+          };
+          img = "" + _this.iconsPath + "/" + markerType + ".png";
+          return _this.addMarkers(markerinfo, img, markerType);
+        });
+        _this.addMarkerLink.bind('click', _this.toggleMarkerList);
+        _this.removeMarkerLink.bind('click', _this.handleMarkerRemovalTool);
+        _this.exportBtn.bind('click', _this.handleExport);
+        _this.editionsTools.bind('click', _this.handleEdition);
+        return _this.exportWindow.find('.close').click(function() {
+          return _this.exportWindow.hide();
+        });
       });
     }
 
     CustomMap.prototype.addMarker = function(markerInfo, markersType, markersCat) {
-      var iconmid, iconsize, image, infoWindow, isMarkerDraggable, marker, markerThatMatchUrl, markerType, permalink, _j, _len1, _ref, _results,
+      var editInfoWindowContent, iconmid, iconsize, image, infoWindow, isMarkerDraggable, marker, markerThatMatchUrl, markerType, permalink, templateInfo, _j, _len1, _ref, _results,
         _this = this;
       iconsize = 32;
       iconmid = iconsize / 2;
@@ -246,13 +251,20 @@
         cursor: isMarkerDraggable ? "move" : "pointer",
         title: "" + markerInfo.title
       });
-      permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat + '&lng=' + markerInfo.lng + '">Permalink</a></p>';
-      infoWindow = new google.maps.InfoWindow({
-        content: (("" + markerInfo.desc) === "" ? "More info comming soon" : "" + markerInfo.desc) + "<p>" + permalink + "</p>",
-        maxWidth: 200
-      });
       marker["title"] = "" + markerInfo.title;
       marker["desc"] = "" + markerInfo.desc;
+      templateInfo = {
+        id: marker._gm_id,
+        title: markerInfo.title,
+        desc: markerInfo.desc,
+        wikiLink: markerInfo.wikiLink
+      };
+      editInfoWindowContent = this.editInfoWindowTemplate(templateInfo);
+      permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat + '&lng=' + markerInfo.lng + '">Permalink</a></p>';
+      infoWindow = new google.maps.InfoWindow({
+        content: editInfoWindowContent,
+        maxWidth: 200
+      });
       marker["infoWindow"] = infoWindow;
       markerThatMatchUrl = this.getMarkerByCoordinates(this.getStartLat(), this.getStartLng());
       if (markerThatMatchUrl === markerInfo) {

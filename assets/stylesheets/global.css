@@ -596,3 +596,8 @@ p.marker-permalink { text-align: right; }
 .confirm-box h1 { 
   margin-top: 0
 }
+
+.customInfo {
+  width: 300px;
+  padding: 10px;
+}
