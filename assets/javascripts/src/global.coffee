@@ -346,14 +346,18 @@ class CustomMap
     )
   
   removeMarker:(id, mType, mCat)->
-    for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
-      for marker, markerKey in markerType.markers when marker.__gm_id is id
-        marker.setMap(null)
-        @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
-          return m == marker
-          # return m.__gm_id == id
-        )
-        return true
+    confirmMessage = "Are you sure you want to delete this marker?"
+    @confirmBox.initConfirmation(confirmMessage, ()=>
+      
+      for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
+        for marker, markerKey in markerType.markers when marker.__gm_id is id
+          marker.setMap(null)
+          @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
+            return m == marker
+            # return m.__gm_id == id
+          )
+          return true
+    )
   
   setDraggableMarker:(val)->
     unDrag = (marker)->

@@ -528,26 +528,30 @@
     };
 
     CustomMap.prototype.removeMarker = function(id, mType, mCat) {
-      var marker, markerKey, markerType, typeKey, _j, _k, _len1, _len2, _ref, _ref1,
+      var confirmMessage,
         _this = this;
-      _ref = this.gMarker[mCat]["markerGroup"];
-      for (typeKey = _j = 0, _len1 = _ref.length; _j < _len1; typeKey = ++_j) {
-        markerType = _ref[typeKey];
-        if (markerType.slug === mType) {
-          _ref1 = markerType.markers;
-          for (markerKey = _k = 0, _len2 = _ref1.length; _k < _len2; markerKey = ++_k) {
-            marker = _ref1[markerKey];
-            if (!(marker.__gm_id === id)) {
-              continue;
+      confirmMessage = "Are you sure you want to delete this marker?";
+      return this.confirmBox.initConfirmation(confirmMessage, function() {
+        var marker, markerKey, markerType, typeKey, _j, _k, _len1, _len2, _ref, _ref1;
+        _ref = _this.gMarker[mCat]["markerGroup"];
+        for (typeKey = _j = 0, _len1 = _ref.length; _j < _len1; typeKey = ++_j) {
+          markerType = _ref[typeKey];
+          if (markerType.slug === mType) {
+            _ref1 = markerType.markers;
+            for (markerKey = _k = 0, _len2 = _ref1.length; _k < _len2; markerKey = ++_k) {
+              marker = _ref1[markerKey];
+              if (!(marker.__gm_id === id)) {
+                continue;
+              }
+              marker.setMap(null);
+              _this.gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
+                return m === marker;
+              });
+              return true;
             }
-            marker.setMap(null);
-            this.gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
-              return m === marker;
-            });
-            return true;
           }
         }
-      }
+      });
     };
 
     CustomMap.prototype.setDraggableMarker = function(val) {
