@@ -196,7 +196,7 @@
           _this.setAllMarkersVisibility(false);
           _this.setAreasInformationVisibility(true);
           if (_this.currentOpenedInfoWindow) {
-            return _this.currentOpenedInfoWindow.setVisible(false);
+            return _this.currentOpenedInfoWindow.close();
           }
         } else if (zoomLevel > 4) {
           _this.canToggleMarkers = true;
@@ -209,7 +209,7 @@
           _this.setAllMarkersVisibility(false);
           _this.setAreasInformationVisibility(false);
           if (_this.currentOpenedInfoWindow) {
-            return _this.currentOpenedInfoWindow.setVisible(false);
+            return _this.currentOpenedInfoWindow.close();
           }
         }
       });
@@ -285,14 +285,12 @@
           default:
             if (marker["infoWindow"] != null) {
               if (_this.currentOpenedInfoWindow === marker["infoWindow"]) {
-                _this.currentOpenedInfoWindow.setVisible(false);
-                return _this.currentOpenedInfoWindow = null;
+                return _this.currentOpenedInfoWindow.close();
               } else {
                 if (_this.currentOpenedInfoWindow) {
-                  _this.currentOpenedInfoWindow.setVisible(false);
+                  _this.currentOpenedInfoWindow.close();
                 }
-                marker["infoWindow"].setVisible(true);
-                return _this.currentOpenedInfoWindow = marker["infoWindow"];
+                return marker["infoWindow"].open();
               }
             } else {
               templateInfo = {
@@ -303,12 +301,18 @@
                 wikiLink: marker.wikiLink
               };
               editInfoWindowContent = _this.editInfoWindowTemplate(templateInfo);
-              marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent);
+              marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent, {
+                onClose: function() {
+                  return _this.currentOpenedInfoWindow = null;
+                },
+                onOpen: function(infoWindow) {
+                  return _this.currentOpenedInfoWindow = infoWindow;
+                }
+              });
               if (_this.currentOpenedInfoWindow) {
-                _this.currentOpenedInfoWindow.setVisible(false);
+                _this.currentOpenedInfoWindow.close();
               }
-              marker["infoWindow"].setVisible(true);
-              return _this.currentOpenedInfoWindow = marker["infoWindow"];
+              return marker["infoWindow"].open();
             }
         }
       });
@@ -536,24 +540,22 @@
         _results = [];
         for (typeKey = _j = 0, _len1 = _ref.length; _j < _len1; typeKey = ++_j) {
           markerType = _ref[typeKey];
-          if (!(markerType.slug === mType)) {
-            continue;
+          if (markerType.slug === mType) {
+            _results.push((function() {
+              var _k, _len2, _ref1, _results1,
+                _this = this;
+              _ref1 = markerType.markers;
+              _results1 = [];
+              for (markerKey = _k = 0, _len2 = _ref1.length; _k < _len2; markerKey = ++_k) {
+                marker = _ref1[markerKey];
+                marker.setMap(null);
+                _results1.push(this.gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
+                  return m === marker;
+                }));
+              }
+              return _results1;
+            }).call(_this));
           }
-          console.log(markerType.markers);
-          _results.push((function() {
-            var _k, _len2, _ref1, _results1,
-              _this = this;
-            _ref1 = markerType.markers;
-            _results1 = [];
-            for (markerKey = _k = 0, _len2 = _ref1.length; _k < _len2; markerKey = ++_k) {
-              marker = _ref1[markerKey];
-              marker.setMap(null);
-              _results1.push(this.gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
-                return m === marker;
-              }));
-            }
-            return _results1;
-          }).call(_this));
         }
         return _results;
       });
@@ -836,14 +838,20 @@
 
   CustomInfoWindow = (function() {
 
-    function CustomInfoWindow(marker, content) {
+    function CustomInfoWindow(marker, content, opts) {
+      this.open = __bind(this.open, this);
+
+      this.close = __bind(this.close, this);
       this.content = content;
       this.marker = marker;
-      this.wrap = $('<div class="customInfoWindow"><div class="padding"></div></div>');
-      this.topOffset = 80;
-      this.leftOffset = 30;
-      this.setMap(marker.map);
+      this.map = marker.map;
+      this.wrap = $('<div class="customInfoWindow"><a href="javascript:" title="Close" class="close button"></a><div class="padding"></div></div>');
+      this.closeBtn = this.wrap.find('.close');
+      this.setMap(this.map);
       this.isVisible = false;
+      this.onClose = opts.onClose;
+      this.onOpen = opts.onOpen;
+      this.closeBtn.bind('click', this.close);
     }
 
     CustomInfoWindow.prototype = new google.maps.OverlayView();
@@ -851,39 +859,84 @@
     CustomInfoWindow.prototype.onAdd = function() {
       var panes;
       this.wrap.find('.padding').append(this.content);
-      console.log(this.wrap);
+      this.iWidth = this.wrap.outerWidth();
+      this.iHeight = this.wrap.outerHeight();
       this.wrap.css({
         position: "absolute"
       });
       panes = this.getPanes();
-      panes.overlayImage.appendChild(this.wrap[0]);
-      return this.setVisible(true);
+      return panes.overlayImage.appendChild(this.wrap[0]);
     };
 
     CustomInfoWindow.prototype.draw = function() {
       var overlayProjection, pos;
       overlayProjection = this.getProjection();
       pos = overlayProjection.fromLatLngToDivPixel(this.marker.position);
+      this.leftOffset = pos.x + 30;
+      this.topOffset = pos.y - 80;
       return this.wrap.css({
-        left: pos.x + this.leftOffset,
-        top: pos.y - this.topOffset
+        left: this.leftOffset,
+        top: this.topOffset
       });
     };
 
-    CustomInfoWindow.prototype.setVisible = function(isVisible) {
+    CustomInfoWindow.prototype.close = function() {
       if (this.wrap) {
-        if (isVisible === true) {
-          this.isVisible = true;
-          return this.wrap.css({
-            visibility: "visible"
-          });
-        } else {
-          this.isVisible = false;
-          return this.wrap.css({
-            visibility: "hidden"
-          });
-        }
+        this.onClose(this);
+        this.isVisible = false;
+        return this.wrap.css({
+          visibility: "hidden"
+        });
       }
+    };
+
+    CustomInfoWindow.prototype.open = function() {
+      if (this.wrap) {
+        this.onOpen(this);
+        this.isVisible = true;
+        return this.wrap.css({
+          visibility: "visible"
+        });
+      }
+    };
+
+    CustomInfoWindow.prototype.panMap = function() {
+      var bounds, boundsSpan, center, centerX, centerY, degPixelX, degPixelY, iwEastLng, iwNorthLat, iwSouthLat, iwWestLng, latSpan, longSpan, mapDiv, mapEastLng, mapHeight, mapNorthLat, mapSouthLat, mapWestLng, mapWidth, shiftLat, shiftLng, _ref, _ref1, _ref2, _ref3;
+      bounds = this.map.getBounds();
+      if (!bounds) {
+        return;
+      }
+      mapDiv = this.map.getDiv();
+      mapWidth = mapDiv.offsetWidth;
+      mapHeight = mapDiv.offsetHeight;
+      boundsSpan = bounds.toSpan();
+      longSpan = boundsSpan.lng();
+      latSpan = boundsSpan.lat();
+      degPixelX = longSpan / mapWidth;
+      degPixelY = latSpan / mapHeight;
+      mapWestLng = bounds.getSouthWest().lng();
+      mapEastLng = bounds.getNorthEast().lng();
+      mapNorthLat = bounds.getNorthEast().lat();
+      mapSouthLat = bounds.getSouthWest().lat();
+      iwWestLng = this.marker.position.lng() + this.leftOffset * degPixelX;
+      iwEastLng = this.marker.position.lng() + (this.leftOffset + this.iWidth) * degPixelX;
+      iwNorthLat = this.marker.position.lat() - this.toptOffset * degPixelY;
+      iwSouthLat = this.marker.position.lat() - (this.toptOffset + this.iHeight) * degPixelY;
+      shiftLng = ((_ref = iwWestLng < mapWestLng) != null ? _ref : mapWestLng - {
+        iwWestLng: 0
+      }) + ((_ref1 = iwEastLng > mapEastLng) != null ? _ref1 : mapEastLng - {
+        iwEastLng: 0
+      });
+      shiftLat = ((_ref2 = iwNorthLat > mapNorthLat) != null ? _ref2 : mapNorthLat - {
+        iwNorthLat: 0
+      }) + ((_ref3 = iwSouthLat < mapSouthLat) != null ? _ref3 : mapSouthLat - {
+        iwSouthLat: 0
+      });
+      center = this.map.getCenter();
+      centerX = center.lng() - shiftLng;
+      centerY = center.lat() - shiftLat;
+      console.log("" + centerY + ", " + centerX);
+      return this.map.setCenter(new google.maps.LatLng(centerY, centerX));
     };
 
     return CustomInfoWindow;

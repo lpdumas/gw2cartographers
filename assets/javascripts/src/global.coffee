@@ -146,7 +146,7 @@ class CustomMap
           @hideMarkersOptionsMenu()
           @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(true)
-          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.setVisible(false)
+          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
         else if zoomLevel > 4
           @canToggleMarkers = true
           @showMarkersOptionsMenu()
@@ -157,7 +157,7 @@ class CustomMap
           @hideMarkersOptionsMenu()
           @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(false)
-          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.setVisible(false)
+          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
     )
     
     #marker
@@ -250,12 +250,11 @@ class CustomMap
           # Handling infoWindow, creating them is their're not
           if marker["infoWindow"]?
             if @currentOpenedInfoWindow is marker["infoWindow"]
-              @currentOpenedInfoWindow.setVisible(false)
-              @currentOpenedInfoWindow = null
+              @currentOpenedInfoWindow.close()
+              
             else
-              if @currentOpenedInfoWindow then @currentOpenedInfoWindow.setVisible(false)
-              marker["infoWindow"].setVisible(true)
-              @currentOpenedInfoWindow = marker["infoWindow"]
+              if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+              marker["infoWindow"].open()
           else  
             templateInfo = 
               id : marker.__gm_id
@@ -265,11 +264,15 @@ class CustomMap
               wikiLink  : marker.wikiLink
           
             editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
-            marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent)
+            marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent,
+              onClose : () =>
+                @currentOpenedInfoWindow = null
+              onOpen  : (infoWindow) =>
+                @currentOpenedInfoWindow = infoWindow
+            )
             
-            if @currentOpenedInfoWindow then @currentOpenedInfoWindow.setVisible(false)
-            marker["infoWindow"].setVisible(true)
-            @currentOpenedInfoWindow = marker["infoWindow"]
+            if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+            marker["infoWindow"].open()
           # console.log marker.test
           # marker.test.setVisible(true)
           # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
@@ -380,8 +383,6 @@ class CustomMap
     confirmMessage = "Delete all «#{mType}» markers on the map?"
     @confirmBox.initConfirmation(confirmMessage, ()=>
       for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
-      
-        console.log markerType.markers
         for marker, markerKey in markerType.markers
           marker.setMap(null)
           @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
@@ -555,48 +556,101 @@ class AreaSummary
 # class AreaSummary {{{
 ###
 class CustomInfoWindow
-  constructor: (marker, content) ->
+  constructor: (marker, content, opts) ->
     @content = content
     @marker  = marker
-    @wrap = $('<div class="customInfoWindow"><div class="padding"></div></div>')
-    @topOffset = 80
-    @leftOffset = 30
-    @setMap(marker.map)
+    @map     = marker.map
+    @wrap = $('<div class="customInfoWindow"><a href="javascript:" title="Close" class="close button"></a><div class="padding"></div></div>')
+    @closeBtn = @wrap.find('.close')
+    @setMap(@map)
     @isVisible = false
+    @onClose= opts.onClose
+    @onOpen= opts.onOpen
+    @closeBtn.bind('click', @close)
 
   CustomInfoWindow:: = new google.maps.OverlayView()
   
   
   onAdd:()->
       @wrap.find('.padding').append(@content)
-      console.log @wrap
+      @iWidth  = @wrap.outerWidth()
+      @iHeight = @wrap.outerHeight()
       @wrap.css(
         position: "absolute"
       )
       panes = @getPanes()
       panes.overlayImage.appendChild(@wrap[0])
-      @setVisible(true)
+      # @open()
   
   draw:()->
     overlayProjection = @getProjection()
     pos = overlayProjection.fromLatLngToDivPixel(@marker.position);
+    @leftOffset = pos.x + 30
+    @topOffset = pos.y - 80
     @wrap.css(
-      left: pos.x + @leftOffset
-      top: pos.y - @topOffset
+      left: @leftOffset
+      top: @topOffset
     )
-  
-  setVisible:(isVisible)->
+  close:()=>
     if @wrap
-      if isVisible is true
-        @isVisible = true
-        @wrap.css(
-          visibility : "visible"
-        )
-      else
-        @isVisible = false
-        @wrap.css(
-          visibility : "hidden"
-        )
+      @onClose(this)
+      @isVisible = false
+      @wrap.css(
+        visibility : "hidden"
+      )
+  open:()=>
+    if @wrap
+      # @panMap()
+      @onOpen(this)
+      @isVisible = true
+      @wrap.css(
+        visibility : "visible"
+      )
+  panMap: () -> 
+    
+    bounds = @map.getBounds();
+    if not bounds then return
+  
+    # the degrees per pixel
+    mapDiv = @map.getDiv();
+    mapWidth = mapDiv.offsetWidth;
+    mapHeight = mapDiv.offsetHeight;
+    boundsSpan = bounds.toSpan();
+    longSpan = boundsSpan.lng();
+    latSpan = boundsSpan.lat();
+    degPixelX = longSpan / mapWidth;
+    degPixelY = latSpan / mapHeight;
+  
+    # The bounds of the map
+    mapWestLng = bounds.getSouthWest().lng();
+    mapEastLng = bounds.getNorthEast().lng();
+    mapNorthLat = bounds.getNorthEast().lat();
+    mapSouthLat = bounds.getSouthWest().lat();
+  
+    # The bounds of the infowindow
+    iwWestLng = @marker.position.lng() + (@leftOffset) * degPixelX;
+    iwEastLng = @marker.position.lng() + (@leftOffset + @iWidth) * degPixelX;
+    iwNorthLat = @marker.position.lat() - (@toptOffset) * degPixelY;
+    iwSouthLat = @marker.position.lat() - (@toptOffset + @iHeight) * degPixelY;
+  
+    # calculate center shift
+    
+    shiftLng = (iwWestLng < mapWestLng ? mapWestLng - iwWestLng : 0) + (iwEastLng > mapEastLng ? mapEastLng - iwEastLng : 0);
+    shiftLat = (iwNorthLat > mapNorthLat ? mapNorthLat - iwNorthLat : 0) + (iwSouthLat < mapSouthLat ? mapSouthLat - iwSouthLat : 0);
+    # The center of the map
+    center = @map.getCenter();
+  
+    # The new map center
+    centerX = center.lng() - shiftLng;
+    centerY = center.lat() - shiftLat;
+  
+    # center the map to the new shifted center
+    console.log "#{centerY}, #{centerX}"
+    @map.setCenter(new google.maps.LatLng(centerY, centerX));
+  
+    # Remove the listener after panning is complete.
+    # google.maps.event.removeListener(@.boundsChangedListener_);
+    # @.boundsChangedListener_ = null;
 ###
 # }}}
 ###

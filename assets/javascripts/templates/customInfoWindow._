@@ -1,5 +1,7 @@
-<div id="name" class="<%= type %>-marker">
-    <h2><%= title %></h2>
+<a href="javascript:" title="Edit infos" class="edit button"></a>
+<% if (title !== "" && desc !== "") { %>
+<div class="marker-desc <%= type %>-marker">
+    <h1><%= title %></h1>
     <p class="desc">
         <%= desc %> 
         <% if(wikiLink !== "") {%>
@@ -20,5 +22,10 @@
         <span class="label">Wiki link</span>
         <input type="text" name="marker-wiki" value="<%= wikiLink %>" >
     </label>
-    <button type='submit'>send</button>
+    <button type='submit'>save</button>
 </form>
+<% } else { %>
+<div class="marker-desc">
+    <h1>More infos comming soon!</h1>
+</div>
+<% } %>

@@ -78,7 +78,35 @@ html, body {
 }
 .left { float: left}
 .right { float: right}
+.button {
+  -webkit-backface-visibility: hidden;
+  -webkit-transform: scale(0.8);
+  -moz-transform: scale(0.8);
+  -ms-transform: scale(0.8);
+  -o-transform: scale(0.8);
+  -webkit-transition-property:-webkit-transform, opacity;
+  -moz-transition-property:-moz-transform, opacity;
+  -ms-transition-property:-ms-transform, opacity;
+  -o-transition-property:-o-transform, opacity;
+  -webkit-transition-duration: 150ms;
+  -moz-transition-duration: 150ms;
+  -ms-transition-duration: 150ms;
+  -o-transition-duration: 150ms;
+}
 
+.button:hover{
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+}
+.button.active {
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  opacity: 0.6;
+}
 #map-container {
   position: relative;
   width:100%;
@@ -285,35 +313,6 @@ html.move #map-mask {
   margin-top: 3px;
 }
 
-.button {
-  -webkit-backface-visibility: hidden;
-  -webkit-transform: scale(0.8);
-  -moz-transform: scale(0.8);
-  -ms-transform: scale(0.8);
-  -o-transform: scale(0.8);
-  -webkit-transition-property:-webkit-transform, opacity;
-  -moz-transition-property:-moz-transform, opacity;
-  -ms-transition-property:-ms-transform, opacity;
-  -o-transition-property:-o-transform, opacity;
-  -webkit-transition-duration: 150ms;
-  -moz-transition-duration: 150ms;
-  -ms-transition-duration: 150ms;
-  -o-transition-duration: 150ms;
-}
-
-.button:hover{
-  -webkit-transform: scale(1);
-  -moz-transform: scale(1);
-  -ms-transform: scale(1);
-  -o-transform: scale(1);
-}
-.button.active {
-  -webkit-transform: scale(1);
-  -moz-transform: scale(1);
-  -ms-transform: scale(1);
-  -o-transform: scale(1);
-  opacity: 0.6;
-}
 #markers-options #edition-tools li a{
   display: block;
   width: 32px;
@@ -599,6 +598,7 @@ p.marker-permalink { text-align: right; }
 /* Custom Infowindo {{{ */
 .customInfoWindow {
   width: 300px;
+  cursor: default;
   background: #fff;
   font-size: 12px;
   font-size: 1.2rem;
@@ -610,6 +610,32 @@ p.marker-permalink { text-align: right; }
   -moz-transition: opacity 150ms linear;
   -ms-transition: opacity 150ms linear;
   -o-transition: opacity 150ms linear;
+}
+.customInfoWindow .close {
+  position: absolute;
+  cursor: pointer;
+  top: -22px;
+  right: -22px;
+  display: block;
+  width: 32px;
+  height: 32px;
+  background: url('../images/layout/edit-options.png') -160px top no-repeat;
+}
+.customInfoWindow .close:hover {
+  background-position: -160px bottom;
+}
+.customInfoWindow .edit {
+  position: absolute;
+  cursor: pointer;
+  top: -22px;
+  right: 12px;
+  display: block;
+  width: 32px;
+  height: 32px;
+  background: url('../images/layout/edit-options.png') -128px top no-repeat;
+}
+.customInfoWindow .edit:hover {
+  background-position: -128px bottom;
 }
 .customInfoWindow:after, .customInfoWindow:before {
 	right: 100%;
@@ -655,5 +681,11 @@ p.marker-permalink { text-align: right; }
     background: #000;
     border: 1px solid #D4D4D4;
     padding: 5px 10px;
+  }
+  
+  .customInfoWindow .marker-desc h1 {
+    font-size: 16px;
+    font-size: 1.6rem;
+    margin: 0 0 10px 0;
   }
 /*}}}*/
