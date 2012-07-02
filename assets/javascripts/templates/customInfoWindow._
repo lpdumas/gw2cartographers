@@ -1,4 +1,13 @@
-<form action="javacript:" id="edit-form-<%= id %>">
+<div id="name" class="<%= type %>-marker">
+    <h2><%= title %></h2>
+    <p class="desc">
+        <%= desc %> 
+        <% if(wikiLink !== "") {%>
+        <a href="<%= wikiLink %>">More infos on wiki.guildwars2.com</a>
+        <% }%>
+    </p>
+</div>
+<form style="display: none;" action="javacript:" id="edit-form-<%= id %>">
     <label>
         <span class="label">Title</span>
         <input type="text" name="marker-title" value="<%= title %>" >
@@ -11,5 +20,5 @@
         <span class="label">Wiki link</span>
         <input type="text" name="marker-wiki" value="<%= wikiLink %>" >
     </label>
-    <button type='submit'>Envoyer</button>
+    <button type='submit'>send</button>
 </form>

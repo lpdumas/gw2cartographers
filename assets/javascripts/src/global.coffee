@@ -99,6 +99,7 @@ class CustomMap
     @draggableMarker  = false
     @visibleMarkers   = true
     @canToggleMarkers = true
+    @currentOpenedInfoWindow = false
     @gMapOptions   = 
       center: new google.maps.LatLng(@getStartLat(), @getStartLng())
       zoom: 6
@@ -145,6 +146,7 @@ class CustomMap
           @hideMarkersOptionsMenu()
           @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(true)
+          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.setVisible(false)
         else if zoomLevel > 4
           @canToggleMarkers = true
           @showMarkersOptionsMenu()
@@ -155,13 +157,14 @@ class CustomMap
           @hideMarkersOptionsMenu()
           @setAllMarkersVisibility(false)
           @setAreasInformationVisibility(false)
+          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.setVisible(false)
     )
     
     #marker
     @gMarker = {}
 
     @editInfoWindowTemplate = ""
-    $.get('assets/javascripts/templates/editInfoWindow._', (e)=>
+    $.get('assets/javascripts/templates/customInfoWindow._', (e)=>
       @editInfoWindowTemplate = _.template(e)
       
       @setAllMarkers()  
@@ -207,24 +210,20 @@ class CustomMap
 
     marker["title"] = "#{markerInfo.title}"
     marker["desc"]  = "#{markerInfo.desc}"
-    templateInfo = 
-      id : marker.__gm_id
-      title : markerInfo.title
-      desc  : markerInfo.desc
-      wikiLink  : markerInfo.wikiLink
-      
-    editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
+    marker["wikiLink"]  = "#{markerInfo.wikiLink}"
+    marker["type"]  = "#{markersType}"
+
     
-    permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat+ '&lng=' + markerInfo.lng + '">Permalink</a></p>'
-    infoWindow = new google.maps.InfoWindow(
-      content  : editInfoWindowContent
-      maxWidth : 200
-    )
+    # permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat+ '&lng=' + markerInfo.lng + '">Permalink</a></p>'
+    # infoWindow = new google.maps.InfoWindow(
+      # content  : editInfoWindowContent
+      # maxWidth : 200
+    # )
     
-    test = new CustomInfoWindow(marker, editInfoWindowContent)
+    # test = new CustomInfoWindow(marker, editInfoWindowContent)
     
-    marker["infoWindow"] = infoWindow
-    marker["test"] = test
+    # marker["infoWindow"] = infoWindow
+    # marker["test"] = test
     
     markerThatMatchUrl = @getMarkerByCoordinates(@getStartLat(), @getStartLng())
     if (markerThatMatchUrl == markerInfo)
@@ -235,6 +234,8 @@ class CustomMap
     #   console.log '{"lat" : "'+ e.latLng.lat() +'", "lng" : "'+ e.latLng.lng() +'", "title" : "", "desc" : ""},'
     # )
     google.maps.event.addListener(marker, 'click', (e)=>
+      closeCurrentInfoWindow = ()=>
+        
       switch @appState
         when "remove"
           @removeMarker(marker.__gm_id, markersType, markersCat)
@@ -246,12 +247,34 @@ class CustomMap
             marker.setDraggable(true)
             marker.setCursor("move")
         else
-          console.log marker.test
-          marker.test.setVisible(true)
+          # Handling infoWindow, creating them is their're not
+          if marker["infoWindow"]?
+            if @currentOpenedInfoWindow is marker["infoWindow"]
+              @currentOpenedInfoWindow.setVisible(false)
+              @currentOpenedInfoWindow = null
+            else
+              if @currentOpenedInfoWindow then @currentOpenedInfoWindow.setVisible(false)
+              marker["infoWindow"].setVisible(true)
+              @currentOpenedInfoWindow = marker["infoWindow"]
+          else  
+            templateInfo = 
+              id : marker.__gm_id
+              title : marker.title
+              desc  : marker.desc
+              type  : marker.type
+              wikiLink  : marker.wikiLink
+          
+            editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
+            marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent)
+            
+            if @currentOpenedInfoWindow then @currentOpenedInfoWindow.setVisible(false)
+            marker["infoWindow"].setVisible(true)
+            @currentOpenedInfoWindow = marker["infoWindow"]
+          # console.log marker.test
+          # marker.test.setVisible(true)
           # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
           # marker.infoWindow.open(@map, marker)
           # marker.infoWindow.show()
-          # @currentOpenedInfoWindow = marker.infoWindow
     )
     
     markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["markerGroup"] when markerType.slug is markersType
@@ -536,40 +559,44 @@ class CustomInfoWindow
     @content = content
     @marker  = marker
     @wrap = $('<div class="customInfoWindow"><div class="padding"></div></div>')
+    @topOffset = 80
+    @leftOffset = 30
     @setMap(marker.map)
+    @isVisible = false
 
   CustomInfoWindow:: = new google.maps.OverlayView()
   
   
   onAdd:()->
       @wrap.find('.padding').append(@content)
+      console.log @wrap
       @wrap.css(
         position: "absolute"
       )
       panes = @getPanes()
       panes.overlayImage.appendChild(@wrap[0])
-      @setVisible(false)
+      @setVisible(true)
   
   draw:()->
     overlayProjection = @getProjection()
     pos = overlayProjection.fromLatLngToDivPixel(@marker.position);
     @wrap.css(
-      left: pos.x
-      top: pos.y
+      left: pos.x + @leftOffset
+      top: pos.y - @topOffset
     )
-    # div.style.left = sw.x + ((ne.x - sw.x) - @width_) / 2 + 'px';
-    # div.style.top = ne.y + ((sw.y - ne.y) - @height_) / 2 + 'px';
   
   setVisible:(isVisible)->
     if @wrap
-        if isVisible is true
-            @wrap.css(
-              visibility : "visible"
-            )
-        else
-            @wrap.css(
-              visibility : "hidden"
-            )
+      if isVisible is true
+        @isVisible = true
+        @wrap.css(
+          visibility : "visible"
+        )
+      else
+        @isVisible = false
+        @wrap.css(
+          visibility : "hidden"
+        )
 ###
 # }}}
 ###

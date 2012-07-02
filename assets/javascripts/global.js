@@ -148,6 +148,7 @@
       this.draggableMarker = false;
       this.visibleMarkers = true;
       this.canToggleMarkers = true;
+      this.currentOpenedInfoWindow = false;
       this.gMapOptions = {
         center: new google.maps.LatLng(this.getStartLat(), this.getStartLng()),
         zoom: 6,
@@ -193,7 +194,10 @@
           _this.canToggleMarkers = false;
           _this.hideMarkersOptionsMenu();
           _this.setAllMarkersVisibility(false);
-          return _this.setAreasInformationVisibility(true);
+          _this.setAreasInformationVisibility(true);
+          if (_this.currentOpenedInfoWindow) {
+            return _this.currentOpenedInfoWindow.setVisible(false);
+          }
         } else if (zoomLevel > 4) {
           _this.canToggleMarkers = true;
           _this.showMarkersOptionsMenu();
@@ -203,12 +207,15 @@
           _this.canToggleMarkers = false;
           _this.hideMarkersOptionsMenu();
           _this.setAllMarkersVisibility(false);
-          return _this.setAreasInformationVisibility(false);
+          _this.setAreasInformationVisibility(false);
+          if (_this.currentOpenedInfoWindow) {
+            return _this.currentOpenedInfoWindow.setVisible(false);
+          }
         }
       });
       this.gMarker = {};
       this.editInfoWindowTemplate = "";
-      $.get('assets/javascripts/templates/editInfoWindow._', function(e) {
+      $.get('assets/javascripts/templates/customInfoWindow._', function(e) {
         _this.editInfoWindowTemplate = _.template(e);
         _this.setAllMarkers();
         _this.initializeAreaSummaryBoxes();
@@ -236,7 +243,7 @@
     }
 
     CustomMap.prototype.addMarker = function(markerInfo, markersType, markersCat) {
-      var editInfoWindowContent, iconmid, iconsize, image, infoWindow, isMarkerDraggable, marker, markerThatMatchUrl, markerType, permalink, templateInfo, test, _j, _len1, _ref, _results,
+      var iconmid, iconsize, image, isMarkerDraggable, marker, markerThatMatchUrl, markerType, _j, _len1, _ref, _results,
         _this = this;
       iconsize = 32;
       iconmid = iconsize / 2;
@@ -253,27 +260,16 @@
       });
       marker["title"] = "" + markerInfo.title;
       marker["desc"] = "" + markerInfo.desc;
-      templateInfo = {
-        id: marker.__gm_id,
-        title: markerInfo.title,
-        desc: markerInfo.desc,
-        wikiLink: markerInfo.wikiLink
-      };
-      editInfoWindowContent = this.editInfoWindowTemplate(templateInfo);
-      permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat + '&lng=' + markerInfo.lng + '">Permalink</a></p>';
-      infoWindow = new google.maps.InfoWindow({
-        content: editInfoWindowContent,
-        maxWidth: 200
-      });
-      test = new CustomInfoWindow(marker, editInfoWindowContent);
-      marker["infoWindow"] = infoWindow;
-      marker["test"] = test;
+      marker["wikiLink"] = "" + markerInfo.wikiLink;
+      marker["type"] = "" + markersType;
       markerThatMatchUrl = this.getMarkerByCoordinates(this.getStartLat(), this.getStartLng());
       if (markerThatMatchUrl === markerInfo) {
         marker.infoWindow.open(this.map, marker);
         this.currentOpenedInfoWindow = marker.infoWindow;
       }
       google.maps.event.addListener(marker, 'click', function(e) {
+        var closeCurrentInfoWindow, editInfoWindowContent, templateInfo;
+        closeCurrentInfoWindow = function() {};
         switch (_this.appState) {
           case "remove":
             return _this.removeMarker(marker.__gm_id, markersType, markersCat);
@@ -287,8 +283,33 @@
             }
             break;
           default:
-            console.log(marker.test);
-            return marker.test.setVisible(true);
+            if (marker["infoWindow"] != null) {
+              if (_this.currentOpenedInfoWindow === marker["infoWindow"]) {
+                _this.currentOpenedInfoWindow.setVisible(false);
+                return _this.currentOpenedInfoWindow = null;
+              } else {
+                if (_this.currentOpenedInfoWindow) {
+                  _this.currentOpenedInfoWindow.setVisible(false);
+                }
+                marker["infoWindow"].setVisible(true);
+                return _this.currentOpenedInfoWindow = marker["infoWindow"];
+              }
+            } else {
+              templateInfo = {
+                id: marker.__gm_id,
+                title: marker.title,
+                desc: marker.desc,
+                type: marker.type,
+                wikiLink: marker.wikiLink
+              };
+              editInfoWindowContent = _this.editInfoWindowTemplate(templateInfo);
+              marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent);
+              if (_this.currentOpenedInfoWindow) {
+                _this.currentOpenedInfoWindow.setVisible(false);
+              }
+              marker["infoWindow"].setVisible(true);
+              return _this.currentOpenedInfoWindow = marker["infoWindow"];
+            }
         }
       });
       _ref = this.gMarker[markersCat]["markerGroup"];
@@ -819,7 +840,10 @@
       this.content = content;
       this.marker = marker;
       this.wrap = $('<div class="customInfoWindow"><div class="padding"></div></div>');
+      this.topOffset = 80;
+      this.leftOffset = 30;
       this.setMap(marker.map);
+      this.isVisible = false;
     }
 
     CustomInfoWindow.prototype = new google.maps.OverlayView();
@@ -827,12 +851,13 @@
     CustomInfoWindow.prototype.onAdd = function() {
       var panes;
       this.wrap.find('.padding').append(this.content);
+      console.log(this.wrap);
       this.wrap.css({
         position: "absolute"
       });
       panes = this.getPanes();
       panes.overlayImage.appendChild(this.wrap[0]);
-      return this.setVisible(false);
+      return this.setVisible(true);
     };
 
     CustomInfoWindow.prototype.draw = function() {
@@ -840,18 +865,20 @@
       overlayProjection = this.getProjection();
       pos = overlayProjection.fromLatLngToDivPixel(this.marker.position);
       return this.wrap.css({
-        left: pos.x,
-        top: pos.y
+        left: pos.x + this.leftOffset,
+        top: pos.y - this.topOffset
       });
     };
 
     CustomInfoWindow.prototype.setVisible = function(isVisible) {
       if (this.wrap) {
         if (isVisible === true) {
+          this.isVisible = true;
           return this.wrap.css({
             visibility: "visible"
           });
         } else {
+          this.isVisible = false;
           return this.wrap.css({
             visibility: "hidden"
           });
