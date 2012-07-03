@@ -884,15 +884,24 @@
     };
 
     CustomInfoWindow.prototype.draw = function() {
-      var overlayProjection, pos;
+      var cancelHandler, overlayProjection, pos,
+        _this = this;
+      cancelHandler = function(e) {
+        e.cancelBubble = true;
+        return e.stopPropagation();
+      };
       overlayProjection = this.getProjection();
       pos = overlayProjection.fromLatLngToDivPixel(this.marker.position);
       this.leftOffset = pos.x + 30;
       this.topOffset = pos.y - 80;
-      return this.wrap.css({
+      this.wrap.css({
         left: this.leftOffset,
         top: this.topOffset
       });
+      this.eventListener1_ = google.maps.event.addDomListener(this.wrap[0], "mousedown", cancelHandler);
+      this.eventListener2_ = google.maps.event.addDomListener(this.wrap[0], "click", cancelHandler);
+      this.eventListener3_ = google.maps.event.addDomListener(this.wrap[0], "dblclick", cancelHandler);
+      return this.contextListener_ = google.maps.event.addDomListener(this.wrap[0], "contextmenu", cancelHandler);
     };
 
     CustomInfoWindow.prototype.close = function() {

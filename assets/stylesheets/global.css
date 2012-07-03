@@ -597,7 +597,7 @@ p.marker-permalink { text-align: right; }
 }
 /* Custom Infowindo {{{ */
 .customInfoWindow {
-  z-index: 14;
+  z-index: 1000;
   width: 300px;
   cursor: default;
   background: #fff;

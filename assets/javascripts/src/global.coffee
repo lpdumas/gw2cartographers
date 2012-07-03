@@ -587,14 +587,30 @@ class CustomInfoWindow
       # @open()
   
   draw:()->
+    # ignoreHandler = (e) =>
+    #   e.returnValue = false;
+    #   if e.preventDefault
+    #     e.preventDefault()
+    #     cancelHandler(e)
+    cancelHandler = (e)=>
+        e.cancelBubble = true
+        e.stopPropagation()
+    
     overlayProjection = @getProjection()
     pos = overlayProjection.fromLatLngToDivPixel(@marker.position);
     @leftOffset = pos.x + 30
     @topOffset = pos.y - 80
+    
     @wrap.css(
       left: @leftOffset
       top: @topOffset
     )
+    
+    @eventListener1_ = google.maps.event.addDomListener(@wrap[0], "mousedown", cancelHandler);
+    @eventListener2_ = google.maps.event.addDomListener(@wrap[0], "click", cancelHandler);
+    @eventListener3_ = google.maps.event.addDomListener(@wrap[0], "dblclick", cancelHandler);
+    @contextListener_ = google.maps.event.addDomListener(@wrap[0], "contextmenu", cancelHandler);
+    
   close:()=>
     if @wrap
       @onClose(this)

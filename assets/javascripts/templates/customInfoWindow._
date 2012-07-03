@@ -11,7 +11,8 @@
 </div>
 <% } else { %>
 <div class="marker-desc active">
-    <h1>More infos comming soon!</h1>
+    <h1>We need your help for this marker!</h1>
+    <p>Click on the edit button (top right of this box).</p>
 </div>
 <% } %>
 <form action="javacript:" class="edit-form" id="edit-form-<%= id %>">
