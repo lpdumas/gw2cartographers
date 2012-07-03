@@ -597,6 +597,7 @@ p.marker-permalink { text-align: right; }
 }
 /* Custom Infowindo {{{ */
 .customInfoWindow {
+  z-index: 14;
   width: 300px;
   cursor: default;
   background: #fff;
@@ -634,8 +635,11 @@ p.marker-permalink { text-align: right; }
   height: 32px;
   background: url('../images/layout/edit-options.png') -128px top no-repeat;
 }
-.customInfoWindow .edit:hover {
+
+.customInfoWindow .edit:hover,
+.customInfoWindow .edit.active {
   background-position: -128px bottom;
+  opacity: 1;
 }
 .customInfoWindow:after, .customInfoWindow:before {
 	right: 100%;
@@ -648,7 +652,7 @@ p.marker-permalink { text-align: right; }
 }
 
 .customInfoWindow:after {
-	border-right-color: #f7fdff;
+	border-right-color: #fff;
 	border-width: 20px;
 	top: 49px;
 }
@@ -683,6 +687,15 @@ p.marker-permalink { text-align: right; }
     padding: 5px 10px;
   }
   
+  .customInfoWindow .edit-form,
+  .customInfoWindow .marker-desc {
+    display: none;
+  }
+  
+  .customInfoWindow .edit-form.active,
+  .customInfoWindow .marker-desc.active {
+    display: block;
+  }
   .customInfoWindow .marker-desc h1 {
     font-size: 16px;
     font-size: 1.6rem;

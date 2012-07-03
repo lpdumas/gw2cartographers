@@ -1,6 +1,6 @@
 <a href="javascript:" title="Edit infos" class="edit button"></a>
 <% if (title !== "" && desc !== "") { %>
-<div class="marker-desc <%= type %>-marker">
+<div class="marker-desc active <%= type %>-marker">
     <h1><%= title %></h1>
     <p class="desc">
         <%= desc %> 
@@ -9,7 +9,12 @@
         <% }%>
     </p>
 </div>
-<form style="display: none;" action="javacript:" id="edit-form-<%= id %>">
+<% } else { %>
+<div class="marker-desc active">
+    <h1>More infos comming soon!</h1>
+</div>
+<% } %>
+<form action="javacript:" class="edit-form" id="edit-form-<%= id %>">
     <label>
         <span class="label">Title</span>
         <input type="text" name="marker-title" value="<%= title %>" >
@@ -24,8 +29,3 @@
     </label>
     <button type='submit'>save</button>
 </form>
-<% } else { %>
-<div class="marker-desc">
-    <h1>More infos comming soon!</h1>
-</div>
-<% } %>

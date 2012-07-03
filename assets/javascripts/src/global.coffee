@@ -573,13 +573,17 @@ class CustomInfoWindow
   
   onAdd:()->
       @wrap.find('.padding').append(@content)
-      @iWidth  = @wrap.outerWidth()
-      @iHeight = @wrap.outerHeight()
       @wrap.css(
-        position: "absolute"
+        display: "block"
+        position: "absolute",
+        "min-height" : 118
       )
+      # console.log window.getComputedStyle(@wrap[0],null).getPropertyValue("height");  
       panes = @getPanes()
       panes.overlayImage.appendChild(@wrap[0])
+      @iWidth = @wrap.outerWidth()
+      @iHeight = @wrap.outerHeight()
+      @wrap.find('.edit').bind('click', @toggleEditMod)
       # @open()
   
   draw:()->
@@ -596,57 +600,75 @@ class CustomInfoWindow
       @onClose(this)
       @isVisible = false
       @wrap.css(
-        visibility : "hidden"
+        display : "none"
       )
   open:()=>
     if @wrap
-      # @panMap()
+      @panMap()
       @onOpen(this)
       @isVisible = true
       @wrap.css(
-        visibility : "visible"
+        display : "block"
       )
+  
+  toggleEditMod: (e)=>
+    this_ = $(e.currentTarget)
+    parent = this_.closest(".customInfoWindow")
+    markerDescBox = parent.find('.marker-desc')
+    editBox = parent.find('.edit-form')
+    
+    if this_.hasClass('active')
+      markerDescBox.addClass('active')
+      this_.removeClass('active')
+      editBox.removeClass('active')
+    else
+      console.log "showing edit"
+      markerDescBox.removeClass('active')
+      this_.addClass('active')
+      editBox.addClass('active')
+      
   panMap: () -> 
-    
-    bounds = @map.getBounds();
-    if not bounds then return
-  
-    # the degrees per pixel
-    mapDiv = @map.getDiv();
-    mapWidth = mapDiv.offsetWidth;
-    mapHeight = mapDiv.offsetHeight;
-    boundsSpan = bounds.toSpan();
-    longSpan = boundsSpan.lng();
-    latSpan = boundsSpan.lat();
-    degPixelX = longSpan / mapWidth;
-    degPixelY = latSpan / mapHeight;
-  
-    # The bounds of the map
-    mapWestLng = bounds.getSouthWest().lng();
-    mapEastLng = bounds.getNorthEast().lng();
-    mapNorthLat = bounds.getNorthEast().lat();
-    mapSouthLat = bounds.getSouthWest().lat();
-  
-    # The bounds of the infowindow
-    iwWestLng = @marker.position.lng() + (@leftOffset) * degPixelX;
-    iwEastLng = @marker.position.lng() + (@leftOffset + @iWidth) * degPixelX;
-    iwNorthLat = @marker.position.lat() - (@toptOffset) * degPixelY;
-    iwSouthLat = @marker.position.lat() - (@toptOffset + @iHeight) * degPixelY;
-  
-    # calculate center shift
-    
-    shiftLng = (iwWestLng < mapWestLng ? mapWestLng - iwWestLng : 0) + (iwEastLng > mapEastLng ? mapEastLng - iwEastLng : 0);
-    shiftLat = (iwNorthLat > mapNorthLat ? mapNorthLat - iwNorthLat : 0) + (iwSouthLat < mapSouthLat ? mapSouthLat - iwSouthLat : 0);
-    # The center of the map
-    center = @map.getCenter();
-  
-    # The new map center
-    centerX = center.lng() - shiftLng;
-    centerY = center.lat() - shiftLat;
-  
-    # center the map to the new shifted center
-    console.log "#{centerY}, #{centerX}"
-    @map.setCenter(new google.maps.LatLng(centerY, centerX));
+
+    @map.panTo(new google.maps.LatLng(@marker.position.lat(), @marker.position.lng()));
+    # 
+    # bounds = @map.getBounds();
+    # if not bounds then return
+    #   
+    # # the degrees per pixel
+    # mapDiv = @map.getDiv();
+    # mapWidth = mapDiv.offsetWidth;
+    # mapHeight = mapDiv.offsetHeight;
+    # boundsSpan = bounds.toSpan();
+    # longSpan = boundsSpan.lng();
+    # latSpan = boundsSpan.lat();
+    # degPixelX = longSpan / mapWidth;
+    # degPixelY = latSpan / mapHeight;
+    #   
+    # # The bounds of the map
+    # mapWestLng = bounds.getSouthWest().lng();
+    # mapEastLng = bounds.getNorthEast().lng();
+    # mapNorthLat = bounds.getNorthEast().lat();
+    # mapSouthLat = bounds.getSouthWest().lat();
+    #   
+    # # The bounds of the infowindow
+    # iwWestLng = @marker.position.lng() + (@leftOffset) * degPixelX;
+    # iwEastLng = @marker.position.lng() + (@leftOffset + @iWidth) * degPixelX;
+    # iwNorthLat = @marker.position.lat() - (@toptOffset) * degPixelY;
+    # iwSouthLat = @marker.position.lat() - (@toptOffset + @iHeight) * degPixelY;
+    #   
+    # # calculate center shift
+    # 
+    # shiftLng = (iwWestLng < mapWestLng ? mapWestLng - iwWestLng : 0) + (iwEastLng > mapEastLng ? mapEastLng - iwEastLng : 0);
+    # shiftLat = (iwNorthLat > mapNorthLat ? mapNorthLat - iwNorthLat : 0) + (iwSouthLat < mapSouthLat ? mapSouthLat - iwSouthLat : 0);
+    # # The center of the map
+    # center = @map.getCenter();
+    #   
+    # # The new map center
+    # centerX = center.lng() - shiftLng;
+    # centerY = center.lat() - shiftLat;
+    #   
+    # # center the map to the new shifted center
+    # console.log "#{centerY}, #{centerX}"
   
     # Remove the listener after panning is complete.
     # google.maps.event.removeListener(@.boundsChangedListener_);
