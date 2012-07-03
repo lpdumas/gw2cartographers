@@ -140,8 +140,8 @@
       this.exportWindow = $('#export-windows');
       this.markersOptionsMenu = $('#markers-options');
       this.editionsTools = $('#edition-tools a');
-      this.defaultLat = 25.760319754713887;
-      this.defaultLng = -35.6396484375;
+      this.defaultLat = 15.919073517982465;
+      this.defaultLng = 18.28125;
       this.defaultCat = "generic";
       $.get('assets/javascripts/templates/confirmBox._', function(e) {
         var template;
@@ -242,9 +242,10 @@
         _this.removeMarkerLink.bind('click', _this.handleMarkerRemovalTool);
         _this.exportBtn.bind('click', _this.handleExport);
         _this.editionsTools.bind('click', _this.handleEdition);
-        return _this.exportWindow.find('.close').click(function() {
+        _this.exportWindow.find('.close').click(function() {
           return _this.exportWindow.hide();
         });
+        return _this.map.setZoom(4);
       });
     }
 
@@ -807,7 +808,7 @@
       this.div_ = $(content)[0];
       panes = this.getPanes();
       panes.overlayImage.appendChild(this.div_);
-      return this.setVisible(false);
+      return this.setVisible(true);
     };
 
     AreaSummary.prototype.draw = function() {

@@ -82,9 +82,10 @@ class CustomMap
     @exportWindow     = $('#export-windows')
     @markersOptionsMenu = $('#markers-options')
     @editionsTools    = $('#edition-tools a')
-
-    @defaultLat = 25.760319754713887
-    @defaultLng = -35.6396484375
+    
+    @defaultLat = 15.919073517982465
+    @defaultLng = 18.28125
+    
     @defaultCat = "generic"
     
     $.get('assets/javascripts/templates/confirmBox._', (e)=>
@@ -191,6 +192,8 @@ class CustomMap
       @exportWindow.find('.close').click(()=>
         @exportWindow.hide()
       )
+      
+      @map.setZoom(4)
     )
     
   addMarker:(markerInfo, markersType, markersCat)->
@@ -494,7 +497,7 @@ class CustomMap
         
   setAreasInformationVisibility:(isVisible)->
     for box in @areaSummaryBoxes
-        box.setVisible(isVisible)
+      box.setVisible(isVisible)
   toggleMarkersOptionsMenu: () ->
     @markersOptionsMenu.toggleClass('active')
   hideMarkersOptionsMenu: () ->
@@ -531,7 +534,7 @@ class AreaSummary
         @div_ = $(content)[0]
         panes = @getPanes()
         panes.overlayImage.appendChild(@div_)
-        @setVisible(false)
+        @setVisible(true)
         
     draw:()->
       overlayProjection = @getProjection()
@@ -543,11 +546,11 @@ class AreaSummary
       div.style.top = ne.y + ((sw.y - ne.y) - @height_) / 2 + 'px';
     
     setVisible:(isVisible)->
-        if @div_
-            if isVisible is true
-                @div_.style.visibility = "visible"
-            else
-                @div_.style.visibility = "hidden"
+      if @div_
+          if isVisible is true
+              @div_.style.visibility = "visible"
+          else
+              @div_.style.visibility = "hidden"
 ###
 # }}}
 ###                
@@ -587,11 +590,6 @@ class CustomInfoWindow
       # @open()
   
   draw:()->
-    # ignoreHandler = (e) =>
-    #   e.returnValue = false;
-    #   if e.preventDefault
-    #     e.preventDefault()
-    #     cancelHandler(e)
     cancelHandler = (e)=>
         e.cancelBubble = true
         e.stopPropagation()
