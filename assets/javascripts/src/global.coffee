@@ -77,11 +77,11 @@ class Confirmbox extends Modalbox
 class CustomMap
   constructor: (id)->
     @localStorageKey  = "gw2c_markers_config_01"
-    if App.localStorageAvailable
-      markerFormStorage = @getConfigFromLocalStorage()
-      @MarkersConfig = if markerFormStorage then markerFormStorage else Markers
-    else
-      @MarkersConfig = Markers
+    # if App.localStorageAvailable
+      # markerFormStorage = @getConfigFromLocalStorage()
+      # @MarkersConfig = if markerFormStorage then markerFormStorage else Markers
+    # else
+    @MarkersConfig = Markers
     
     @blankTilePath = 'tiles/00empty.jpg'
     @iconsPath     = 'assets/images/icons/32x32'
@@ -425,11 +425,12 @@ class CustomMap
   removeMarker:(id, mType, mCat)->
     confirmMessage = "Are you sure you want to delete this marker?"
     @confirmBox.initConfirmation(confirmMessage, ()=>
-      
       for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
         for marker, markerKey in markerType.markers when marker.__gm_id is id
+          if marker.infoWindow?
+            marker.infoWindow.setMap(null)
           marker.setMap(null)
-          @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
+          @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m) =>
             return m == marker
             # return m.__gm_id == id
           )
@@ -501,7 +502,7 @@ class CustomMap
         # remove -> Delete all marker from clicked marker type
         
         switch @appState
-          when "read", "move"
+          when "read", "move", "remove"
             if @canToggleMarkers
               if item.hasClass('off')
                 @setMarkersVisibilityByType(true, markerType, markerCat)
@@ -519,8 +520,8 @@ class CustomMap
               lng       : coord.lng()
               draggable : true
             @addMarker(newMarkerInfo, markerType, markerCat)
-          when "remove"
-            @removeMarkerFromType(markerType, markerCat)
+          # when "remove"
+            # @removeMarkerFromType(markerType, markerCat)
       
       html.find('.group-toggling').bind 'click', (e)=>
         this_ = $(e.currentTarget)
@@ -648,6 +649,11 @@ class CustomInfoWindow
     @wrap.find('.edit').bind('click', @toggleEditMod)
     @wrap.find('button').bind('click', @handleSave)
     
+  onRemove :() ->
+    # console.log @wrap.parent()
+    @wrap[0].parentNode.removeChild(@wrap[0])
+    @wrap = null
+    
   draw: () ->
     cancelHandler = (e)=>
         e.cancelBubble = true
@@ -722,8 +728,7 @@ class CustomInfoWindow
     @bindButton()
     @wrap.find('.edit').removeClass('active')
     @onSave(newInfo)
-    
-      
+  
   panMap: () -> 
     @map.panTo(new google.maps.LatLng(@marker.position.lat(), @marker.position.lng()));
 

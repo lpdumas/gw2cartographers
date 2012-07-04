@@ -138,15 +138,9 @@
 
       this.handleMarkerRemovalTool = __bind(this.handleMarkerRemovalTool, this);
 
-      var markerFormStorage,
-        _this = this;
+      var _this = this;
       this.localStorageKey = "gw2c_markers_config_01";
-      if (App.localStorageAvailable) {
-        markerFormStorage = this.getConfigFromLocalStorage();
-        this.MarkersConfig = markerFormStorage ? markerFormStorage : Markers;
-      } else {
-        this.MarkersConfig = Markers;
-      }
+      this.MarkersConfig = Markers;
       this.blankTilePath = 'tiles/00empty.jpg';
       this.iconsPath = 'assets/images/icons/32x32';
       this.maxZoom = 7;
@@ -623,6 +617,9 @@
               if (!(marker.__gm_id === id)) {
                 continue;
               }
+              if (marker.infoWindow != null) {
+                marker.infoWindow.setMap(null);
+              }
               marker.setMap(null);
               _this.gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
                 return m === marker;
@@ -753,6 +750,7 @@
           switch (_this.appState) {
             case "read":
             case "move":
+            case "remove":
               if (_this.canToggleMarkers) {
                 if (item.hasClass('off')) {
                   _this.setMarkersVisibilityByType(true, markerType, markerCat);
@@ -774,8 +772,6 @@
                 draggable: true
               };
               return _this.addMarker(newMarkerInfo, markerType, markerCat);
-            case "remove":
-              return _this.removeMarkerFromType(markerType, markerCat);
           }
         });
         html.find('.group-toggling').bind('click', function(e) {
@@ -965,6 +961,11 @@
     CustomInfoWindow.prototype.bindButton = function() {
       this.wrap.find('.edit').bind('click', this.toggleEditMod);
       return this.wrap.find('button').bind('click', this.handleSave);
+    };
+
+    CustomInfoWindow.prototype.onRemove = function() {
+      this.wrap[0].parentNode.removeChild(this.wrap[0]);
+      return this.wrap = null;
     };
 
     CustomInfoWindow.prototype.draw = function() {

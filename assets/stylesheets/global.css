@@ -416,10 +416,10 @@ html.add .menu-marker ul li:after{
   opacity: 1;
   background-position: top left;
 }
-html.remove .menu-marker ul li:after{
-  opacity: 1;
-  background-position: bottom left;
-}
+/*html.remove .menu-marker ul li:after{*/
+/*  opacity: 1;*/
+/*  background-position: bottom left;*/
+/*}*/
 .menu-marker ul li img {
   width: 25px;
   height: 25px;
