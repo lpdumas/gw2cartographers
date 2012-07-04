@@ -609,7 +609,6 @@ class AreaSummary
 class CustomInfoWindow
   constructor: (marker, content, opts) ->
     @content = content
-    console.log content
     @marker  = marker
     @template = opts.template
     @map     = marker.map
@@ -640,7 +639,7 @@ class CustomInfoWindow
       )
       # console.log window.getComputedStyle(@wrap[0],null).getPropertyValue("height");  
       panes = @getPanes()
-      panes.overlayImage.appendChild(@wrap[0])
+      panes.overlayMouseTarget.appendChild(@wrap[0])
       @iWidth = @wrap.outerWidth()
       @iHeight = @wrap.outerHeight()
       
@@ -653,8 +652,9 @@ class CustomInfoWindow
   draw: () ->
     cancelHandler = (e)=>
         e.cancelBubble = true
-        console.log "mousedown"
-        e.stopPropagation()
+        if e.stopPropagation
+          console.log e.type
+          e.stopPropagation()
     
     overlayProjection = @getProjection()
     pos = overlayProjection.fromLatLngToDivPixel(@marker.position)
@@ -663,10 +663,10 @@ class CustomInfoWindow
       top: pos.y - 80
     )
     
-    @eventListener1_ = google.maps.event.addDomListener(@wrap[0], "mousedown", cancelHandler);
-    @eventListener2_ = google.maps.event.addDomListener(@wrap[0], "click", cancelHandler);
-    @eventListener3_ = google.maps.event.addDomListener(@wrap[0], "dblclick", cancelHandler);
-    @contextListener_ = google.maps.event.addDomListener(@wrap[0], "contextmenu", cancelHandler);
+    events = ['mousedown', 'touchstart', 'touchend', 'touchmove', 'contextmenu', 'click']
+    @listeners = []
+    for event in events
+      @listeners.push(google.maps.event.addDomListener(@wrap[0], event, cancelHandler);)
     
   close:()=>
     if @wrap

@@ -932,7 +932,6 @@
 
       var wrap;
       this.content = content;
-      console.log(content);
       this.marker = marker;
       this.template = opts.template;
       this.map = marker.map;
@@ -958,7 +957,7 @@
         "min-height": 118
       });
       panes = this.getPanes();
-      panes.overlayImage.appendChild(this.wrap[0]);
+      panes.overlayMouseTarget.appendChild(this.wrap[0]);
       this.iWidth = this.wrap.outerWidth();
       this.iHeight = this.wrap.outerHeight();
       return this.bindButton();
@@ -970,12 +969,14 @@
     };
 
     CustomInfoWindow.prototype.draw = function() {
-      var cancelHandler, overlayProjection, pos,
+      var cancelHandler, event, events, overlayProjection, pos, _j, _len1, _results,
         _this = this;
       cancelHandler = function(e) {
         e.cancelBubble = true;
-        console.log("mousedown");
-        return e.stopPropagation();
+        if (e.stopPropagation) {
+          console.log(e.type);
+          return e.stopPropagation();
+        }
       };
       overlayProjection = this.getProjection();
       pos = overlayProjection.fromLatLngToDivPixel(this.marker.position);
@@ -983,10 +984,14 @@
         left: pos.x + 30,
         top: pos.y - 80
       });
-      this.eventListener1_ = google.maps.event.addDomListener(this.wrap[0], "mousedown", cancelHandler);
-      this.eventListener2_ = google.maps.event.addDomListener(this.wrap[0], "click", cancelHandler);
-      this.eventListener3_ = google.maps.event.addDomListener(this.wrap[0], "dblclick", cancelHandler);
-      return this.contextListener_ = google.maps.event.addDomListener(this.wrap[0], "contextmenu", cancelHandler);
+      events = ['mousedown', 'touchstart', 'touchend', 'touchmove', 'contextmenu', 'click'];
+      this.listeners = [];
+      _results = [];
+      for (_j = 0, _len1 = events.length; _j < _len1; _j++) {
+        event = events[_j];
+        _results.push(this.listeners.push(google.maps.event.addDomListener(this.wrap[0], event, cancelHandler)));
+      }
+      return _results;
     };
 
     CustomInfoWindow.prototype.close = function() {

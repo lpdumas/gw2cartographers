@@ -32,7 +32,8 @@ sub { bottom: -0.25em; }
 ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
 dd { margin: 0 0 0 40px; }
 nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
-
+a { outline: none; }
+:-moz-any-link:focus { outline: none; }
 /*img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }*/
 
 svg:not(:root) { overflow: hidden; }
@@ -146,7 +147,7 @@ html.move #map-mask {
 }
 #map {
   position: relative;
-  z-index: 2;
+  z-index: 0;
   top: 0;
   right: 0;
   bottom: 0;
@@ -597,7 +598,7 @@ p.marker-permalink { text-align: right; }
 }
 /* Custom Infowindo {{{ */
 .customInfoWindow {
-  z-index: 1000;
+  z-index: 100;
   width: 300px;
   cursor: default;
   background: #fff;
@@ -663,17 +664,22 @@ p.marker-permalink { text-align: right; }
 }
   .customInfoWindow .padding {
     position: relative;
+    cursor: default;
+    z-index: 101;
     padding: 10px;
   }
   .customInfoWindow label {
+    position: relative;
     display: block;
     margin-bottom: 8px;
   }
     .customInfoWindow span.label {
+      position: relative;
       display: block;
     }
   .customInfoWindow input[type="text"],
   .customInfoWindow textarea {
+    position: relative;
     background: #fff;
     border: 1px solid #B3B3B3;
     width: 264px;
@@ -681,6 +687,7 @@ p.marker-permalink { text-align: right; }
     color: #585858;
   }
   .customInfoWindow button {
+    position: relative;
     color: #fff;
     background: #000;
     border: 1px solid #D4D4D4;
@@ -689,6 +696,8 @@ p.marker-permalink { text-align: right; }
   
   .customInfoWindow .edit-form,
   .customInfoWindow .marker-desc {
+    position: relative;
+    z-index: 102;
     display: none;
   }
   
@@ -697,6 +706,7 @@ p.marker-permalink { text-align: right; }
     display: block;
   }
   .customInfoWindow .marker-desc h1 {
+    position: relative;
     font-size: 16px;
     font-size: 1.6rem;
     margin: 0 0 10px 0;
