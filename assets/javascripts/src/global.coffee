@@ -1,8 +1,19 @@
+App = {}
+App.opacity = false
+App.pointerEvents = false
+App.localStorageAvailable = (()->
+  if window['localStorage']?
+    return true
+  else
+    return false
+)()
+
 html = document.documentElement
 attToCheck = ["pointerEvents", "opacity"]
 for att in attToCheck 
-  if html.style["pointerEvents"]?
-    $(html).addClass(att) 
+  if html.style[att]?
+    $(html).addClass(att)
+    App[att] = true
   else
     $(html).addClass("no-#{att}") 
 ###
@@ -65,6 +76,13 @@ class Confirmbox extends Modalbox
 ###
 class CustomMap
   constructor: (id)->
+    @localStorageKey  = "gw2c_markers_config_01"
+    if App.localStorageAvailable
+      markerFormStorage = @getConfigFromLocalStorage()
+      @MarkersConfig = if markerFormStorage then markerFormStorage else Markers
+    else
+      @MarkersConfig = Markers
+    
     @blankTilePath = 'tiles/00empty.jpg'
     @iconsPath     = 'assets/images/icons/32x32'
     @maxZoom       = 7
@@ -82,7 +100,6 @@ class CustomMap
     @exportWindow     = $('#export-windows')
     @markersOptionsMenu = $('#markers-options')
     @editionsTools    = $('#edition-tools a')
-    
     # @defaultLat = 15.919073517982465
     @defaultLat = 26.765230565697536
     # @defaultLng = 18.28125
@@ -198,6 +215,10 @@ class CustomMap
       # @map.setZoom(4)
     )
     
+  getConfigFromLocalStorage: () ->
+    json = localStorage.getItem(@localStorageKey)
+    return JSON.parse(json)
+  
   addMarker:(markerInfo, markersType, markersCat)->
     iconsize = 32;
     iconmid = iconsize / 2;
@@ -237,6 +258,7 @@ class CustomMap
         @currentOpenedInfoWindow = marker.infoWindow
     
     google.maps.event.addListener(marker, 'dragend', (e)=>
+      @saveToLocalStorage()
       if marker["infoWindow"]?
         marker["infoWindow"].updatePos()
     )
@@ -289,7 +311,7 @@ class CustomMap
     markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["markerGroup"] when markerType.slug is markersType
   
   setAllMarkers:()->
-    for markersCat, markersObjects of Markers
+    for markersCat, markersObjects of @MarkersConfig
       if not @gMarker[markersCat]?
         @gMarker[markersCat] = {}
         @gMarker[markersCat]["name"] = markersObjects.name
@@ -308,7 +330,7 @@ class CustomMap
     return Resources.Icons[markersCat][icon].url for icon of Resources.Icons[markersCat] when icon is type
 
   setAllMarkersVisibility:(isVisible)->
-    for cat, markersObjects of Markers
+    for cat, markersObjects of @MarkersConfig
       @setMarkersVisibilityByType(isVisible, markerTypeObject.slug, cat) for markerTypeObject in markersObjects.markerGroup when not $("[data-type='#{markerTypeObject.slug}']").hasClass('off')
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
@@ -396,6 +418,7 @@ class CustomMap
           @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
             return m == marker
           )
+          @saveToLocalStorage()
     )
   
   removeMarker:(id, mType, mCat)->
@@ -409,6 +432,7 @@ class CustomMap
             return m == marker
             # return m.__gm_id == id
           )
+          @saveToLocalStorage()
           return true
     )
   
@@ -418,9 +442,16 @@ class CustomMap
         marker.desc = newInfo.desc
         marker.title = newInfo.title
         marker.wikiLink = newInfo.wikiLink
-        console.log @handleExport()
+        @saveToLocalStorage()
         return
         
+  
+  saveToLocalStorage: ()->
+    # Save new exported JSON to local storage if it is supported
+    if App.localStorageAvailable
+      json = @handleExport()
+      localStorage.setItem(@localStorageKey, json);
+
   
   setDraggableMarker:(val)->
     unDrag = (marker)->
@@ -441,7 +472,7 @@ class CustomMap
       @canRemoveMarker = false
 
   getMarkerByCoordinates:(lat, lng)->
-    for type, markersObjects of Markers
+    for type, markersObjects of @MarkersConfig
       for markerTypeObject, key in markersObjects.markerGroup
         return marker for marker in markerTypeObject.markers when marker.lat is lat and marker.lng is lng
     return false
@@ -467,6 +498,7 @@ class CustomMap
         # read   -> Toggle on/off marker on map
         # add    -> Add a draggable marker on center of map
         # remove -> Delete all marker from clicked marker type
+        
         switch @appState
           when "read", "move"
             if @canToggleMarkers
@@ -503,7 +535,7 @@ class CustomMap
           parent.find('.trigger').addClass('off')
             
       @markersOptionsMenu.find('.padding').prepend(html)
-      @turnOfMenuIconsFromCat(markerCat) for markerCat of Markers when markerCat isnt @defaultCat
+      @turnOfMenuIconsFromCat(markerCat) for markerCat of @MarkersConfig when markerCat isnt @defaultCat
     )
       
   initializeAreaSummaryBoxes:()->
