@@ -155,9 +155,9 @@ class CustomMap
     @addMenuIcons()
     
     # Events
-    google.maps.event.addListener(@map, 'click', (e)=>
+    # google.maps.event.addListener(@map, 'click', (e)=>
       # console.log '{"lat" : "'+e.latLng.lat()+'", "lng" : "'+e.latLng.lng()+'", "title" : "", "desc" : ""},'
-    )
+    # )
     
     google.maps.event.addListener(@map, 'zoom_changed', (e)=>
         zoomLevel = @map.getZoom()
@@ -637,7 +637,6 @@ class CustomInfoWindow
         position: "absolute",
         "min-height" : 118
       )
-      # console.log window.getComputedStyle(@wrap[0],null).getPropertyValue("height");  
       panes = @getPanes()
       panes.overlayMouseTarget.appendChild(@wrap[0])
       @iWidth = @wrap.outerWidth()
@@ -653,7 +652,6 @@ class CustomInfoWindow
     cancelHandler = (e)=>
         e.cancelBubble = true
         if e.stopPropagation
-          console.log e.type
           e.stopPropagation()
     
     overlayProjection = @getProjection()

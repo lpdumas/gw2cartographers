@@ -213,7 +213,6 @@
       this.map.mapTypes.set('custom', this.customMapType);
       this.map.setMapTypeId('custom');
       this.addMenuIcons();
-      google.maps.event.addListener(this.map, 'click', function(e) {});
       google.maps.event.addListener(this.map, 'zoom_changed', function(e) {
         var zoomLevel;
         zoomLevel = _this.map.getZoom();
@@ -974,7 +973,6 @@
       cancelHandler = function(e) {
         e.cancelBubble = true;
         if (e.stopPropagation) {
-          console.log(e.type);
           return e.stopPropagation();
         }
       };
