@@ -138,8 +138,15 @@
 
       this.handleMarkerRemovalTool = __bind(this.handleMarkerRemovalTool, this);
 
-      var _this = this;
+      var markerFormStorage,
+        _this = this;
       this.localStorageKey = "gw2c_markers_config_01";
+      if (App.localStorageAvailable) {
+        markerFormStorage = this.getConfigFromLocalStorage();
+        this.MarkersConfig = markerFormStorage ? markerFormStorage : Markers;
+      } else {
+
+      }
       this.MarkersConfig = Markers;
       this.blankTilePath = 'tiles/00empty.jpg';
       this.iconsPath = 'assets/images/icons/32x32';

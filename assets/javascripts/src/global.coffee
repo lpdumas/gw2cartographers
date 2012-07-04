@@ -77,10 +77,10 @@ class Confirmbox extends Modalbox
 class CustomMap
   constructor: (id)->
     @localStorageKey  = "gw2c_markers_config_01"
-    # if App.localStorageAvailable
-      # markerFormStorage = @getConfigFromLocalStorage()
-      # @MarkersConfig = if markerFormStorage then markerFormStorage else Markers
-    # else
+    if App.localStorageAvailable
+      markerFormStorage = @getConfigFromLocalStorage()
+      @MarkersConfig = if markerFormStorage then markerFormStorage else Markers
+    else
     @MarkersConfig = Markers
     
     @blankTilePath = 'tiles/00empty.jpg'
