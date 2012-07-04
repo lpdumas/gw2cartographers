@@ -213,9 +213,7 @@
       this.map.mapTypes.set('custom', this.customMapType);
       this.map.setMapTypeId('custom');
       this.addMenuIcons();
-      google.maps.event.addListener(this.map, 'click', function(e) {
-        return console.log('{"lat" : "' + e.latLng.lat() + '", "lng" : "' + e.latLng.lng() + '", "title" : "", "desc" : ""},');
-      });
+      google.maps.event.addListener(this.map, 'click', function(e) {});
       google.maps.event.addListener(this.map, 'zoom_changed', function(e) {
         var zoomLevel;
         zoomLevel = _this.map.getZoom();
@@ -525,7 +523,8 @@
               "lng": marker.getPosition().lng(),
               "lat": marker.getPosition().lat(),
               "title": marker.title,
-              "desc": marker.desc
+              "desc": marker.desc,
+              "wikiLink": marker.wikiLink
             };
             exportMarkerObject[markersCat]["markerGroup"][key]["markers"].push(nm);
           }
@@ -933,6 +932,7 @@
 
       var wrap;
       this.content = content;
+      console.log(content);
       this.marker = marker;
       this.template = opts.template;
       this.map = marker.map;
@@ -974,6 +974,7 @@
         _this = this;
       cancelHandler = function(e) {
         e.cancelBubble = true;
+        console.log("mousedown");
         return e.stopPropagation();
       };
       overlayProjection = this.getProjection();

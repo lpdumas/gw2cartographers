@@ -156,7 +156,7 @@ class CustomMap
     
     # Events
     google.maps.event.addListener(@map, 'click', (e)=>
-      console.log '{"lat" : "'+e.latLng.lat()+'", "lng" : "'+e.latLng.lng()+'", "title" : "", "desc" : ""},'
+      # console.log '{"lat" : "'+e.latLng.lat()+'", "lng" : "'+e.latLng.lng()+'", "title" : "", "desc" : ""},'
     )
     
     google.maps.event.addListener(@map, 'zoom_changed', (e)=>
@@ -374,6 +374,7 @@ class CustomMap
             "lat" : marker.getPosition().lat()
             "title" : marker.title
             "desc"  : marker.desc
+            "wikiLink"  : marker.wikiLink
           exportMarkerObject[markersCat]["markerGroup"][key]["markers"].push(nm)
 
     jsonString = JSON.stringify(exportMarkerObject)
@@ -608,6 +609,7 @@ class AreaSummary
 class CustomInfoWindow
   constructor: (marker, content, opts) ->
     @content = content
+    console.log content
     @marker  = marker
     @template = opts.template
     @map     = marker.map
@@ -647,9 +649,11 @@ class CustomInfoWindow
   bindButton: () ->
     @wrap.find('.edit').bind('click', @toggleEditMod)
     @wrap.find('button').bind('click', @handleSave)
+    
   draw: () ->
     cancelHandler = (e)=>
         e.cancelBubble = true
+        console.log "mousedown"
         e.stopPropagation()
     
     overlayProjection = @getProjection()
