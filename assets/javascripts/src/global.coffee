@@ -81,7 +81,7 @@ class CustomMap
       markerFormStorage = @getConfigFromLocalStorage()
       @MarkersConfig = if markerFormStorage then markerFormStorage else Markers
     else
-    @MarkersConfig = Markers
+      @MarkersConfig = Markers
     
     @blankTilePath = 'tiles/00empty.jpg'
     @iconsPath     = 'assets/images/icons/32x32'
@@ -267,7 +267,7 @@ class CustomMap
         marker["infoWindow"].updatePos()
     )
 
-    if markerInfo.lat is @getStartLat() and markerInfo.lng is @getStartLng()
+    if markerInfo.lat.toString() is @getStartLat() and markerInfo.lng.toString() is @getStartLng()
       if not marker["infoWindow"]?
         createInfoWindow(marker)
         marker["infoWindow"].open()
@@ -743,6 +743,8 @@ class CustomInfoWindow
       wikiLink : newWikiLink
       type : @marker.type
       cat  : @marker.cat
+      lat  : @marker.position.lat()
+      lng  : @marker.position.lng()
     @wrap.find('.padding').html(@template(newInfo))
     @bindButton()
     @wrap.find('.edit').removeClass('active')

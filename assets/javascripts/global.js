@@ -145,9 +145,8 @@
         markerFormStorage = this.getConfigFromLocalStorage();
         this.MarkersConfig = markerFormStorage ? markerFormStorage : Markers;
       } else {
-
+        this.MarkersConfig = Markers;
       }
-      this.MarkersConfig = Markers;
       this.blankTilePath = 'tiles/00empty.jpg';
       this.iconsPath = 'assets/images/icons/32x32';
       this.maxZoom = 7;
@@ -327,7 +326,7 @@
           return marker["infoWindow"].updatePos();
         }
       });
-      if (markerInfo.lat === this.getStartLat() && markerInfo.lng === this.getStartLng()) {
+      if (markerInfo.lat.toString() === this.getStartLat() && markerInfo.lng.toString() === this.getStartLng()) {
         if (!(marker["infoWindow"] != null)) {
           createInfoWindow(marker);
           marker["infoWindow"].open();
@@ -1100,7 +1099,9 @@
         desc: newDesc,
         wikiLink: newWikiLink,
         type: this.marker.type,
-        cat: this.marker.cat
+        cat: this.marker.cat,
+        lat: this.marker.position.lat(),
+        lng: this.marker.position.lng()
       };
       this.wrap.find('.padding').html(this.template(newInfo));
       this.bindButton();
