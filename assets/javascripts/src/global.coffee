@@ -83,8 +83,10 @@ class CustomMap
     @markersOptionsMenu = $('#markers-options')
     @editionsTools    = $('#edition-tools a')
     
-    @defaultLat = 15.919073517982465
-    @defaultLng = 18.28125
+    # @defaultLat = 15.919073517982465
+    @defaultLat = 26.765230565697536
+    # @defaultLng = 18.28125
+    @defaultLng = -36.32080078125
     
     @defaultCat = "generic"
     
@@ -193,7 +195,7 @@ class CustomMap
         @exportWindow.hide()
       )
       
-      @map.setZoom(4)
+      # @map.setZoom(4)
     )
     
   addMarker:(markerInfo, markersType, markersCat)->
@@ -215,6 +217,7 @@ class CustomMap
     marker["desc"]  = "#{markerInfo.desc}"
     marker["wikiLink"]  = "#{markerInfo.wikiLink}"
     marker["type"]  = "#{markersType}"
+    marker["cat"]  = "#{markersCat}"
 
     
     # permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat+ '&lng=' + markerInfo.lng + '">Permalink</a></p>'
@@ -233,9 +236,10 @@ class CustomMap
         marker.infoWindow.open(@map, marker)
         @currentOpenedInfoWindow = marker.infoWindow
     
-    # google.maps.event.addListener(marker, 'dragend', (e)=>
-    #   console.log '{"lat" : "'+ e.latLng.lat() +'", "lng" : "'+ e.latLng.lng() +'", "title" : "", "desc" : ""},'
-    # )
+    google.maps.event.addListener(marker, 'dragend', (e)=>
+      if marker["infoWindow"]?
+        marker["infoWindow"].updatePos()
+    )
     google.maps.event.addListener(marker, 'click', (e)=>
       closeCurrentInfoWindow = ()=>
         
@@ -272,18 +276,18 @@ class CustomMap
                 @currentOpenedInfoWindow = null
               onOpen  : (infoWindow) =>
                 @currentOpenedInfoWindow = infoWindow
+              onSave  : (newInfo)=>
+                @updateMarkerInfos(newInfo)
+                
+              template : @editInfoWindowTemplate
             )
             
             if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
             marker["infoWindow"].open()
-          # console.log marker.test
-          # marker.test.setVisible(true)
-          # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-          # marker.infoWindow.open(@map, marker)
-          # marker.infoWindow.show()
     )
     
     markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["markerGroup"] when markerType.slug is markersType
+  
   setAllMarkers:()->
     for markersCat, markersObjects of Markers
       if not @gMarker[markersCat]?
@@ -351,8 +355,9 @@ class CustomMap
           exportMarkerObject[markersCat]["markerGroup"][key]["markers"].push(nm)
 
     jsonString = JSON.stringify(exportMarkerObject)
-    @exportWindow.find('.content').html(jsonString)
-    @exportWindow.show();
+    return jsonString
+    # @exportWindow.find('.content').html(jsonString)
+    # @exportWindow.show();
     
   handleEdition:(e)=>
     this_ = $(e.currentTarget)
@@ -406,6 +411,16 @@ class CustomMap
           )
           return true
     )
+  
+  updateMarkerInfos: (newInfo)->
+    for markerType, typeKey in @gMarker[newInfo.cat]["markerGroup"] when markerType.slug is newInfo.type
+      for marker, markerKey in markerType.markers when marker.__gm_id is newInfo.id
+        marker.desc = newInfo.desc
+        marker.title = newInfo.title
+        marker.wikiLink = newInfo.wikiLink
+        console.log @handleExport()
+        return
+        
   
   setDraggableMarker:(val)->
     unDrag = (marker)->
@@ -534,7 +549,7 @@ class AreaSummary
         @div_ = $(content)[0]
         panes = @getPanes()
         panes.overlayImage.appendChild(@div_)
-        @setVisible(true)
+        @setVisible(false)
         
     draw:()->
       overlayProjection = @getProjection()
@@ -562,13 +577,21 @@ class CustomInfoWindow
   constructor: (marker, content, opts) ->
     @content = content
     @marker  = marker
+    @template = opts.template
     @map     = marker.map
-    @wrap = $('<div class="customInfoWindow"><a href="javascript:" title="Close" class="close button"></a><div class="padding"></div></div>')
+    wrap = """
+    <div class="customInfoWindow">
+      <a href="javascript:" title="Close" class="close button"></a>
+        <div class="padding"></div>
+    </div>
+    """
+    @wrap = $(wrap)
     @closeBtn = @wrap.find('.close')
     @setMap(@map)
     @isVisible = false
-    @onClose= opts.onClose
-    @onOpen= opts.onOpen
+    @onClose   = opts.onClose
+    @onOpen    = opts.onOpen
+    @onSave    = opts.onSave
     @closeBtn.bind('click', @close)
 
   CustomInfoWindow:: = new google.maps.OverlayView()
@@ -586,22 +609,22 @@ class CustomInfoWindow
       panes.overlayImage.appendChild(@wrap[0])
       @iWidth = @wrap.outerWidth()
       @iHeight = @wrap.outerHeight()
-      @wrap.find('.edit').bind('click', @toggleEditMod)
+      
+      @bindButton()
       # @open()
-  
-  draw:()->
+  bindButton: () ->
+    @wrap.find('.edit').bind('click', @toggleEditMod)
+    @wrap.find('button').bind('click', @handleSave)
+  draw: () ->
     cancelHandler = (e)=>
         e.cancelBubble = true
         e.stopPropagation()
     
     overlayProjection = @getProjection()
-    pos = overlayProjection.fromLatLngToDivPixel(@marker.position);
-    @leftOffset = pos.x + 30
-    @topOffset = pos.y - 80
-    
+    pos = overlayProjection.fromLatLngToDivPixel(@marker.position)
     @wrap.css(
-      left: @leftOffset
-      top: @topOffset
+      left: pos.x + 30
+      top: pos.y - 80
     )
     
     @eventListener1_ = google.maps.event.addDomListener(@wrap[0], "mousedown", cancelHandler);
@@ -625,9 +648,16 @@ class CustomInfoWindow
         display : "block"
       )
   
+  updatePos: ()->
+    overlayProjection = @getProjection()
+    pos = overlayProjection.fromLatLngToDivPixel(@marker.position)
+    @wrap.css(
+      left: pos.x + 30
+      top: pos.y - 80
+    )
   toggleEditMod: (e)=>
     this_ = $(e.currentTarget)
-    parent = this_.closest(".customInfoWindow")
+    parent = @wrap
     markerDescBox = parent.find('.marker-desc')
     editBox = parent.find('.edit-form')
     
@@ -636,57 +666,33 @@ class CustomInfoWindow
       this_.removeClass('active')
       editBox.removeClass('active')
     else
-      console.log "showing edit"
       markerDescBox.removeClass('active')
       this_.addClass('active')
       editBox.addClass('active')
+
+  handleSave: (e) =>
+    this_ = $(e.currentTarget)
+    form = @wrap.find('.edit-form')
+    newTitle = @wrap.find('[name="marker-title"]').val()
+    newDesc = @wrap.find('[name="marker-description"]').val()
+    newWikiLink = @wrap.find('[name="marker-wiki"]').val()
+    form.removeClass('active')
+    newInfo = 
+      id    : @marker.__gm_id
+      title : newTitle
+      desc  : newDesc
+      wikiLink : newWikiLink
+      type : @marker.type
+      cat  : @marker.cat
+    @wrap.find('.padding').html(@template(newInfo))
+    @bindButton()
+    @wrap.find('.edit').removeClass('active')
+    @onSave(newInfo)
+    
       
   panMap: () -> 
-
     @map.panTo(new google.maps.LatLng(@marker.position.lat(), @marker.position.lng()));
-    # 
-    # bounds = @map.getBounds();
-    # if not bounds then return
-    #   
-    # # the degrees per pixel
-    # mapDiv = @map.getDiv();
-    # mapWidth = mapDiv.offsetWidth;
-    # mapHeight = mapDiv.offsetHeight;
-    # boundsSpan = bounds.toSpan();
-    # longSpan = boundsSpan.lng();
-    # latSpan = boundsSpan.lat();
-    # degPixelX = longSpan / mapWidth;
-    # degPixelY = latSpan / mapHeight;
-    #   
-    # # The bounds of the map
-    # mapWestLng = bounds.getSouthWest().lng();
-    # mapEastLng = bounds.getNorthEast().lng();
-    # mapNorthLat = bounds.getNorthEast().lat();
-    # mapSouthLat = bounds.getSouthWest().lat();
-    #   
-    # # The bounds of the infowindow
-    # iwWestLng = @marker.position.lng() + (@leftOffset) * degPixelX;
-    # iwEastLng = @marker.position.lng() + (@leftOffset + @iWidth) * degPixelX;
-    # iwNorthLat = @marker.position.lat() - (@toptOffset) * degPixelY;
-    # iwSouthLat = @marker.position.lat() - (@toptOffset + @iHeight) * degPixelY;
-    #   
-    # # calculate center shift
-    # 
-    # shiftLng = (iwWestLng < mapWestLng ? mapWestLng - iwWestLng : 0) + (iwEastLng > mapEastLng ? mapEastLng - iwEastLng : 0);
-    # shiftLat = (iwNorthLat > mapNorthLat ? mapNorthLat - iwNorthLat : 0) + (iwSouthLat < mapSouthLat ? mapSouthLat - iwSouthLat : 0);
-    # # The center of the map
-    # center = @map.getCenter();
-    #   
-    # # The new map center
-    # centerX = center.lng() - shiftLng;
-    # centerY = center.lat() - shiftLat;
-    #   
-    # # center the map to the new shifted center
-    # console.log "#{centerY}, #{centerX}"
-  
-    # Remove the listener after panning is complete.
-    # google.maps.event.removeListener(@.boundsChangedListener_);
-    # @.boundsChangedListener_ = null;
+
 ###
 # }}}
 ###

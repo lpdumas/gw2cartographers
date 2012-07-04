@@ -4,10 +4,10 @@
     <h1><%= title %></h1>
     <p class="desc">
         <%= desc %> 
-        <% if(wikiLink !== "") {%>
-        <a href="<%= wikiLink %>">More infos on wiki.guildwars2.com</a>
-        <% }%>
     </p>
+    <% if(wikiLink !== "") {%>
+    <p><a target="_blank" href="<%= wikiLink %>">More infos on wiki.guildwars2.com</a></p>
+    <% }%>
 </div>
 <% } else { %>
 <div class="marker-desc active">
@@ -28,5 +28,5 @@
         <span class="label">Wiki link</span>
         <input type="text" name="marker-wiki" value="<%= wikiLink %>" >
     </label>
-    <button type='submit'>save</button>
+    <button type='button'>save</button>
 </form>
