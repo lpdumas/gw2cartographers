@@ -33,5 +33,5 @@
 </form>
 <div class="share-input">
     <span class="label">Share link</span>
-    <input type="text" disabled name="share-link" value="http://gw2cartographers.com?lat=<%= lat %>&amp;lng=<%= lng %>" >
+    <input type="text" readonly name="share-link" value="http://gw2cartographers.com?lat=<%= lat %>&amp;lng=<%= lng %>" >
 </div>

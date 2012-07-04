@@ -685,10 +685,17 @@ class CustomInfoWindow
   updatePos: ()->
     overlayProjection = @getProjection()
     pos = overlayProjection.fromLatLngToDivPixel(@marker.position)
+
+    shareInput = @wrap.find('[name="share-link"]') 
+    val = shareInput.val()
+    newVal = val.split("?")[0] + "?lat=" + @marker.position.lat() + "&lng=" + @marker.position.lng()
+    shareInput.val(newVal)
+
     @wrap.css(
       left: pos.x + 30
       top: pos.y - 80
     )
+    
   toggleEditMod: (e)=>
     this_ = $(e.currentTarget)
     parent = @wrap
