@@ -220,6 +220,27 @@ class CustomMap
     return JSON.parse(json)
   
   addMarker:(markerInfo, markersType, markersCat)->
+    createInfoWindow = (marker)=>
+      templateInfo = 
+        id : marker.__gm_id
+        title : marker.title
+        desc  : marker.desc
+        type  : marker.type
+        lat   : marker.position.lat()
+        lng   : marker.position.lng()
+        wikiLink  : marker.wikiLink
+    
+      editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
+      marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent,
+        onClose : () =>
+          @currentOpenedInfoWindow = null
+        onOpen  : (infoWindow) =>
+          @currentOpenedInfoWindow = infoWindow
+        onSave  : (newInfo)=>
+          @updateMarkerInfos(newInfo)
+        template : @editInfoWindowTemplate
+      )
+      
     iconsize = 32;
     iconmid = iconsize / 2;
     image = new google.maps.MarkerImage(@getIconURLByType(markersType, markersCat), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
@@ -240,28 +261,19 @@ class CustomMap
     marker["type"]  = "#{markersType}"
     marker["cat"]  = "#{markersCat}"
 
-    
-    # permalink = '<p class="marker-permalink"><a href="?lat=' + markerInfo.lat+ '&lng=' + markerInfo.lng + '">Permalink</a></p>'
-    # infoWindow = new google.maps.InfoWindow(
-      # content  : editInfoWindowContent
-      # maxWidth : 200
-    # )
-    
-    # test = new CustomInfoWindow(marker, editInfoWindowContent)
-    
-    # marker["infoWindow"] = infoWindow
-    # marker["test"] = test
-    
-    markerThatMatchUrl = @getMarkerByCoordinates(@getStartLat(), @getStartLng())
-    if (markerThatMatchUrl == markerInfo)
-        marker.infoWindow.open(@map, marker)
-        @currentOpenedInfoWindow = marker.infoWindow
-    
     google.maps.event.addListener(marker, 'dragend', (e)=>
       @saveToLocalStorage()
       if marker["infoWindow"]?
         marker["infoWindow"].updatePos()
     )
+
+    if markerInfo.lat is @getStartLat() and markerInfo.lng is @getStartLng()
+      if not marker["infoWindow"]?
+        createInfoWindow(marker)
+        marker["infoWindow"].open()
+      else
+        marker["infoWindow"].open()
+        
     google.maps.event.addListener(marker, 'click', (e)=>
       closeCurrentInfoWindow = ()=>
         
@@ -285,31 +297,13 @@ class CustomMap
               if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
               marker["infoWindow"].open()
           else  
-            templateInfo = 
-              id : marker.__gm_id
-              title : marker.title
-              desc  : marker.desc
-              type  : marker.type
-              wikiLink  : marker.wikiLink
-          
-            editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
-            marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent,
-              onClose : () =>
-                @currentOpenedInfoWindow = null
-              onOpen  : (infoWindow) =>
-                @currentOpenedInfoWindow = infoWindow
-              onSave  : (newInfo)=>
-                @updateMarkerInfos(newInfo)
-                
-              template : @editInfoWindowTemplate
-            )
-            
+            createInfoWindow(marker)
             if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
             marker["infoWindow"].open()
     )
     
     markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["markerGroup"] when markerType.slug is markersType
-  
+
   setAllMarkers:()->
     for markersCat, markersObjects of @MarkersConfig
       if not @gMarker[markersCat]?
@@ -474,11 +468,11 @@ class CustomMap
       @canRemoveMarker = false
 
   getMarkerByCoordinates:(lat, lng)->
-    for type, markersObjects of @MarkersConfig
+    for markersCat, markersObjects of @MarkersConfig
       for markerTypeObject, key in markersObjects.markerGroup
         return marker for marker in markerTypeObject.markers when marker.lat is lat and marker.lng is lng
-    return false
-  
+    return false  
+      
   turnOfMenuIconsFromCat:(markerCat)->
     menu = $(".menu-marker[data-markerCat='#{markerCat}']")
     menu.find('.group-toggling').addClass('off')
@@ -635,8 +629,7 @@ class CustomInfoWindow
       @wrap.find('.padding').append(@content)
       @wrap.css(
         display: "block"
-        position: "absolute",
-        "min-height" : 118
+        position: "absolute"
       )
       panes = @getPanes()
       panes.overlayMouseTarget.appendChild(@wrap[0])
@@ -648,6 +641,7 @@ class CustomInfoWindow
   bindButton: () ->
     @wrap.find('.edit').bind('click', @toggleEditMod)
     @wrap.find('button').bind('click', @handleSave)
+    @wrap.find('.share').bind('click', @toggleShare)
     
   onRemove :() ->
     # console.log @wrap.parent()
@@ -667,7 +661,7 @@ class CustomInfoWindow
       top: pos.y - 80
     )
     
-    events = ['mousedown', 'touchstart', 'touchend', 'touchmove', 'contextmenu', 'click']
+    events = ['mousedown', 'touchstart', 'touchend', 'touchmove', 'contextmenu', 'click', 'dblclick', 'mousewheel', 'DOMMouseScroll']
     @listeners = []
     for event in events
       @listeners.push(google.maps.event.addDomListener(@wrap[0], event, cancelHandler);)
@@ -698,17 +692,42 @@ class CustomInfoWindow
   toggleEditMod: (e)=>
     this_ = $(e.currentTarget)
     parent = @wrap
+    buttons = parent.find('.button')
     markerDescBox = parent.find('.marker-desc')
     editBox = parent.find('.edit-form')
+    shareBox = parent.find('.share-input')
     
     if this_.hasClass('active')
       markerDescBox.addClass('active')
-      this_.removeClass('active')
+      buttons.removeClass('active')
       editBox.removeClass('active')
+      shareBox.removeClass('active')
     else
+      buttons.removeClass('active')
       markerDescBox.removeClass('active')
+      shareBox.removeClass('active')
       this_.addClass('active')
       editBox.addClass('active')
+      
+  toggleShare:(e)=>
+    this_ = $(e.currentTarget)
+    parent = @wrap
+    buttons = parent.find('.button')
+    markerDescBox = parent.find('.marker-desc')
+    editBox = parent.find('.edit-form')
+    shareBox = parent.find('.share-input')
+    
+    if this_.hasClass('active')
+      markerDescBox.addClass('active')
+      buttons.removeClass('active')
+      editBox.removeClass('active')
+      shareBox.removeClass('active')
+    else
+      buttons.removeClass('active')
+      markerDescBox.removeClass('active')
+      editBox.removeClass('active')
+      this_.addClass('active')
+      shareBox.addClass('active')
 
   handleSave: (e) =>
     this_ = $(e.currentTarget)

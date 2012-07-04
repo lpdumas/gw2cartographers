@@ -269,8 +269,33 @@
     };
 
     CustomMap.prototype.addMarker = function(markerInfo, markersType, markersCat) {
-      var iconmid, iconsize, image, isMarkerDraggable, marker, markerThatMatchUrl, markerType, _j, _len1, _ref, _results,
+      var createInfoWindow, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, _j, _len1, _ref, _results,
         _this = this;
+      createInfoWindow = function(marker) {
+        var editInfoWindowContent, templateInfo;
+        templateInfo = {
+          id: marker.__gm_id,
+          title: marker.title,
+          desc: marker.desc,
+          type: marker.type,
+          lat: marker.position.lat(),
+          lng: marker.position.lng(),
+          wikiLink: marker.wikiLink
+        };
+        editInfoWindowContent = _this.editInfoWindowTemplate(templateInfo);
+        return marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent, {
+          onClose: function() {
+            return _this.currentOpenedInfoWindow = null;
+          },
+          onOpen: function(infoWindow) {
+            return _this.currentOpenedInfoWindow = infoWindow;
+          },
+          onSave: function(newInfo) {
+            return _this.updateMarkerInfos(newInfo);
+          },
+          template: _this.editInfoWindowTemplate
+        });
+      };
       iconsize = 32;
       iconmid = iconsize / 2;
       image = new google.maps.MarkerImage(this.getIconURLByType(markersType, markersCat), null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
@@ -289,19 +314,22 @@
       marker["wikiLink"] = "" + markerInfo.wikiLink;
       marker["type"] = "" + markersType;
       marker["cat"] = "" + markersCat;
-      markerThatMatchUrl = this.getMarkerByCoordinates(this.getStartLat(), this.getStartLng());
-      if (markerThatMatchUrl === markerInfo) {
-        marker.infoWindow.open(this.map, marker);
-        this.currentOpenedInfoWindow = marker.infoWindow;
-      }
       google.maps.event.addListener(marker, 'dragend', function(e) {
         _this.saveToLocalStorage();
         if (marker["infoWindow"] != null) {
           return marker["infoWindow"].updatePos();
         }
       });
+      if (markerInfo.lat === this.getStartLat() && markerInfo.lng === this.getStartLng()) {
+        if (!(marker["infoWindow"] != null)) {
+          createInfoWindow(marker);
+          marker["infoWindow"].open();
+        } else {
+          marker["infoWindow"].open();
+        }
+      }
       google.maps.event.addListener(marker, 'click', function(e) {
-        var closeCurrentInfoWindow, editInfoWindowContent, templateInfo;
+        var closeCurrentInfoWindow;
         closeCurrentInfoWindow = function() {};
         switch (_this.appState) {
           case "remove":
@@ -326,26 +354,7 @@
                 return marker["infoWindow"].open();
               }
             } else {
-              templateInfo = {
-                id: marker.__gm_id,
-                title: marker.title,
-                desc: marker.desc,
-                type: marker.type,
-                wikiLink: marker.wikiLink
-              };
-              editInfoWindowContent = _this.editInfoWindowTemplate(templateInfo);
-              marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent, {
-                onClose: function() {
-                  return _this.currentOpenedInfoWindow = null;
-                },
-                onOpen: function(infoWindow) {
-                  return _this.currentOpenedInfoWindow = infoWindow;
-                },
-                onSave: function(newInfo) {
-                  return _this.updateMarkerInfos(newInfo);
-                },
-                template: _this.editInfoWindowTemplate
-              });
+              createInfoWindow(marker);
               if (_this.currentOpenedInfoWindow) {
                 _this.currentOpenedInfoWindow.close();
               }
@@ -708,10 +717,10 @@
     };
 
     CustomMap.prototype.getMarkerByCoordinates = function(lat, lng) {
-      var key, marker, markerTypeObject, markersObjects, type, _j, _k, _len1, _len2, _ref, _ref1, _ref2;
+      var key, marker, markerTypeObject, markersCat, markersObjects, _j, _k, _len1, _len2, _ref, _ref1, _ref2;
       _ref = this.MarkersConfig;
-      for (type in _ref) {
-        markersObjects = _ref[type];
+      for (markersCat in _ref) {
+        markersObjects = _ref[markersCat];
         _ref1 = markersObjects.markerGroup;
         for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
           markerTypeObject = _ref1[key];
@@ -919,6 +928,8 @@
     function CustomInfoWindow(marker, content, opts) {
       this.handleSave = __bind(this.handleSave, this);
 
+      this.toggleShare = __bind(this.toggleShare, this);
+
       this.toggleEditMod = __bind(this.toggleEditMod, this);
 
       this.open = __bind(this.open, this);
@@ -948,8 +959,7 @@
       this.wrap.find('.padding').append(this.content);
       this.wrap.css({
         display: "block",
-        position: "absolute",
-        "min-height": 118
+        position: "absolute"
       });
       panes = this.getPanes();
       panes.overlayMouseTarget.appendChild(this.wrap[0]);
@@ -960,7 +970,8 @@
 
     CustomInfoWindow.prototype.bindButton = function() {
       this.wrap.find('.edit').bind('click', this.toggleEditMod);
-      return this.wrap.find('button').bind('click', this.handleSave);
+      this.wrap.find('button').bind('click', this.handleSave);
+      return this.wrap.find('.share').bind('click', this.toggleShare);
     };
 
     CustomInfoWindow.prototype.onRemove = function() {
@@ -983,7 +994,7 @@
         left: pos.x + 30,
         top: pos.y - 80
       });
-      events = ['mousedown', 'touchstart', 'touchend', 'touchmove', 'contextmenu', 'click'];
+      events = ['mousedown', 'touchstart', 'touchend', 'touchmove', 'contextmenu', 'click', 'dblclick', 'mousewheel', 'DOMMouseScroll'];
       this.listeners = [];
       _results = [];
       for (_j = 0, _len1 = events.length; _j < _len1; _j++) {
@@ -1025,19 +1036,46 @@
     };
 
     CustomInfoWindow.prototype.toggleEditMod = function(e) {
-      var editBox, markerDescBox, parent, this_;
+      var buttons, editBox, markerDescBox, parent, shareBox, this_;
       this_ = $(e.currentTarget);
       parent = this.wrap;
+      buttons = parent.find('.button');
       markerDescBox = parent.find('.marker-desc');
       editBox = parent.find('.edit-form');
+      shareBox = parent.find('.share-input');
       if (this_.hasClass('active')) {
         markerDescBox.addClass('active');
-        this_.removeClass('active');
-        return editBox.removeClass('active');
+        buttons.removeClass('active');
+        editBox.removeClass('active');
+        return shareBox.removeClass('active');
       } else {
+        buttons.removeClass('active');
         markerDescBox.removeClass('active');
+        shareBox.removeClass('active');
         this_.addClass('active');
         return editBox.addClass('active');
+      }
+    };
+
+    CustomInfoWindow.prototype.toggleShare = function(e) {
+      var buttons, editBox, markerDescBox, parent, shareBox, this_;
+      this_ = $(e.currentTarget);
+      parent = this.wrap;
+      buttons = parent.find('.button');
+      markerDescBox = parent.find('.marker-desc');
+      editBox = parent.find('.edit-form');
+      shareBox = parent.find('.share-input');
+      if (this_.hasClass('active')) {
+        markerDescBox.addClass('active');
+        buttons.removeClass('active');
+        editBox.removeClass('active');
+        return shareBox.removeClass('active');
+      } else {
+        buttons.removeClass('active');
+        markerDescBox.removeClass('active');
+        editBox.removeClass('active');
+        this_.addClass('active');
+        return shareBox.addClass('active');
       }
     };
 

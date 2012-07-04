@@ -1,4 +1,5 @@
 <a href="javascript:" title="Edit infos" class="edit button"></a>
+<a href="javascript:" title="Share marker" class="share button"></a>
 <% if (title !== "" && desc !== "") { %>
 <div class="marker-desc active <%= type %>-marker">
     <h1><%= title %></h1>
@@ -30,3 +31,7 @@
     </label>
     <button type='button'>save</button>
 </form>
+<div class="share-input">
+    <span class="label">Share link</span>
+    <input type="text" disabled name="share-link" value="http://gw2cartographers.com?lat=<%= lat %>&amp;lng=<%= lng %>" >
+</div>

@@ -598,6 +598,9 @@ p.marker-permalink { text-align: right; }
 }
 /* Custom Infowindo {{{ */
 .customInfoWindow {
+  display: block;
+  position: "absolute";
+  min-height : 103px;
   z-index: 100;
   width: 300px;
   cursor: default;
@@ -642,6 +645,24 @@ p.marker-permalink { text-align: right; }
   background-position: -128px bottom;
   opacity: 1;
 }
+
+.customInfoWindow .share {
+  position: absolute;
+  cursor: pointer;
+  top: -22px;
+  right: 48px;
+  display: block;
+  width: 32px;
+  height: 32px;
+  background: url('../images/layout/edit-options.png') -192px top no-repeat;
+}
+
+.customInfoWindow .share:hover,
+.customInfoWindow .share.active {
+  background-position: -192px bottom;
+  opacity: 1;
+}
+
 .customInfoWindow:after, .customInfoWindow:before {
 	right: 100%;
 	border: solid transparent;
@@ -676,6 +697,7 @@ p.marker-permalink { text-align: right; }
     .customInfoWindow span.label {
       position: relative;
       display: block;
+      margin-bottom: 8px;
     }
   .customInfoWindow input[type="text"],
   .customInfoWindow textarea {
@@ -695,14 +717,20 @@ p.marker-permalink { text-align: right; }
   }
   
   .customInfoWindow .edit-form,
-  .customInfoWindow .marker-desc {
+  .customInfoWindow .marker-desc,
+  .customInfoWindow .share-input {
     position: relative;
     z-index: 102;
     display: none;
   }
   
+  .customInfoWindow .share-input {
+    vertical-align: center;
+  }
+  
   .customInfoWindow .edit-form.active,
-  .customInfoWindow .marker-desc.active {
+  .customInfoWindow .marker-desc.active,
+  .customInfoWindow .share-input.active {
     display: block;
   }
   .customInfoWindow .marker-desc h1 {
