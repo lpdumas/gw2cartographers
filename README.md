@@ -1,6 +1,6 @@
-# Plane Guild Wars 2 map
+# A interactive Guild Wars 2 map
 ## About
-A simple custom google maps for Guildwars 2. More to come!
+A interactive custom google maps for Guildwars 2. More to come!
 
 ## Missing fonctionalities
 
