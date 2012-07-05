@@ -1,0 +1,7 @@
+<img src="/assets/images/layout/skull.png"  alt="Skull" />
+<div class="right">
+    <h1>Warning</h1>
+    <p class="confirm-message"><%= confirmMessage %></p>
+    <a id="accept" class="button" title="YES" href="javascript:"></a>
+    <a id="denied" class="button" title="NO" href="javascript:"></a>
+</div>

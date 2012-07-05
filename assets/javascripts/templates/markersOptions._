@@ -1,11 +1,11 @@
 <% _.each(Icons, function(iconsTypeObject, cat) { %>
 <div data-markerCat="<%= cat %>" class="menu-marker">
-  <span class="menu-title"><%= cat %> markers<span class="group-toggling"></span></span>
+  <span class="menu-title"><%= Markers[cat].name %> markers<span class="group-toggling"></span></span>
   
   <ul class="group">
     <% _.each(iconsTypeObject, function(iconsObject, type) { %>
     <li class="trigger" data-type="<%= type %>" data-cat="<%= cat %>">
-        <img src="<%= iconsObject.url %>" alt="<%= type %>" />
+        <a href="javascript:" title="<%= iconsObject.label %>"><img src="<%= iconsObject.url %>" alt="<%= iconsObject.label %>" /></a>
     </li> 
     <% }); %>
   </ul>

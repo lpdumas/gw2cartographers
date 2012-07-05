@@ -5,8 +5,8 @@
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <title>Guild Wars 2 Map</title>
-  <meta name="description" content="A simple guildwars 2 map">
+  <title>Guild Wars 2 interactive Map - Guild Wars 2 cartographers</title>
+  <meta name="description" content="A guildwars 2 interactive map">
 
   <meta name="viewport" content="width=device-width">
 
@@ -23,18 +23,25 @@
   </script>
 </head>
 <body>
-    
+
+    <div id="map-mask"></div>
+
     <div id="markers-options" class="group">
         <span id="options-toggle"><strong>Markers options</strong></span>
+        <div class="padding">
+        </div>
         <span class="decorations"></span>
     </div>
-    
-    <div id="map"><img id="loading" src="assets/images/loading.gif"  alt="Loading ..." /></div>
+
+    <div id="map-container">
+        <div id="map"><img id="loading" src="assets/images/loading.gif"  alt="Loading ..." /></div>
+    </div>
 
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="assets/javascripts/libs/jquery-latest.js"><\/script>')</script>
     <script src="assets/javascripts/libs/underscore.js"></script>
+
     <script src="assets/javascripts/config.js"></script>
     <script src="assets/javascripts/global.js"></script>
 

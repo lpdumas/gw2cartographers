@@ -1,0 +1,37 @@
+<a href="javascript:" title="Edit infos" class="edit button"></a>
+<a href="javascript:" title="Share marker" class="share button"></a>
+<% if (title !== "" && desc !== "") { %>
+<div class="marker-desc active <%= type %>-marker">
+    <h1><%= title %></h1>
+    <p class="desc">
+        <%= desc %> 
+    </p>
+    <% if(wikiLink !== "") {%>
+    <p><a target="_blank" href="<%= wikiLink %>">More infos on wiki.guildwars2.com</a></p>
+    <% }%>
+</div>
+<% } else { %>
+<div class="marker-desc active">
+    <h1>We need your help for this marker!</h1>
+    <p>Click on the edit button (top right of this box).</p>
+</div>
+<% } %>
+<form action="javacript:" class="edit-form" id="edit-form-<%= id %>">
+    <label>
+        <span class="label">Title</span>
+        <input type="text" name="marker-title" value="<%= title %>" >
+    </label>
+    <label>
+        <span class="label">Description</span>
+        <textarea name="marker-description" rows="8" cols="40"><%= desc %></textarea>
+    </label>
+    <label>
+        <span class="label">Wiki link</span>
+        <input type="text" name="marker-wiki" value="<%= wikiLink %>" >
+    </label>
+    <button type='button'>save</button>
+</form>
+<div class="share-input">
+    <span class="label">Share link</span>
+    <input type="text" readonly name="share-link" value="http://gw2cartographers.com?lat=<%= lat %>&amp;lng=<%= lng %>" >
+</div>
