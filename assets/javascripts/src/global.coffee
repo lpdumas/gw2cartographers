@@ -474,7 +474,7 @@ class CustomMap
     return false  
       
   turnOfMenuIconsFromCat:(markerCat)->
-    menu = $(".menu-marker[data-markerCat='#{markerCat}']")
+    menu = $(".menu-item[data-markerCat='#{markerCat}']")
     menu.find('.group-toggling').addClass('off')
     menu.find('.trigger').addClass('off')
   
@@ -520,7 +520,8 @@ class CustomMap
       html.find('.group-toggling').bind 'click', (e)=>
         this_ = $(e.currentTarget)
         parent = this_.closest('.menu-marker')
-        markerCat = parent.attr('data-markerCat')
+        menuItem = parent.find('.menu-item')
+        markerCat = menuItem.attr('data-markerCat')
         if this_.hasClass('off')
           this_.removeClass('off')
           @setMarkersVisibilityByCat(on, markerCat)
