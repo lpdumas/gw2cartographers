@@ -32,7 +32,8 @@ sub { bottom: -0.25em; }
 ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
 dd { margin: 0 0 0 40px; }
 nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
-
+a { outline: none; }
+:-moz-any-link:focus { outline: none; }
 /*img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }*/
 
 svg:not(:root) { overflow: hidden; }
@@ -68,11 +69,93 @@ html, body {
     background-color: black;
     font-family: 'Belgrano', serif;
 }
+
+.padding {
+  padding: 0 20px;
+}
+.shy {
+  position: absolute;
+  top: -9999em;
+}
+.left { float: left}
+.right { float: right}
+.button {
+  -webkit-backface-visibility: hidden;
+  -webkit-transform: scale(0.8);
+  -moz-transform: scale(0.8);
+  -ms-transform: scale(0.8);
+  -o-transform: scale(0.8);
+  -webkit-transition-property:-webkit-transform, opacity;
+  -moz-transition-property:-moz-transform, opacity;
+  -ms-transition-property:-ms-transform, opacity;
+  -o-transition-property:-o-transform, opacity;
+  -webkit-transition-duration: 150ms;
+  -moz-transition-duration: 150ms;
+  -ms-transition-duration: 150ms;
+  -o-transition-duration: 150ms;
+}
+
+.button:hover{
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+}
+.button.active {
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  opacity: 0.6;
+}
+#map-container {
+  position: relative;
+  width:100%;
+  height:100%;
+}
+#map-mask {
+  position: absolute;
+  z-index: 50;
+  display: block;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  -webkit-transition: all 150ms linear;
+  -moz-transition: all 150ms linear;
+  -ms-transition: all 150ms linear;
+  -o-transition: all 150ms linear;
+}
+
+html.no-pointerEvents #map-mask {
+  display: none;
+}
+
+html.add #map-mask {
+  -webkit-box-shadow: inset 0px 0px 50px 0px #00A71E;
+  box-shadow: inset 0px 0px 50px 0px #00A71E;
+}
+html.remove #map-mask {
+  -webkit-box-shadow: inset 0px 0px 50px 0px #A70001;
+  box-shadow: inset 0px 0px 50px 0px #A70001;
+}
+
+html.move #map-mask {
+  -webkit-box-shadow: inset 0px 0px 50px 0px #f25b00;
+  box-shadow: inset 0px 0px 50px 0px #f25b00;
+}
 #map {
-    width:100%;
-    height:100%;
-    background: #EFEFEF;
-    cursor: move;
+  position: relative;
+  z-index: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width:100%;
+  height:100%;
+  background: #EFEFEF;
+  cursor: move;
 }
 #loading {
   position: relative;
@@ -108,95 +191,9 @@ html, body {
     margin-right: 10px;
 }
 
-#dev-box {
-  z-index: 10;
-  display: none;
-  position: absolute;
-  bottom: 10px;
-  left: 70px;
-  width: 75px;
-  background: #fff;
-  color: #000;
-  padding: 5px 10px;
-  text-align: center;
-}
-
-#options-box {
-  position:fixed;
-  z-index: 5;
-  top: 0;
-  right: -40px;
-  bottom: 0;
-  width: 40px;
-  background: #ffffff;
-  -webkit-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
-  -moz-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
-  -ms-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
-  -o-transition: right 150ms cubic-bezier(0.8, 0, 0.2, 1);
-}
-
-#options-box.active {
-  right: 0;
-}
-
-#options-box.red {
-  background: red;
-}
-
-#add-marker,
-#remove-marker {
-  display: block;
-  color: #fff;
-  text-decoration: none;
-  -webkit-transition: color 150ms linear;
-  -moz-transition: color 150ms linear;
-  -ms-transition: color 150ms linear;
-  -o-transition: color 150ms linear;
-  line-height: normal;
-}
-#add-marker:hover,
-#add-marker.active {
-  cursor: pointer;
-  color: #666666;
-}
-#options-box #marker-list {
-  position: absolute;
-  display: block;
-  z-index:5;
-  margin: 0;
-  padding: 10px;
-  list-style:none;
-  width: 160px;
-  height: auto;
-  left: -190px;
-  top: -9999em;
-  opacity: 0;
-  background: rgba(0, 0, 0, 1);
-  -webkit-transition: opacity 150ms linear;
-  -moz-transition: opacity 150ms linear;
-  -ms-transition: opacity 150ms linear;
-  -o-transition: opacity 150ms linear;
-}
-#options-box #marker-list.active {
-  top: 10px;
-  opacity: 1;
-}
-#options-box #marker-list li {
-  float: left;
-}
-#options-box #marker-list li + li {
-  margin-left: 10px;
-}
-#options-box #marker-list li + li span{ position: relative; top: 5px }
-
-#options-box #marker-list li span{
-  display: inline-block;
-  width: 32px;
-  cursor: pointer;
-  text-align: center;
-}
 #export {
   display: none;
+/*  display: inline-block;*/
   position: absolute;
   z-index: 10;
   bottom: 10px;
@@ -246,11 +243,11 @@ html, body {
 #markers-options {
   position: fixed;
   z-index: 5;
-  top: -135px;
+  top: -50px;
 /*  top: 0px;*/
-  min-height: 60px;
+  min-height: 25px;
   width: 100%;
-  padding: 10px 20px 10px 20px;
+  padding: 10px 0 10px 0;
   background: #fff;
   opacity: 1;
   -webkit-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
@@ -303,31 +300,98 @@ html, body {
   background: url('../images/layout/decorations.png') center top repeat-x;
 }
 
+#markers-options #edition-tools {
+  position: absolute;
+  z-index: 15;
+  width: auto;
+  top: 13px;
+  right: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+#markers-options #edition-tools li { display: inline-block}
+#markers-options #edition-tools li + li {
+  margin-left: 3px;
+}
+
+#markers-options #edition-tools li a{
+  display: block;
+  width: 32px;
+  height: 32px;
+  background: url('../images/layout/edit-options.png') 0 0 no-repeat;
+}
+#markers-options #edition-tools li a#add {
+  background-position: -32px 0px;
+}
+#markers-options #edition-tools li a#remove {
+  background-position: -64px 0px;
+}
+#markers-options #edition-tools li a#move {
+  background-position: -96px 0px;
+}
+#markers-options #edition-tools li #add:hover,
+#markers-options #edition-tools li #add.active {
+  background-position: -32px -32px;
+}
+#markers-options #edition-tools li #remove:hover,
+#markers-options #edition-tools li #remove.active {
+  background-position: -64px -32px;
+}
+#markers-options #edition-tools li #move:hover,
+#markers-options #edition-tools li #move.active {
+  background-position: -96px -32px;
+}
+
 .menu-marker {
     z-index: 10;
     position: relative;
     color: #333;
-    display: block;
-    width: 170px;
-    padding-right: 30px;
-    float: left;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    
+}
+.menu-marker > li {
+  float: none;
 }
 
-.menu-marker span.menu-title {
+.menu-marker .menu-item {
   position: relative;
   display: inline-block;
   color: #333;
-  font-size: 15px;
-  font-size: 1.5rem;
-  padding: 0 6px 4px 0;
-  border-bottom: 1px solid #D4D4D4;
 }
 
-.menu-marker span.group-toggling {
-  position: absolute;
+.menu-marker .menu-item:hover {
+
+}
+
+.menu-marker .menu-title {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  color: #333;
+  font-size: 15px;
+  font-size: 1.5rem;
+  line-height: 30px;
+  height: 30px;
+  vertical-align: middle;
+  padding: 0px 10px;
+  -webkit-border-radius: 10px 10px 0px 0px;
+  border-radius: 10px 10px 0px 0px;
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
+}
+.menu-marker .menu-item:hover .menu-title {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+}
+.menu-marker a.group-toggling span {
+  position: relative;
   z-index: 10;
-  top: 0px;
-  right: -30px;
   display: inline-block;
   width: 25px;
   height: 25px;
@@ -338,40 +402,154 @@ html, body {
   -ms-transition: opacity 150ms linear;
   -o-transition: opacity 150ms linear;
 }
-.menu-marker span.group-toggling:hover {
+.menu-marker a.group-toggling:hover {
   opacity: 0.4;
 }
-.menu-marker span.group-toggling.off {
+.menu-marker a.group-toggling.off {
   opacity: 0.4;
   background-position: center bottom;
 }
 
-.menu-marker ul {
-  margin: 10px 0 0 -5px;
+
+.menu-marker .menu-item:hover ul.type-menu{
+  display:block;
+}
+.menu-marker .menu-item ul.type-menu {
+/*  display: block;*/
+  display: none;
+  position: absolute;
+  z-index: 11;
+  min-width: 165px;
+  top: 30px;
+  left: 0;
   padding: 0;
+  margin: 0;
+  background: #fff;
   list-style-type: none;
+  border: 10px solid rgba(0, 0, 0, 0.7);
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  -webkit-border-radius: 0px 15px 15px 15px;
+  border-radius: 0px 15px 15px 15px;
 }
-.menu-marker ul li {
-  display: inline-block;
-  margin-left: 5px;
+.menu-marker .menu-item ul.type-menu li {
+  position: relative;
+  z-index: 12;
 }
-.menu-marker ul li img {
-  width: 25px;
-  height: 25px;
-  cursor: pointer;
-  border: 1px solid #fff;
-  padding: 1px;
+.menu-marker .menu-item ul.type-menu li:after {
+  opacity: 0;
+  -webkit-backface-visibility: hidden;
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
+  content: "";
+  position: absolute;
+  display: block;
+  z-index: 6;
+  bottom: 0;
+  right: 0;
+  height: 13px;
+  width: 13px;
+  background: url('../images/layout/little-add-remove.png') center center no-repeat;
+}
+/*html.add .menu-marker .menu-item ul.type-menu li:after{
+  opacity: 1;
+  background-position: top left;
+}
+*/
+.menu-marker .menu-item ul.type-menu li a.marker-type-link,
+.menu-marker .menu-item ul.type-menu li a.group-toggling{
+  position: relative;
+  z-index: 14;
+  display: block;
+  text-decoration: none;
+  padding: 9px 8px 9px 40px;
+  color: #000;
+  background: #fff;
+  -webkit-backface-visibility: hidden;
   -webkit-transition: all 150ms linear;
   -moz-transition: all 150ms linear;
   -ms-transition: all 150ms linear;
   -o-transition: all 150ms linear;
 }
 
-.menu-marker ul li.off img,
-.menu-marker ul li:hover img {
-    opacity: 0.5;
+.menu-marker .menu-item ul.type-menu li a.group-toggling {
+  display: block;
+  padding-left: 8px;
+  font-style: italic;
 }
 
+.menu-marker .menu-item ul.type-menu li a.off.marker-type-link {
+  background-color: #DEDEDE;
+  color: #B8B8B8;
+}
+.menu-marker .menu-item ul.type-menu li:hover a.marker-type-link,
+.menu-marker .menu-item ul.type-menu li a.marker-type-link:hover {
+  background-color: #3A3A3A;
+  color: #fff;
+  opacity: 1;
+}
+.menu-marker .menu-item ul.type-menu li a.off.marker-type-link:hover {
+  color: #B8B8B8;
+}
+
+
+.menu-marker .menu-item ul.type-menu li a.button{
+  position: absolute;
+  display: block;
+  z-index: 11;
+  top: 50%;
+  right: 0px;
+  margin-top: -16px;
+  width: 32px;
+  height: 32px;
+  background: url('../images/layout/edit-options.png') -224px 0 no-repeat;
+  -webkit-backface-visibility: hidden;
+  -webkit-transform: scale(0.85);
+  -moz-transform: scale(0.85);
+  -ms-transform: scale(0.85);
+  -o-transform: scale(0.85);
+  -webkit-transition-property:-webkit-transform, right;
+  -moz-transition-property:-moz-transform, right;
+  -ms-transition-property:-ms-transform, right;
+  -o-transition-property:-o-transform, right;
+  -webkit-transition-duration: 150ms;
+  -moz-transition-duration: 150ms;
+  -ms-transition-duration: 150ms;
+  -o-transition-duration: 150ms;
+}
+
+.menu-marker .menu-item ul.type-menu li:hover a.button{
+  right: -25px;
+}
+
+.menu-marker .menu-item ul.type-menu li a.button:hover,
+.menu-marker .menu-item ul.type-menu li a.button.active {
+  background-position: -224px -32px;
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+}
+
+.menu-marker .menu-item ul.type-menu li img {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  margin-top: -10px;
+  width: 20px;
+  height: 20px;
+  -webkit-backface-visibility: hidden;
+  -webkit-transition: all 150ms linear;
+  -moz-transition: all 150ms linear;
+  -ms-transition: all 150ms linear;
+  -o-transition: all 150ms linear;
+}
+
+.menu-marker .menu-item ul.type-menu li.off img {
+    opacity: 0.5;
+}
 
 div.area-summary-overlay {
  position: absolute;
@@ -435,3 +613,242 @@ div.area-summary-overlay ul.area-summary-list li .area-summary-icons {
 }
 
 p.marker-permalink { text-align: right; }
+
+.confirm-box {
+  position: absolute;
+  display: block;
+  z-index: 10;
+  font-size: 12px;
+  font-size: 1.2rem;
+  width: 350px;
+  top: -9999em;
+  opacity: 0;
+  left: 50%;
+  margin-left: -175px;
+  background: #fff;
+  border-radius: 15px;
+  border: 10px solid rgba(0, 0, 0, 0.7);
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  -webkit-box-shadow: 0px 0px 50px 0px #ffffff;
+  box-shadow: 0px 0px 50px 0px #ffffff;
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
+}
+
+
+.confirm-box.visible {
+  top: 20%;
+  opacity: 1;
+}
+
+.confirm-box.fadding {
+  opacity: 0;
+}
+.overlay {
+  position: fixed;
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 9;
+  top: -9999em;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
+}
+
+.overlay.visible {
+  opacity: 1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.overlay.fadding {
+  opacity: 0;
+}
+
+.confirm-box .padding {
+  padding: 10px;
+}
+.confirm-box p.confirm-message {
+  margin: 0 0 12px 0;
+}
+.confirm-box img {
+/*  margin-top: 20px;*/
+}
+.confirm-box .right {
+  position: relative;
+  width: 233px;
+  display: block;
+}
+.confirm-box .right a {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('../images/layout/yes-no.png') top left no-repeat;
+}
+.confirm-box .right a#accept:hover {
+  background-position: left bottom;
+}
+.confirm-box .right a#denied {
+  margin-left: 40px;
+  background-position: right top;
+}
+.confirm-box .right a#denied:hover {
+  background-position: right bottom;
+  
+}
+.confirm-box h1 { 
+  margin-top: 0
+}
+/* Custom Infowindo {{{ */
+.customInfoWindow {
+  display: block;
+  position: "absolute";
+  min-height : 103px;
+  z-index: 100;
+  width: 300px;
+  cursor: default;
+  background: #fff;
+  font-size: 12px;
+  font-size: 1.2rem;
+  border-radius: 15px;
+  border: 10px solid rgba(0, 0, 0, 0.7);
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
+}
+.customInfoWindow .close {
+  position: absolute;
+  cursor: pointer;
+  top: -22px;
+  right: -22px;
+  display: block;
+  width: 32px;
+  height: 32px;
+  background: url('../images/layout/edit-options.png') -160px top no-repeat;
+}
+.customInfoWindow .close:hover {
+  background-position: -160px bottom;
+}
+.customInfoWindow .edit {
+  position: absolute;
+  cursor: pointer;
+  top: -22px;
+  right: 12px;
+  display: block;
+  width: 32px;
+  height: 32px;
+  background: url('../images/layout/edit-options.png') -128px top no-repeat;
+}
+
+.customInfoWindow .edit:hover,
+.customInfoWindow .edit.active {
+  background-position: -128px bottom;
+  opacity: 1;
+}
+
+.customInfoWindow .share {
+  position: absolute;
+  cursor: pointer;
+  top: -22px;
+  right: 48px;
+  display: block;
+  width: 32px;
+  height: 32px;
+  background: url('../images/layout/edit-options.png') -192px top no-repeat;
+}
+
+.customInfoWindow .share:hover,
+.customInfoWindow .share.active {
+  background-position: -192px bottom;
+  opacity: 1;
+}
+
+.customInfoWindow:after, .customInfoWindow:before {
+	right: 100%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.customInfoWindow:after {
+	border-right-color: #fff;
+	border-width: 20px;
+	top: 49px;
+}
+.customInfoWindow:before {
+	border-right-color: #000000;
+	border-width: 34px;
+	top: 35px
+}
+  .customInfoWindow .padding {
+    position: relative;
+    cursor: default;
+    z-index: 101;
+    padding: 10px;
+  }
+  .customInfoWindow label {
+    position: relative;
+    display: block;
+    margin-bottom: 8px;
+  }
+    .customInfoWindow span.label {
+      position: relative;
+      display: block;
+      margin-bottom: 8px;
+    }
+  .customInfoWindow input[type="text"],
+  .customInfoWindow textarea {
+    position: relative;
+    background: #fff;
+    border: 1px solid #B3B3B3;
+    width: 264px;
+    padding: 8px 5px;
+    color: #585858;
+  }
+  .customInfoWindow button {
+    position: relative;
+    color: #fff;
+    background: #000;
+    border: 1px solid #D4D4D4;
+    padding: 5px 10px;
+  }
+  
+  .customInfoWindow .edit-form,
+  .customInfoWindow .marker-desc,
+  .customInfoWindow .share-input {
+    position: relative;
+    z-index: 102;
+    display: none;
+  }
+  
+  .customInfoWindow .share-input {
+    vertical-align: center;
+  }
+  
+  .customInfoWindow .edit-form.active,
+  .customInfoWindow .marker-desc.active,
+  .customInfoWindow .share-input.active {
+    display: block;
+  }
+  .customInfoWindow .marker-desc h1 {
+    position: relative;
+    font-size: 16px;
+    font-size: 1.6rem;
+    margin: 0 0 10px 0;
+  }
+/*}}}*/
