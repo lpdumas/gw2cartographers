@@ -725,24 +725,5 @@ Markers.generic = {
     markers: []
   }
   ]
-  // "jumpingpuzzles" : [
-
-  // ],
-  // "hearts" : [
-  // ],
-  // 
-  // "waypoints" : [
-  // ],
-  // "poi" : [
-  // ],
-  // "skillpoints" : [
-  // ],
-  // "dungeons" : [
-
-  // ],
-  // "asurasgates" : [
-  // ],
-  // "scouts" : [
-  //   {"lat" : "30.088107753367307", "lng" : "-40.36376953125", "title" : "", "desc" : "", "wikiLink" : ""},
-  // ]
 }
+

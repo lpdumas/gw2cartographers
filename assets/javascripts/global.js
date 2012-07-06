@@ -140,15 +140,9 @@
 
       this.handleMarkerRemovalTool = __bind(this.handleMarkerRemovalTool, this);
 
-      var markerFormStorage,
-        _this = this;
+      var _this = this;
       this.localStorageKey = "gw2c_markers_config_01";
-      if (App.localStorageAvailable) {
-        markerFormStorage = this.getConfigFromLocalStorage();
-        this.MarkersConfig = markerFormStorage ? markerFormStorage : Markers;
-      } else {
-        this.MarkersConfig = Markers;
-      }
+      this.MarkersConfig = Markers;
       this.blankTilePath = 'tiles/00empty.jpg';
       this.iconsPath = 'assets/images/icons/32x32';
       this.maxZoom = 7;
@@ -281,7 +275,7 @@
       return JSON.parse(json);
     };
 
-    CustomMap.prototype.addMarker = function(markerInfo, markersType, markersCat) {
+    CustomMap.prototype.addMarker = function(markerInfo, markersType, markersCat, test) {
       var createInfoWindow, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, _j, _len1, _ref, _results,
         _this = this;
       createInfoWindow = function(marker) {
@@ -327,6 +321,9 @@
       marker["wikiLink"] = "" + markerInfo.wikiLink;
       marker["type"] = "" + markersType;
       marker["cat"] = "" + markersCat;
+      if (test) {
+        console.log(marker);
+      }
       google.maps.event.addListener(marker, 'dragend', function(e) {
         _this.saveToLocalStorage();
         if (marker["infoWindow"] != null) {
@@ -565,7 +562,7 @@
         wikiLink: "",
         draggable: true
       };
-      return this.addMarker(newMarkerInfo, markerType, markerCat);
+      return this.addMarker(newMarkerInfo, markerType, markerCat, true);
     };
 
     CustomMap.prototype.handleEdition = function(e) {
@@ -816,19 +813,18 @@
           }
         });
         html.find('.group-toggling').bind('click', function(e) {
-          var markerCat, menuItem, parent, this_;
+          var markerCat, menuItem, this_;
           this_ = $(e.currentTarget);
-          parent = this_.closest('.menu-marker');
-          menuItem = parent.find('.menu-item');
+          menuItem = this_.closest('.menu-item');
           markerCat = menuItem.attr('data-markerCat');
           if (this_.hasClass('off')) {
             this_.removeClass('off');
             _this.setMarkersVisibilityByCat(true, markerCat);
-            return parent.find('.trigger').removeClass('off');
+            return menuItem.find('.trigger').removeClass('off');
           } else {
             this_.addClass('off');
             _this.setMarkersVisibilityByCat(false, markerCat);
-            return parent.find('.trigger').addClass('off');
+            return menuItem.find('.trigger').addClass('off');
           }
         });
         _this.markersOptionsMenu.find('.padding').prepend(html);

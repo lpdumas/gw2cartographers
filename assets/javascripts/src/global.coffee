@@ -77,11 +77,11 @@ class Confirmbox extends Modalbox
 class CustomMap
   constructor: (id)->
     @localStorageKey  = "gw2c_markers_config_01"
-    if App.localStorageAvailable
-      markerFormStorage = @getConfigFromLocalStorage()
-      @MarkersConfig = if markerFormStorage then markerFormStorage else Markers
-    else
-      @MarkersConfig = Markers
+    # if App.localStorageAvailable
+      # markerFormStorage = @getConfigFromLocalStorage()
+      # @MarkersConfig = if markerFormStorage then markerFormStorage else Markers
+    # else
+    @MarkersConfig = Markers
     
     @blankTilePath = 'tiles/00empty.jpg'
     @iconsPath     = 'assets/images/icons/32x32'
@@ -192,7 +192,7 @@ class CustomMap
     $.get('assets/javascripts/templates/customInfoWindow._', (e)=>
       @editInfoWindowTemplate = _.template(e)
       
-      @setAllMarkers()  
+      @setAllMarkers()
       @initializeAreaSummaryBoxes()
     
       @markerList.find('span').bind('click', (e)=>
@@ -224,7 +224,7 @@ class CustomMap
     json = localStorage.getItem(@localStorageKey)
     return JSON.parse(json)
   
-  addMarker:(markerInfo, markersType, markersCat)->
+  addMarker:(markerInfo, markersType, markersCat, test)->
     createInfoWindow = (marker)=>
       templateInfo = 
         id : marker.__gm_id
@@ -250,6 +250,7 @@ class CustomMap
     iconmid = iconsize / 2;
     image = new google.maps.MarkerImage(@getIconURLByType(markersType, markersCat), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
     isMarkerDraggable = if markerInfo.draggable? then markerInfo.draggable else false
+
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
@@ -259,12 +260,14 @@ class CustomMap
       cursor : if isMarkerDraggable then "move" else "pointer"
       title: "#{markerInfo.title}"
     )
-
     marker["title"] = "#{markerInfo.title}"
     marker["desc"]  = "#{markerInfo.desc}"
     marker["wikiLink"]  = "#{markerInfo.wikiLink}"
     marker["type"]  = "#{markersType}"
     marker["cat"]  = "#{markersCat}"
+    
+    if test
+      console.log marker
 
     google.maps.event.addListener(marker, 'dragend', (e)=>
       @saveToLocalStorage()
@@ -395,7 +398,7 @@ class CustomMap
       lng       : coord.lng()
       wikiLink  : ""
       draggable : true
-    @addMarker(newMarkerInfo, markerType, markerCat)
+    @addMarker(newMarkerInfo, markerType, markerCat, true)
     
   handleEdition:(e)=>
     this_ = $(e.currentTarget)
@@ -540,17 +543,16 @@ class CustomMap
       
       html.find('.group-toggling').bind 'click', (e)=>
         this_ = $(e.currentTarget)
-        parent = this_.closest('.menu-marker')
-        menuItem = parent.find('.menu-item')
+        menuItem = this_.closest('.menu-item')
         markerCat = menuItem.attr('data-markerCat')
         if this_.hasClass('off')
           this_.removeClass('off')
           @setMarkersVisibilityByCat(on, markerCat)
-          parent.find('.trigger').removeClass('off')
+          menuItem.find('.trigger').removeClass('off')
         else
           this_.addClass('off')
           @setMarkersVisibilityByCat(off, markerCat)
-          parent.find('.trigger').addClass('off')
+          menuItem.find('.trigger').addClass('off')
             
       @markersOptionsMenu.find('.padding').prepend(html)
       callback()
