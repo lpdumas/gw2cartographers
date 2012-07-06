@@ -74,16 +74,6 @@ class Confirmbox extends Modalbox
 #}}} 
 ###
 
-class ChoiceBox extends Modalbox
-  constructor: (template) ->
-    @modal.addClass('choice-box')
-    @template = template
-  
-  initChoice: (oContent, choicesActions)->
-    console.log oContent
-    
-    
-
 ###
 # classCustomMap {{{
 ###
