@@ -220,7 +220,7 @@ class CustomMap
     
   handleLocalStorageLoad: (callback)->
     if App.localStorageAvailable and @getConfigFromLocalStorage()
-      confirmMessage = "I have detected data stored in you local storage, Do you want to load it?"
+      confirmMessage = "I have detected data stored in your local storage, Do you want to load it?"
       @confirmBox.initConfirmation(confirmMessage, (e)=>
         if e
           @MarkersConfig = @getConfigFromLocalStorage()
