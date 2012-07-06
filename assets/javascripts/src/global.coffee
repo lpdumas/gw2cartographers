@@ -61,15 +61,28 @@ class Confirmbox extends Modalbox
     @modal.find('.padding').html(confirmBoxContent)
     
     acceptBtn.bind('click', ()=>
-      callback()
+      callback(yes)
       @close()
     )
-    deniedBtn.bind('click', @close)
+    deniedBtn.bind('click', ()=>
+      callback(no)
+      @close()
+    )
     
     @open();
 ###
 #}}} 
 ###
+
+class ChoiceBox extends Modalbox
+  constructor: (template) ->
+    @modal.addClass('choice-box')
+    @template = template
+  
+  initChoice: (oContent, choicesActions)->
+    console.log oContent
+    
+    
 
 ###
 # classCustomMap {{{
@@ -77,11 +90,6 @@ class Confirmbox extends Modalbox
 class CustomMap
   constructor: (id)->
     @localStorageKey  = "gw2c_markers_config_01"
-    # if App.localStorageAvailable
-      # markerFormStorage = @getConfigFromLocalStorage()
-      # @MarkersConfig = if markerFormStorage then markerFormStorage else Markers
-    # else
-    @MarkersConfig = Markers
     
     @blankTilePath = 'tiles/00empty.jpg'
     @iconsPath     = 'assets/images/icons/32x32'
@@ -106,14 +114,8 @@ class CustomMap
     @defaultLng = -36.32080078125
     
     @defaultCat = "generic"
-    
-    $.get('assets/javascripts/templates/confirmBox._', (e)=>
-      template = _.template(e);
-      @confirmBox = new Confirmbox(template)
-    )
+
     @areaSummaryBoxes = []
-    
-    @editInfowindowTemapl
     
     @canRemoveMarker  = false
     @draggableMarker  = false
@@ -152,79 +154,99 @@ class CustomMap
     @map.mapTypes.set('custom', @customMapType)
     @map.setMapTypeId('custom')
 
-    @addMenuIcons(()=>
-      @addTools = $('.menu-marker a.add')
-      @addTools.each((index, target)=>
-        $(target).bind('click', @handleAddTool)
-      )
-    )
+    $.get('assets/javascripts/templates/confirmBox._', (e)=>
+      template = _.template(e);
+      @confirmBox = new Confirmbox(template)
     
-    # Events
-    # google.maps.event.addListener(@map, 'click', (e)=>
-      # console.log '{"lat" : "'+e.latLng.lat()+'", "lng" : "'+e.latLng.lng()+'", "title" : "", "desc" : ""},'
-    # )
+      @handleLocalStorageLoad(()=>
+        @addMenuIcons(()=>
+          @addTools = $('.menu-marker a.add')
+          @addTools.each((index, target)=>
+            $(target).bind('click', @handleAddTool)
+          )
+        )
     
-    google.maps.event.addListener(@map, 'zoom_changed', (e)=>
-        zoomLevel = @map.getZoom()
-        if zoomLevel == 4
-          @canToggleMarkers = false
-          @hideMarkersOptionsMenu()
-          @setAllMarkersVisibility(false)
-          @setAreasInformationVisibility(true)
-          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-        else if zoomLevel > 4
-          @canToggleMarkers = true
-          @showMarkersOptionsMenu()
-          @setAllMarkersVisibility(true)
-          @setAreasInformationVisibility(false)
-        else if zoomLevel < 4
-          @canToggleMarkers = false
-          @hideMarkersOptionsMenu()
-          @setAllMarkersVisibility(false)
-          @setAreasInformationVisibility(false)
-          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-    )
+        # Events
+        # google.maps.event.addListener(@map, 'click', (e)=>
+          # console.log '{"lat" : "'+e.latLng.lat()+'", "lng" : "'+e.latLng.lng()+'", "title" : "", "desc" : ""},'
+        # )
     
-    #marker
-    @gMarker = {}
+        google.maps.event.addListener(@map, 'zoom_changed', (e)=>
+            zoomLevel = @map.getZoom()
+            if zoomLevel == 4
+              @canToggleMarkers = false
+              @hideMarkersOptionsMenu()
+              @setAllMarkersVisibility(false)
+              @setAreasInformationVisibility(true)
+              if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+            else if zoomLevel > 4
+              @canToggleMarkers = true
+              @showMarkersOptionsMenu()
+              @setAllMarkersVisibility(true)
+              @setAreasInformationVisibility(false)
+            else if zoomLevel < 4
+              @canToggleMarkers = false
+              @hideMarkersOptionsMenu()
+              @setAllMarkersVisibility(false)
+              @setAreasInformationVisibility(false)
+              if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+        )
+    
+        #marker
+        @gMarker = {}
 
-    @editInfoWindowTemplate = ""
-    $.get('assets/javascripts/templates/customInfoWindow._', (e)=>
-      @editInfoWindowTemplate = _.template(e)
+        @editInfoWindowTemplate = ""
+        $.get('assets/javascripts/templates/customInfoWindow._', (e)=>
+          @editInfoWindowTemplate = _.template(e)
       
-      @setAllMarkers()
-      @initializeAreaSummaryBoxes()
+          @setAllMarkers()
+          @initializeAreaSummaryBoxes()
     
-      @markerList.find('span').bind('click', (e)=>
-        this_      = $(e.currentTarget)
-        markerType = this_.attr('data-type')
-        coord       = @map.getCenter()
-        markerinfo = 
-          "lng" : coord.lng()
-          "lat" : coord.lat()
-          "title" : "--"
-        img        = "#{@iconsPath}/#{markerType}.png"
-        @addMarkers(markerinfo, img, markerType)
-      )
+          @markerList.find('span').bind('click', (e)=>
+            this_      = $(e.currentTarget)
+            markerType = this_.attr('data-type')
+            coord       = @map.getCenter()
+            markerinfo = 
+              "lng" : coord.lng()
+              "lat" : coord.lat()
+              "title" : "--"
+            img        = "#{@iconsPath}/#{markerType}.png"
+            @addMarkers(markerinfo, img, markerType)
+          )
       
-      # UI
-      @addMarkerLink.bind('click', @toggleMarkerList)
-      @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
-      @exportBtn.bind('click', @handleExport)
-      @editionsTools.bind('click', @handleEdition)
+          # UI
+          @addMarkerLink.bind('click', @toggleMarkerList)
+          @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
+          @exportBtn.bind('click', @handleExport)
+          @editionsTools.bind('click', @handleEdition)
     
-      @exportWindow.find('.close').click(()=>
-        @exportWindow.hide()
+          @exportWindow.find('.close').click(()=>
+            @exportWindow.hide()
+          )
+        )
       )
-      
-      # @map.setZoom(4)
     )
+    
+  handleLocalStorageLoad: (callback)->
+    if App.localStorageAvailable and @getConfigFromLocalStorage()
+      confirmMessage = "I have detected data stored in you local storage, Do you want to load it?"
+      @confirmBox.initConfirmation(confirmMessage, (e)=>
+        if e
+          @MarkersConfig = @getConfigFromLocalStorage()
+        else
+            @MarkersConfig = Markers
+        callback()
+      )
+    else
+      @MarkersConfig = Markers
+      callback()
     
   getConfigFromLocalStorage: () ->
     json = localStorage.getItem(@localStorageKey)
     return JSON.parse(json)
   
-  addMarker:(markerInfo, markersType, markersCat, test)->
+  addMarker:(markerInfo, markersType, markersCat, isNew)->
+
     createInfoWindow = (marker)=>
       templateInfo = 
         id : marker.__gm_id
@@ -255,20 +277,19 @@ class CustomMap
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
       icon: image
-      visible: if markersCat is @defaultCat then yes else no
+      visible: if markersCat is @defaultCat || isNew? then yes else no
       draggable: isMarkerDraggable
       cursor : if isMarkerDraggable then "move" else "pointer"
       title: "#{markerInfo.title}"
+      animation: if isNew? then google.maps.Animation.DROP else no
     )
+    
     marker["title"] = "#{markerInfo.title}"
     marker["desc"]  = "#{markerInfo.desc}"
     marker["wikiLink"]  = "#{markerInfo.wikiLink}"
     marker["type"]  = "#{markersType}"
     marker["cat"]  = "#{markersCat}"
     
-    if test
-      console.log marker
-
     google.maps.event.addListener(marker, 'dragend', (e)=>
       @saveToLocalStorage()
       if marker["infoWindow"]?
@@ -430,30 +451,32 @@ class CustomMap
     
   removeMarkerFromType:(mType, mCat)->
     confirmMessage = "Delete all «#{mType}» markers on the map?"
-    @confirmBox.initConfirmation(confirmMessage, ()=>
-      for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
-        for marker, markerKey in markerType.markers
-          marker.setMap(null)
-          @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
-            return m == marker
-          )
-          @saveToLocalStorage()
+    @confirmBox.initConfirmation(confirmMessage, (e)=>
+      if e
+        for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
+          for marker, markerKey in markerType.markers
+            marker.setMap(null)
+            @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
+              return m == marker
+            )
+            @saveToLocalStorage()
     )
   
   removeMarker:(id, mType, mCat)->
     confirmMessage = "Are you sure you want to delete this marker?"
-    @confirmBox.initConfirmation(confirmMessage, ()=>
-      for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
-        for marker, markerKey in markerType.markers when marker.__gm_id is id
-          if marker.infoWindow?
-            marker.infoWindow.setMap(null)
-          marker.setMap(null)
-          @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m) =>
-            return m == marker
-            # return m.__gm_id == id
-          )
-          @saveToLocalStorage()
-          return true
+    @confirmBox.initConfirmation(confirmMessage, (e)=>
+      if e
+        for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
+          for marker, markerKey in markerType.markers when marker.__gm_id is id
+            if marker.infoWindow?
+              marker.infoWindow.setMap(null)
+            marker.setMap(null)
+            @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m) =>
+              return m == marker
+              # return m.__gm_id == id
+            )
+            @saveToLocalStorage()
+            return true
     )
   
   updateMarkerInfos: (newInfo)->
@@ -624,7 +647,7 @@ class AreaSummary
 ###                
 
 ###
-# class AreaSummary {{{
+# class CustomInfoWindow {{{
 ###
 class CustomInfoWindow
   constructor: (marker, content, opts) ->
