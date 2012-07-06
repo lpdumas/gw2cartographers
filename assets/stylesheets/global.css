@@ -243,9 +243,9 @@ html.move #map-mask {
 #markers-options {
   position: fixed;
   z-index: 5;
-  top: -105px;
+  top: -50px;
 /*  top: 0px;*/
-  min-height: 60px;
+  min-height: 25px;
   width: 100%;
   padding: 10px 0 10px 0;
   background: #fff;
@@ -355,21 +355,38 @@ html.move #map-mask {
   float: none;
 }
 
-.menu-marker span.menu-title {
+.menu-marker .menu-item {
   position: relative;
   display: inline-block;
   color: #333;
-  font-size: 15px;
-  font-size: 1.5rem;
-  padding: 0 6px 4px 0;
-  border-bottom: 1px solid #D4D4D4;
+  padding: 4px 10px;
+  -webkit-border-radius: 10px 10px 0px 0px;
+  border-radius: 10px 10px 0px 0px;
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
 }
 
-.menu-marker span.group-toggling {
-  position: absolute;
+.menu-marker .menu-item:hover {
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+}
+
+.menu-marker .menu-title {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  color: #333;
+  font-size: 15px;
+  font-size: 1.5rem;
+}
+.menu-marker .menu-item:hover .menu-title {
+  color: #fff;
+}
+.menu-marker a.group-toggling span {
+  position: relative;
   z-index: 10;
-  top: 0px;
-  right: -30px;
   display: inline-block;
   width: 25px;
   height: 25px;
@@ -380,23 +397,38 @@ html.move #map-mask {
   -ms-transition: opacity 150ms linear;
   -o-transition: opacity 150ms linear;
 }
-.menu-marker span.group-toggling:hover {
+.menu-marker a.group-toggling:hover {
   opacity: 0.4;
 }
-.menu-marker span.group-toggling.off {
+.menu-marker a.group-toggling.off {
   opacity: 0.4;
   background-position: center bottom;
 }
 
-.menu-marker .menu-item ul {
-  margin: 10px 0 0 -5px;
-  padding: 0;
-  list-style-type: none;
+
+.menu-marker .menu-item:hover ul.type-menu{
+  display:block;
 }
-.menu-marker .menu-item ul li {
+.menu-marker .menu-item ul.type-menu {
+  display: none;
+  position: absolute;
+  min-width: 165px;
+  top: 29px;
+  left: 0;
+  padding: 0;
+  margin: 0;
+  background: #fff;
+  list-style-type: none;
+  border: 10px solid rgba(0, 0, 0, 0.7);
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  -webkit-border-radius: 0px 15px 15px 15px;
+  border-radius: 0px 15px 15px 15px;
+}
+.menu-marker .menu-item ul.type-menu li {
   position: relative;
 }
-.menu-marker .menu-item ul li:after {
+.menu-marker .menu-item ul.type-menu li:after {
   opacity: 0;
   -webkit-backface-visibility: hidden;
   -webkit-transition: opacity 150ms linear;
@@ -413,20 +445,17 @@ html.move #map-mask {
   width: 13px;
   background: url('../images/layout/little-add-remove.png') center center no-repeat;
 }
-html.add .menu-marker .menu-item ul li:after{
+html.add .menu-marker .menu-item ul.type-menu li:after{
   opacity: 1;
   background-position: top left;
 }
-/*html.remove .menu-marker ul li:after{*/
-/*  opacity: 1;*/
-/*  background-position: bottom left;*/
-/*}*/
-.menu-marker .menu-item ul li img {
-  width: 25px;
-  height: 25px;
-  cursor: pointer;
-  border: 1px solid #fff;
-  padding: 1px;
+
+.menu-marker .menu-item ul.type-menu li a{
+  position: relative;
+  display: block;
+  text-decoration: none;
+  padding: 9px 8px 9px 40px;
+  color: #000;
   -webkit-backface-visibility: hidden;
   -webkit-transition: all 150ms linear;
   -moz-transition: all 150ms linear;
@@ -434,11 +463,41 @@ html.add .menu-marker .menu-item ul li:after{
   -o-transition: all 150ms linear;
 }
 
-.menu-marker .menu-item ul li.off img,
-.menu-marker .menu-item ul li:hover img {
-    opacity: 0.5;
+.menu-marker .menu-item ul.type-menu li a.group-toggling {
+  display: block;
+  padding-left: 8px;
+  font-style: italic;
 }
 
+.menu-marker .menu-item ul.type-menu li.off a {
+  background-color: #DEDEDE;
+  color: #B8B8B8;
+}
+.menu-marker .menu-item ul.type-menu li:hover a {
+  background-color: #3A3A3A;
+  color: #fff;
+  opacity: 1;
+}
+.menu-marker .menu-item ul.type-menu li.off:hover a {
+  color: #B8B8B8;
+}
+.menu-marker .menu-item ul.type-menu li img {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  margin-top: -10px;
+  width: 20px;
+  height: 20px;
+  -webkit-backface-visibility: hidden;
+  -webkit-transition: all 150ms linear;
+  -moz-transition: all 150ms linear;
+  -ms-transition: all 150ms linear;
+  -o-transition: all 150ms linear;
+}
+
+.menu-marker .menu-item ul.type-menu li.off img {
+    opacity: 0.5;
+}
 
 div.area-summary-overlay {
  position: absolute;
@@ -517,10 +576,10 @@ p.marker-permalink { text-align: right; }
   background: #fff;
   border-radius: 15px;
   border: 10px solid rgba(0, 0, 0, 0.7);
-  -webkit-box-shadow: 0px 0px 50px 0px #ffffff;
-  box-shadow: 0px 0px 50px 0px #ffffff;
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
+  -webkit-box-shadow: 0px 0px 50px 0px #ffffff;
+  box-shadow: 0px 0px 50px 0px #ffffff;
   -webkit-transition: opacity 150ms linear;
   -moz-transition: opacity 150ms linear;
   -ms-transition: opacity 150ms linear;
