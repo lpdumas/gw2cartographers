@@ -152,7 +152,12 @@ class CustomMap
     @map.mapTypes.set('custom', @customMapType)
     @map.setMapTypeId('custom')
 
-    @addMenuIcons()
+    @addMenuIcons(()=>
+      @addTools = $('.menu-marker a.add')
+      @addTools.each((index, target)=>
+        $(target).bind('click', @handleAddTool)
+      )
+    )
     
     # Events
     # google.maps.event.addListener(@map, 'click', (e)=>
@@ -201,7 +206,7 @@ class CustomMap
         img        = "#{@iconsPath}/#{markerType}.png"
         @addMarkers(markerinfo, img, markerType)
       )
-    
+      
       # UI
       @addMarkerLink.bind('click', @toggleMarkerList)
       @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
@@ -376,6 +381,22 @@ class CustomMap
     # @exportWindow.find('.content').html(jsonString)
     # @exportWindow.show();
     
+  handleAddTool: (e)=>
+    this_      = $(e.currentTarget)
+    parent     = this_.closest('.type-menu-item')
+    markerLink = parent.find('.marker-type-link')
+    markerType = markerLink.attr('data-type')
+    markerCat  = markerLink.attr('data-cat')
+    coord      = @map.getCenter()
+    newMarkerInfo =
+      desc      : ""
+      title     : ""
+      lat       : coord.lat()
+      lng       : coord.lng()
+      wikiLink  : ""
+      draggable : true
+    @addMarker(newMarkerInfo, markerType, markerCat)
+    
   handleEdition:(e)=>
     this_ = $(e.currentTarget)
     $(elements).removeClass('active') for elements in @editionsTools when elements isnt e.currentTarget
@@ -478,7 +499,7 @@ class CustomMap
     menu.find('.group-toggling').addClass('off')
     menu.find('.trigger').addClass('off')
   
-  addMenuIcons:()->
+  addMenuIcons:(callback)->
     markersOptions = $.get('assets/javascripts/templates/markersOptions._', (e)=>
       template = _.template(e);
       html = $(template(Resources))
@@ -532,6 +553,7 @@ class CustomMap
           parent.find('.trigger').addClass('off')
             
       @markersOptionsMenu.find('.padding').prepend(html)
+      callback()
       @turnOfMenuIconsFromCat(markerCat) for markerCat of @MarkersConfig when markerCat isnt @defaultCat
     )
       

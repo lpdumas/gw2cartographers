@@ -5,8 +5,9 @@
         <ul class="type-menu group">
           <li class="type-menu-item"><a href="javascript:" class="group-toggling">Toggle all markers</a></li>
           <% _.each(iconsTypeObject, function(iconsObject, type) { %>
-          <li class="type-menu-item trigger" data-type="<%= type %>" data-cat="<%= cat %>">
-              <a href="javascript:" title="<%= iconsObject.label %>"><img src="<%= iconsObject.url %>" alt="<%= iconsObject.label %>" /><span><%= iconsObject.label %></span></a>
+          <li class="type-menu-item">
+              <a href="javascript:" class="marker-type-link trigger" data-type="<%= type %>" data-cat="<%= cat %>" title="Click to toggle"><img src="<%= iconsObject.url %>" alt="<%= iconsObject.label %>" /><span><%= iconsObject.label %></span></a>
+              <a href="javascript:" class="add button" title="Add marker"></a>
           </li> 
           <% }); %>
         </ul>
