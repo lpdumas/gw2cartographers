@@ -52,6 +52,7 @@ class Confirmbox extends Modalbox
     super
     @modal.addClass('confirm-box')
     @template = template
+    @overlay.unbind('click')
   
   initConfirmation: (contentString, callback)->
     confirmMessage = { confirmMessage : contentString}
