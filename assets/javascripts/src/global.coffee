@@ -22,7 +22,7 @@ for att in attToCheck
 class Modalbox
   constructor: () ->
     @modal   = $('<div class="modal"><div class="padding"></div></div>')
-    @overlay = $('<span class="overlay"></span>') 
+    @overlay = $('<span class="overlay"></span>')
     $('body').append(@modal)
     $('body').append(@overlay)
     
@@ -32,13 +32,18 @@ class Modalbox
     @modal.addClass('visible')
     @overlay.addClass('visible')
     
-  close: () =>
+  close: (callback) =>
+    callback = if _.isFunction(callback) then callback else ()->
     @modal.addClass('fadding')
     @overlay.addClass('fadding')
     t = setTimeout(()=>
       @modal.removeClass('visible fadding')
       @overlay.removeClass('visible fadding')
+      callback()
     , 150)
+  
+  setContent: (content) ->
+    @modal.find('.padding').html(content)
     
 ###
 #}}} 
@@ -52,6 +57,7 @@ class Confirmbox extends Modalbox
     super
     @modal.addClass('confirm-box')
     @template = template
+    @overlay.unbind('click')
   
   initConfirmation: (contentString, callback)->
     confirmMessage = { confirmMessage : contentString}
@@ -61,10 +67,13 @@ class Confirmbox extends Modalbox
     @modal.find('.padding').html(confirmBoxContent)
     
     acceptBtn.bind('click', ()=>
-      callback()
+      callback(yes)
       @close()
     )
-    deniedBtn.bind('click', @close)
+    deniedBtn.bind('click', ()=>
+      callback(no)
+      @close()
+    )
     
     @open();
 ###
@@ -76,7 +85,7 @@ class Confirmbox extends Modalbox
 ###
 class CustomMap
   constructor: (id)->
-    @MarkersConfig = Markers
+    @localStorageKey  = "gw2c_markers_config_01"
     
     @blankTilePath = 'tiles/00empty.jpg'
     @iconsPath     = 'assets/images/icons/32x32'
@@ -88,19 +97,23 @@ class CustomMap
     @latContainer     = $('#lat')
     @devModInput      = $('#dev-mod')
     @optionsBox       = $('#options-box')
-
+    @addMarkerLink    = $('#add-marker')
+    @removeMarkerLink = $('#remove-marker')
     @markerList       = $('#marker-list')
+    @exportBtn        = $('#export')
+    @exportWindow     = $('#export-windows')
     @markersOptionsMenu = $('#markers-options')
-    
+    @mapOptions    = $('#edition-tools a')
     # @defaultLat = 15.919073517982465
     @defaultLat = 26.765230565697536
     # @defaultLng = 18.28125
     @defaultLng = -36.32080078125
     
-    @defaultCat = "generic"
-    
+    @defaultCat = "explore"
+
     @areaSummaryBoxes = []
     
+    @canRemoveMarker  = false
     @draggableMarker  = false
     @visibleMarkers   = true
     @canToggleMarkers = true
@@ -137,46 +150,101 @@ class CustomMap
     @map.mapTypes.set('custom', @customMapType)
     @map.setMapTypeId('custom')
 
-    @addMenuIcons()
+    $.get('assets/javascripts/templates/confirmBox._', (e)=>
+      template = _.template(e);
+      @confirmBox = new Confirmbox(template)
     
-    # Events
-    # google.maps.event.addListener(@map, 'click', (e)=>
-      # console.log '{"lat" : "'+e.latLng.lat()+'", "lng" : "'+e.latLng.lng()+'", "title" : "", "desc" : ""},'
-    # )
+      @handleLocalStorageLoad(()=>
+        @addMenuIcons(()=>
+          @addTools = $('.menu-marker a.add')
+          @addTools.each((index, target)=>
+            $(target).bind('click', @handleAddTool)
+          )
+        )
     
-    google.maps.event.addListener(@map, 'zoom_changed', (e)=>
-        zoomLevel = @map.getZoom()
-        if zoomLevel == 4
-          @canToggleMarkers = false
-          @hideMarkersOptionsMenu()
-          @setAllMarkersVisibility(false)
-          @setAreasInformationVisibility(true)
-          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-        else if zoomLevel > 4
-          @canToggleMarkers = true
-          @showMarkersOptionsMenu()
-          @setAllMarkersVisibility(true)
-          @setAreasInformationVisibility(false)
-        else if zoomLevel < 4
-          @canToggleMarkers = false
-          @hideMarkersOptionsMenu()
-          @setAllMarkersVisibility(false)
-          @setAreasInformationVisibility(false)
-          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-    )
+        # Events
+        # google.maps.event.addListener(@map, 'click', (e)=>
+          # console.log '{"lat" : "'+e.latLng.lat()+'", "lng" : "'+e.latLng.lng()+'", "title" : "", "desc" : ""},'
+        # )
     
-    #marker
-    @gMarker = {}
+        google.maps.event.addListener(@map, 'zoom_changed', (e)=>
+            zoomLevel = @map.getZoom()
+            if zoomLevel == 4
+              @canToggleMarkers = false
+              @hideMarkersOptionsMenu()
+              @setAllMarkersVisibility(false)
+              @setAreasInformationVisibility(true)
+              if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+            else if zoomLevel > 4
+              @canToggleMarkers = true
+              @showMarkersOptionsMenu()
+              @setAllMarkersVisibility(true)
+              @setAreasInformationVisibility(false)
+            else if zoomLevel < 4
+              @canToggleMarkers = false
+              @hideMarkersOptionsMenu()
+              @setAllMarkersVisibility(false)
+              @setAreasInformationVisibility(false)
+              if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+        )
+    
+        #marker
+        @gMarker = {}
 
-    @editInfoWindowTemplate = ""
-    $.get('assets/javascripts/templates/customInfoWindowRead._', (e)=>
-      @editInfoWindowTemplate = _.template(e)
+        @editInfoWindowTemplate = ""
+        $.get('assets/javascripts/templates/customInfoWindow._', (e)=>
+          @editInfoWindowTemplate = _.template(e)
       
-      @setAllMarkers()  
-      @initializeAreaSummaryBoxes()
+          @setAllMarkers()
+          @initializeAreaSummaryBoxes()
+    
+          @markerList.find('span').bind('click', (e)=>
+            this_      = $(e.currentTarget)
+            markerType = this_.attr('data-type')
+            coord       = @map.getCenter()
+            markerinfo = 
+              "lng" : coord.lng()
+              "lat" : coord.lat()
+              "title" : "--"
+            img        = "#{@iconsPath}/#{markerType}.png"
+            @addMarkers(markerinfo, img, markerType)
+          )
+      
+          # UI
+          @addMarkerLink.bind('click', @toggleMarkerList)
+          @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
+          @exportBtn.bind('click', @handleExport)
+          $('#destroy').bind('click', @destroyLocalStorage)
+          $('#send').bind('click', @sendMapForApproval)
+
+    
+          @exportWindow.find('.close').click(()=>
+            @exportWindow.hide()
+          )
+        )
+      )
     )
+    
+  handleLocalStorageLoad: (callback)->
+    if App.localStorageAvailable and @getConfigFromLocalStorage()
+      confirmMessage = "I have detected data stored in your local storage, Do you want to load it?"
+      @confirmBox.initConfirmation(confirmMessage, (e)=>
+        if e
+          @MarkersConfig = @getConfigFromLocalStorage()
+        else
+            @MarkersConfig = Markers
+        callback()
+      )
+    else
+      @MarkersConfig = Markers
+      callback()
+    
+  getConfigFromLocalStorage: () ->
+    json = localStorage.getItem(@localStorageKey)
+    return JSON.parse(json)
   
-  addMarker:(markerInfo, markersType, markersCat)->
+  addMarker:(markerInfo, markersType, markersCat, isNew)->
+
     createInfoWindow = (marker)=>
       templateInfo = 
         id : marker.__gm_id
@@ -194,28 +262,40 @@ class CustomMap
         onOpen  : (infoWindow) =>
           @currentOpenedInfoWindow = infoWindow
         onSave  : (newInfo)=>
+          @updateMarkerInfos(newInfo)
+        deleteCalled : (marker)=>
+          @removeMarker(marker.__gm_id, markersType, markersCat)
+        moveCalled : (marker) =>
+          if marker.getDraggable()
+            marker.setDraggable(false)
+            marker.setCursor("pointer")
+          else
+            marker.setDraggable(true)
+            marker.setCursor("move")
+        template : @editInfoWindowTemplate
       )
       
     iconsize = 32;
     iconmid = iconsize / 2;
     image = new google.maps.MarkerImage(@getIconURLByType(markersType, markersCat), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
     isMarkerDraggable = if markerInfo.draggable? then markerInfo.draggable else false
+
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
       icon: image
-      visible: if markersCat is @defaultCat then yes else no
+      visible: if markersCat is @defaultCat || isNew? then yes else no
       draggable: isMarkerDraggable
       cursor : if isMarkerDraggable then "move" else "pointer"
       title: "#{markerInfo.title}"
+      animation: if isNew? then google.maps.Animation.DROP else no
     )
-
+    
     marker["title"] = "#{markerInfo.title}"
     marker["desc"]  = "#{markerInfo.desc}"
     marker["wikiLink"]  = "#{markerInfo.wikiLink}"
     marker["type"]  = "#{markersType}"
     marker["cat"]  = "#{markersCat}"
-    
 
     if markerInfo.lat.toString() is @getStartLat() and markerInfo.lng.toString() is @getStartLng()
       if not marker["infoWindow"]?
@@ -224,8 +304,13 @@ class CustomMap
       else
         marker["infoWindow"].open()
         
+    google.maps.event.addListener(marker, 'dragend', (e)=>
+      @saveToLocalStorage()
+      if marker["infoWindow"]?
+        marker["infoWindow"].updatePos()
+    )
+
     google.maps.event.addListener(marker, 'click', (e)=>
-      # Handling infoWindow, creating them is their're not
       if marker["infoWindow"]?
         if @currentOpenedInfoWindow is marker["infoWindow"]
           @currentOpenedInfoWindow.close()
@@ -272,7 +357,107 @@ class CustomMap
   setMarkersVisibilityByCat:(isVisible, cat)->
     for markerTypeObject in @gMarker[cat]["markerGroup"]
       marker.setVisible(isVisible) for marker in markerTypeObject.markers
-                    
+
+  handleMarkerRemovalTool:(e)=>
+    if @removeMarkerLink.hasClass('active')
+      @removeMarkerLink.removeClass('active')
+      @optionsBox.removeClass('red')
+      @canRemoveMarker = false
+    else
+      @removeMarkerLink.addClass('active')
+      @optionsBox.addClass('red')
+      @canRemoveMarker = true
+      @markerList.removeClass('active')
+      @addMarkerLink.removeClass('active')
+
+  destroyLocalStorage: (e) =>
+    confirmMessage = "This action will destroy you local change to the map. Are you sure you want to proceed?"
+    @confirmBox.initConfirmation(confirmMessage, (e)=>
+      if @getConfigFromLocalStorage()
+        localStorage.removeItem(@localStorageKey);
+        window.location = "/"
+    )
+  sendMapForApproval: (e) =>
+    this_ = $(e.currentTarget)
+    ajaxUrl = this_.attr('data-ajaxUrl')
+    modal = new Modalbox()
+    modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">')
+    confirmMessage = "Are you ready to send your map for approval?"
+    @confirmBox.initConfirmation(confirmMessage, (e)=>
+      modal.open()
+      
+      # request = $.ajax(
+      #   url: ajaxUrl
+      #   type: "GET"
+      #   dataType: "json"
+      #   data: @handleExport()
+      #   )
+      # 
+      # request.done((response) =>
+      #   modal.close(()=>
+      #     modal.setContent('<h1>Thank you!</h1>')
+      #     modal.open()
+      #   )
+      # )
+      # 
+      # request.fail((jqXHR, textStatus)=>
+      #   console.log 'fail'
+      # )
+      
+      # Simulating ajax call latency
+      t = setTimeout(()=>
+        modal.close(()=>
+          modal.setContent('<h1>Thank you!</h1>')
+          modal.open()
+        )
+        
+      , 500)
+    )
+    
+  handleExport:(e)=>
+    exportMarkerObject = {}
+    for markersCat, markersObjects of @gMarker
+      if not exportMarkerObject[markersCat]?
+        exportMarkerObject[markersCat] = {}
+        exportMarkerObject[markersCat]["name"] = markersObjects.name
+        exportMarkerObject[markersCat]["markerGroup"] = []
+        
+      for markerTypeObject, key in markersObjects.markerGroup
+        newmarkerTypeObject = {}
+        newmarkerTypeObject["name"] = markerTypeObject.name
+        newmarkerTypeObject["slug"] = markerTypeObject.slug
+        newmarkerTypeObject["markers"] = []
+        exportMarkerObject[markersCat]["markerGroup"].push(newmarkerTypeObject)
+        for marker in markerTypeObject.markers
+          nm = 
+            "lng" : marker.getPosition().lng()
+            "lat" : marker.getPosition().lat()
+            "title" : marker.title
+            "desc"  : marker.desc
+            "wikiLink"  : marker.wikiLink
+          exportMarkerObject[markersCat]["markerGroup"][key]["markers"].push(nm)
+
+    jsonString = JSON.stringify(exportMarkerObject)
+    return jsonString
+    # @exportWindow.find('.content').html(jsonString)
+    # @exportWindow.show();
+    
+  handleAddTool: (e)=>
+    this_      = $(e.currentTarget)
+    parent     = this_.closest('.type-menu-item')
+    markerLink = parent.find('.marker-type-link')
+    markerType = markerLink.attr('data-type')
+    markerCat  = markerLink.attr('data-cat')
+    coord      = @map.getCenter()
+    newMarkerInfo =
+      desc      : ""
+      title     : ""
+      lat       : coord.lat()
+      lng       : coord.lng()
+      wikiLink  : ""
+      draggable : true
+    @addMarker(newMarkerInfo, markerType, markerCat, true)
+    
   getStartLat:()->
     params = extractUrlParams()
     if params['lat']?
@@ -286,6 +471,53 @@ class CustomMap
           params['lng']
       else
           @defaultLng
+    
+  removeMarkerFromType:(mType, mCat)->
+    confirmMessage = "Delete all «#{mType}» markers on the map?"
+    @confirmBox.initConfirmation(confirmMessage, (e)=>
+      if e
+        for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
+          for marker, markerKey in markerType.markers
+            marker.setMap(null)
+            @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
+              return m == marker
+            )
+            @saveToLocalStorage()
+    )
+  
+  removeMarker:(id, mType, mCat)->
+    confirmMessage = "Are you sure you want to delete this marker?"
+    @confirmBox.initConfirmation(confirmMessage, (e)=>
+      if e
+        for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
+          for marker, markerKey in markerType.markers when marker.__gm_id is id
+            if marker.infoWindow?
+              marker.infoWindow.setMap(null)
+            marker.setMap(null)
+            @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m) =>
+              return m == marker
+              # return m.__gm_id == id
+            )
+            @saveToLocalStorage()
+            return true
+    )
+  
+  updateMarkerInfos: (newInfo)->
+    for markerType, typeKey in @gMarker[newInfo.cat]["markerGroup"] when markerType.slug is newInfo.type
+      for marker, markerKey in markerType.markers when marker.__gm_id is newInfo.id
+        marker.desc = newInfo.desc
+        marker.title = newInfo.title
+        marker.wikiLink = newInfo.wikiLink
+        @saveToLocalStorage()
+        return
+        
+  
+  saveToLocalStorage: ()->
+    # Save new exported JSON to local storage if it is supported
+    if App.localStorageAvailable
+      json = @handleExport()
+      localStorage.setItem(@localStorageKey, json);
+
   
   setDraggableMarker:(val)->
     unDrag = (marker)->
@@ -296,6 +528,15 @@ class CustomMap
       for markerTypeObject, key in markersObjects.markerGroup
         unDrag(marker) for marker in markerTypeObject.markers
         
+  toggleMarkerList: (e)=>
+    this_ = $(e.currentTarget)
+    @markerList.toggleClass('active')
+    this_.toggleClass('active')
+    if this_.hasClass('active')
+      @removeMarkerLink.removeClass('active')
+      @optionsBox.removeClass('red')
+      @canRemoveMarker = false
+
   getMarkerByCoordinates:(lat, lng)->
     for markersCat, markersObjects of @MarkersConfig
       for markerTypeObject, key in markersObjects.markerGroup
@@ -303,11 +544,11 @@ class CustomMap
     return false  
       
   turnOfMenuIconsFromCat:(markerCat)->
-    menu = $(".menu-marker[data-markerCat='#{markerCat}']")
+    menu = $(".menu-item[data-markerCat='#{markerCat}']")
     menu.find('.group-toggling').addClass('off')
     menu.find('.trigger').addClass('off')
   
-  addMenuIcons:()->
+  addMenuIcons:(callback)->
     markersOptions = $.get('assets/javascripts/templates/markersOptions._', (e)=>
       template = _.template(e);
       html = $(template(Resources))
@@ -318,7 +559,7 @@ class CustomMap
         myGroupTrigger = item.closest(".menu-marker").find('.group-toggling')
         markerType     = item.attr('data-type')
         markerCat      = item.attr('data-cat')
-        
+
         if @canToggleMarkers
           if item.hasClass('off')
             @setMarkersVisibilityByType(true, markerType, markerCat)
@@ -327,22 +568,22 @@ class CustomMap
           else
             @setMarkersVisibilityByType(false, markerType, markerCat)
             item.addClass('off')
-        
       
       html.find('.group-toggling').bind 'click', (e)=>
         this_ = $(e.currentTarget)
-        parent = this_.closest('.menu-marker')
-        markerCat = parent.attr('data-markerCat')
+        menuItem = this_.closest('.menu-item')
+        markerCat = menuItem.attr('data-markerCat')
         if this_.hasClass('off')
           this_.removeClass('off')
           @setMarkersVisibilityByCat(on, markerCat)
-          parent.find('.trigger').removeClass('off')
+          menuItem.find('.trigger').removeClass('off')
         else
           this_.addClass('off')
           @setMarkersVisibilityByCat(off, markerCat)
-          parent.find('.trigger').addClass('off')
+          menuItem.find('.trigger').addClass('off')
             
       @markersOptionsMenu.find('.padding').prepend(html)
+      callback()
       @turnOfMenuIconsFromCat(markerCat) for markerCat of @MarkersConfig when markerCat isnt @defaultCat
     )
       
@@ -411,7 +652,7 @@ class AreaSummary
 ###                
 
 ###
-# class AreaSummary {{{
+# class CustomInfoWindow {{{
 ###
 class CustomInfoWindow
   constructor: (marker, content, opts) ->
@@ -432,6 +673,8 @@ class CustomInfoWindow
     @onClose   = opts.onClose
     @onOpen    = opts.onOpen
     @onSave    = opts.onSave
+    @deleteCalled = opts.deleteCalled
+    @moveCalled = opts.moveCalled
     @closeBtn.bind('click', @close)
 
   CustomInfoWindow:: = new google.maps.OverlayView()
@@ -447,8 +690,12 @@ class CustomInfoWindow
       panes.overlayMouseTarget.appendChild(@wrap[0])
       @iWidth = @wrap.outerWidth()
       @iHeight = @wrap.outerHeight()
+      
+      @bindButton()
       # @open()
-
+  bindButton: () ->
+    @wrap.find('button').bind('click', @handleSave)
+    @wrap.find('.iw-options-list .button').bind('click', @toggleSection)
     
   onRemove :() ->
     # console.log @wrap.parent()
@@ -502,6 +749,30 @@ class CustomInfoWindow
       left: pos.x + 30
       top: pos.y - 80
     )
+    
+  toggleSection: (e) =>
+    this_ = $(e.currentTarget)
+    action = this_.attr('data-action')
+    defaultTab = @wrap.find('.marker-desc')
+    activeTab = @wrap.find('.toggling-tab.active') 
+    targetTab = $("[data-target='#{action}']")
+
+    switch action
+      when "move", "share", "edit"
+        @wrap.find('.iw-options-list .button').removeClass('active')
+        if targetTab.attr("data-target") is activeTab.attr("data-target")
+          targetTab.removeClass('active')
+          defaultTab.addClass('active')
+        else
+          this_.addClass('active')
+          activeTab.removeClass('active')
+          targetTab.addClass('active')
+          defaultTab.removeClass('active')
+      when "delete"
+        @deleteCalled(@marker)
+      
+    if action is "move"
+      @moveCalled(@marker)
 
   handleSave: (e) =>
     this_ = $(e.currentTarget)
@@ -520,7 +791,7 @@ class CustomInfoWindow
       lat  : @marker.position.lat()
       lng  : @marker.position.lng()
     @wrap.find('.padding').html(@template(newInfo))
-
+    @bindButton()
     @wrap.find('.edit').removeClass('active')
     @onSave(newInfo)
   
@@ -541,7 +812,7 @@ extractUrlParams = ()->
     
 $ ()->
   myCustomMap = new CustomMap('#map')
-  markersOptionsMenuToggle = $('#options-toggle strong')
-  markersOptionsMenuToggle.click( () ->
-    myCustomMap.toggleMarkersOptionsMenu()
-  )
+  # markersOptionsMenuToggle = $('#options-toggle strong')
+  # markersOptionsMenuToggle.click( () ->
+    # myCustomMap.toggleMarkersOptionsMenu()
+  # )

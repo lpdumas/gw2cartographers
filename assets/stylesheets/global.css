@@ -243,17 +243,13 @@ html.move #map-mask {
 #markers-options {
   position: fixed;
   z-index: 5;
-  top: -135px;
-/*  top: 0px;*/
-  min-height: 60px;
+  top: -50px;
+  top: 0px;
+  min-height: 25px;
   width: 100%;
-  padding: 10px 0 10px 0;
+  padding: 0;
   background: #fff;
   opacity: 1;
-  -webkit-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
-  -moz-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
-  -ms-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
-  -o-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
 }
 #markers-options.active {
   top: 0px;
@@ -302,16 +298,17 @@ html.move #map-mask {
 
 #markers-options #edition-tools {
   position: absolute;
-  z-index: 6;
-  width: 32px;
+  z-index: 15;
+  width: auto;
   top: 13px;
   right: 10px;
   list-style: none;
   padding: 0;
   margin: 0;
 }
+#markers-options #edition-tools li { display: inline-block}
 #markers-options #edition-tools li + li {
-  margin-top: 3px;
+  margin-left: 3px;
 }
 
 #markers-options #edition-tools li a{
@@ -320,53 +317,73 @@ html.move #map-mask {
   height: 32px;
   background: url('../images/layout/edit-options.png') 0 0 no-repeat;
 }
-#markers-options #edition-tools li a#add {
-  background-position: -32px 0px;
+#markers-options #edition-tools li a#destroy {
+  background-position: -256px 0px;
 }
-#markers-options #edition-tools li a#remove {
-  background-position: -64px 0px;
+#markers-options #edition-tools li a#send {
+  background-position: 0px 0px;
 }
-#markers-options #edition-tools li a#move {
-  background-position: -96px 0px;
+#markers-options #edition-tools li #destroy:hover,
+#markers-options #edition-tools li #destroy.active {
+  background-position: -256px -32px;
 }
-#markers-options #edition-tools li #add:hover,
-#markers-options #edition-tools li #add.active {
-  background-position: -32px -32px;
-}
-#markers-options #edition-tools li #remove:hover,
-#markers-options #edition-tools li #remove.active {
-  background-position: -64px -32px;
-}
-#markers-options #edition-tools li #move:hover,
-#markers-options #edition-tools li #move.active {
-  background-position: -96px -32px;
+#markers-options #edition-tools li #send:hover,
+#markers-options #edition-tools li #send.active {
+  background-position: 0px -32px;
 }
 
 .menu-marker {
     z-index: 10;
     position: relative;
     color: #333;
-    display: block;
-    width: 170px;
-    padding-right: 30px;
-    float: left;
+    list-style: none;
+    padding: 0;
+    margin: 9px 0 0 0;
+    
+}
+.menu-marker > li {
+  float: none;
 }
 
-.menu-marker span.menu-title {
+.menu-marker .menu-item {
   position: relative;
   display: inline-block;
   color: #333;
-  font-size: 15px;
-  font-size: 1.5rem;
-  padding: 0 6px 4px 0;
-  border-bottom: 1px solid #D4D4D4;
 }
 
-.menu-marker span.group-toggling {
-  position: absolute;
+
+.menu-marker .menu-title {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  color: #333;
+  font-size: 15px;
+  font-size: 1.5rem;
+  line-height: 30px;
+  height: 30px;
+  vertical-align: middle;
+  padding: 0px 10px;
+  -webkit-border-radius: 10px 10px 0px 0px;
+  border-radius: 10px 10px 0px 0px;
+  -webkit-transition: opacity 150ms linear;
+  -moz-transition: opacity 150ms linear;
+  -ms-transition: opacity 150ms linear;
+  -o-transition: opacity 150ms linear;
+}
+.menu-marker .menu-item .menu-title span.arrow {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 9px;
+  font-size: 0.9rem;
+}
+.menu-marker .menu-item:hover .menu-title {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+}
+.menu-marker a.group-toggling span {
+  position: relative;
   z-index: 10;
-  top: 0px;
-  right: -30px;
   display: inline-block;
   width: 25px;
   height: 25px;
@@ -377,25 +394,41 @@ html.move #map-mask {
   -ms-transition: opacity 150ms linear;
   -o-transition: opacity 150ms linear;
 }
-.menu-marker span.group-toggling:hover {
+.menu-marker a.group-toggling:hover {
   opacity: 0.4;
 }
-.menu-marker span.group-toggling.off {
+.menu-marker a.group-toggling.off {
   opacity: 0.4;
   background-position: center bottom;
 }
 
-.menu-marker ul {
-  margin: 10px 0 0 -5px;
+
+.menu-marker .menu-item:hover ul.type-menu{
+  display:block;
+}
+.menu-marker .menu-item ul.type-menu {
+/*  display: block;*/
+  display: none;
+  position: absolute;
+  z-index: 11;
+  min-width: 165px;
+  top: 30px;
+  left: 0;
   padding: 0;
+  margin: 0;
+  background: #fff;
   list-style-type: none;
+  border: 10px solid rgba(0, 0, 0, 0.7);
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  -webkit-border-radius: 0px 15px 15px 15px;
+  border-radius: 0px 15px 15px 15px;
 }
-.menu-marker ul li {
+.menu-marker .menu-item ul.type-menu li {
   position: relative;
-  display: inline-block;
-  margin-left: 5px;
+  z-index: 12;
 }
-.menu-marker ul li:after {
+.menu-marker .menu-item ul.type-menu li:after {
   opacity: 0;
   -webkit-backface-visibility: hidden;
   -webkit-transition: opacity 150ms linear;
@@ -412,20 +445,20 @@ html.move #map-mask {
   width: 13px;
   background: url('../images/layout/little-add-remove.png') center center no-repeat;
 }
-html.add .menu-marker ul li:after{
+/*html.add .menu-marker .menu-item ul.type-menu li:after{
   opacity: 1;
   background-position: top left;
 }
-/*html.remove .menu-marker ul li:after{*/
-/*  opacity: 1;*/
-/*  background-position: bottom left;*/
-/*}*/
-.menu-marker ul li img {
-  width: 25px;
-  height: 25px;
-  cursor: pointer;
-  border: 1px solid #fff;
-  padding: 1px;
+*/
+.menu-marker .menu-item ul.type-menu li a.marker-type-link,
+.menu-marker .menu-item ul.type-menu li a.group-toggling{
+  position: relative;
+  z-index: 14;
+  display: block;
+  text-decoration: none;
+  padding: 9px 8px 9px 40px;
+  color: #000;
+  background: #fff;
   -webkit-backface-visibility: hidden;
   -webkit-transition: all 150ms linear;
   -moz-transition: all 150ms linear;
@@ -433,11 +466,82 @@ html.add .menu-marker ul li:after{
   -o-transition: all 150ms linear;
 }
 
-.menu-marker ul li.off img,
-.menu-marker ul li:hover img {
-    opacity: 0.5;
+.menu-marker .menu-item ul.type-menu li a.group-toggling {
+  display: block;
+  padding-left: 8px;
+  font-style: italic;
 }
 
+.menu-marker .menu-item ul.type-menu li a.off.marker-type-link {
+  background-color: #DEDEDE;
+  color: #B8B8B8;
+}
+.menu-marker .menu-item ul.type-menu li:hover a.marker-type-link,
+.menu-marker .menu-item ul.type-menu li a.marker-type-link:hover {
+  background-color: #3A3A3A;
+  color: #fff;
+  opacity: 1;
+}
+.menu-marker .menu-item ul.type-menu li a.off.marker-type-link:hover {
+  color: #B8B8B8;
+}
+
+
+.menu-marker .menu-item ul.type-menu li a.button{
+  position: absolute;
+  display: block;
+  z-index: 11;
+  top: 50%;
+  right: 0px;
+  margin-top: -16px;
+  width: 32px;
+  height: 32px;
+  background: url('../images/layout/edit-options.png') -224px 0 no-repeat;
+  -webkit-backface-visibility: hidden;
+  -webkit-transform: scale(0.85);
+  -moz-transform: scale(0.85);
+  -ms-transform: scale(0.85);
+  -o-transform: scale(0.85);
+  -webkit-transition-property:-webkit-transform, right;
+  -moz-transition-property:-moz-transform, right;
+  -ms-transition-property:-ms-transform, right;
+  -o-transition-property:-o-transform, right;
+  -webkit-transition-duration: 150ms;
+  -moz-transition-duration: 150ms;
+  -ms-transition-duration: 150ms;
+  -o-transition-duration: 150ms;
+}
+
+.menu-marker .menu-item ul.type-menu li:hover a.button{
+  right: -25px;
+}
+
+.menu-marker .menu-item ul.type-menu li a.button:hover,
+.menu-marker .menu-item ul.type-menu li a.button.active {
+  background-position: -224px -32px;
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+}
+
+.menu-marker .menu-item ul.type-menu li img {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  margin-top: -10px;
+  width: 20px;
+  height: 20px;
+  -webkit-backface-visibility: hidden;
+  -webkit-transition: all 150ms linear;
+  -moz-transition: all 150ms linear;
+  -ms-transition: all 150ms linear;
+  -o-transition: all 150ms linear;
+}
+
+.menu-marker .menu-item ul.type-menu li.off img {
+    opacity: 0.5;
+}
 
 div.area-summary-overlay {
  position: absolute;
@@ -502,7 +606,7 @@ div.area-summary-overlay ul.area-summary-list li .area-summary-icons {
 
 p.marker-permalink { text-align: right; }
 
-.confirm-box {
+.modal {
   position: absolute;
   display: block;
   z-index: 10;
@@ -516,10 +620,10 @@ p.marker-permalink { text-align: right; }
   background: #fff;
   border-radius: 15px;
   border: 10px solid rgba(0, 0, 0, 0.7);
-  -webkit-box-shadow: 0px 0px 50px 0px #ffffff;
-  box-shadow: 0px 0px 50px 0px #ffffff;
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
+  -webkit-box-shadow: 0px 0px 50px 0px #ffffff;
+  box-shadow: 0px 0px 50px 0px #ffffff;
   -webkit-transition: opacity 150ms linear;
   -moz-transition: opacity 150ms linear;
   -ms-transition: opacity 150ms linear;
@@ -527,12 +631,12 @@ p.marker-permalink { text-align: right; }
 }
 
 
-.confirm-box.visible {
+.modal.visible {
   top: 20%;
   opacity: 1;
 }
 
-.confirm-box.fadding {
+.modal.fadding {
   opacity: 0;
 }
 .overlay {
@@ -562,8 +666,14 @@ p.marker-permalink { text-align: right; }
   opacity: 0;
 }
 
-.confirm-box .padding {
+.modal .padding {
   padding: 10px;
+}
+.modal .loading {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 .confirm-box p.confirm-message {
   margin: 0 0 12px 0;
@@ -616,6 +726,7 @@ p.marker-permalink { text-align: right; }
   -ms-transition: opacity 150ms linear;
   -o-transition: opacity 150ms linear;
 }
+
 .customInfoWindow .close {
   position: absolute;
   cursor: pointer;
@@ -629,37 +740,64 @@ p.marker-permalink { text-align: right; }
 .customInfoWindow .close:hover {
   background-position: -160px bottom;
 }
-.customInfoWindow .edit {
+
+.customInfoWindow .iw-options-list {
   position: absolute;
-  cursor: pointer;
   top: -22px;
-  right: 12px;
+  left: -22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.customInfoWindow .iw-options-list li {
+  display: inline-block;
+}
+
+.customInfoWindow .iw-options-list li a{
   display: block;
+  position: relative;
+  cursor: pointer;
   width: 32px;
   height: 32px;
   background: url('../images/layout/edit-options.png') -128px top no-repeat;
 }
+.customInfoWindow .iw-options-list li a .edit {
+  background-position: -128px top;
+}
 
-.customInfoWindow .edit:hover,
-.customInfoWindow .edit.active {
+.customInfoWindow .iw-options-list li a.edit:hover,
+.customInfoWindow .iw-options-list li a.edit.active {
   background-position: -128px bottom;
   opacity: 1;
 }
 
-.customInfoWindow .share {
-  position: absolute;
-  cursor: pointer;
-  top: -22px;
-  right: 48px;
-  display: block;
-  width: 32px;
-  height: 32px;
-  background: url('../images/layout/edit-options.png') -192px top no-repeat;
+.customInfoWindow .iw-options-list li a.share {
+  background-position: -192px top;
 }
 
-.customInfoWindow .share:hover,
-.customInfoWindow .share.active {
+.customInfoWindow .iw-options-list li a.share:hover,
+.customInfoWindow .iw-options-list li a.share.active {
   background-position: -192px bottom;
+  opacity: 1;
+}
+
+.customInfoWindow .iw-options-list li a.delete {
+  background-position: -64px 0px;
+}
+
+.customInfoWindow .iw-options-list li a.delete:hover,
+.customInfoWindow .iw-options-list li a.delete.active {
+  background-position: -64px bottom;
+  opacity: 1;
+}
+
+.customInfoWindow .iw-options-list li a.move {
+  background-position: -96px top;
+}
+
+.customInfoWindow .iw-options-list li a.move:hover,
+.customInfoWindow .iw-options-list li a.move.active {
+  background-position: -96px bottom;
   opacity: 1;
 }
 
@@ -718,7 +856,8 @@ p.marker-permalink { text-align: right; }
   
   .customInfoWindow .edit-form,
   .customInfoWindow .marker-desc,
-  .customInfoWindow .share-input {
+  .customInfoWindow .share-input,
+  .customInfoWindow .moving {
     position: relative;
     z-index: 102;
     display: none;
@@ -730,10 +869,11 @@ p.marker-permalink { text-align: right; }
   
   .customInfoWindow .edit-form.active,
   .customInfoWindow .marker-desc.active,
-  .customInfoWindow .share-input.active {
+  .customInfoWindow .share-input.active,
+  .customInfoWindow .moving.active {
     display: block;
   }
-  .customInfoWindow .marker-desc h1 {
+  .customInfoWindow h1 {
     position: relative;
     font-size: 16px;
     font-size: 1.6rem;
