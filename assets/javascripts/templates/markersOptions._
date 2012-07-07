@@ -1,7 +1,7 @@
 <ul class="menu-marker group">
 <% _.each(Icons, function(iconsTypeObject, cat) { %>
     <li class="menu-item" data-markerCat="<%= cat %>">
-        <a href="javascript:" class="menu-title"><%= Markers[cat].name %> markers</a>
+        <a href="javascript:" class="menu-title"><%= Markers[cat].name %> <span class="arrow"> ▼</span></a>
         <ul class="type-menu group">
           <li class="type-menu-item"><a href="javascript:" class="group-toggling">Toggle all markers</a></li>
           <% _.each(iconsTypeObject, function(iconsObject, type) { %>

@@ -3,7 +3,7 @@ Resources.Paths = {
 }
 
 Resources.Icons = {
-  "generic" : {
+  "explore" : {
     "hearts" : {"label" : "Hearts", "url" : Resources.Paths.icons + "hearts.png"},
     "waypoints" : {"label" : "Waypoints", "url" : Resources.Paths.icons + "waypoints.png"},
     "skillpoints" : {"label" : "Skill points", "url" : Resources.Paths.icons + "skillpoints.png"},
@@ -13,12 +13,19 @@ Resources.Icons = {
     "scouts" : {"label" : "Scouts", "url" : Resources.Paths.icons + "scout.png"},
     "jumpingpuzzles" : {"label" : "Jumping puzzles", "url" : Resources.Paths.icons + "puzzle.png"}
   }
-  // ,
-  // "merchants" : {
-  //   "rangerSkillBooks" : {"label" : "Ranger's skill book vendor", "url" : Resources.Paths.icons + "skillBookRanger.png"}
-  // }
+  ,
+  "train" : {
+    "rangerSkillBooks" : {"label" : "Ranger training", "url" : Resources.Paths.icons + "skillBookRanger.png"},
+    "necroSkillBooks" : {"label" : "Necromancer training", "url" : Resources.Paths.icons + "skillBookNecro.png"},
+    "warriorSkillBooks" : {"label" : "Warrior training", "url" : Resources.Paths.icons + "skillBookWarrior.png"},
+    "guardianSkillBooks" : {"label" : "Guardian training", "url" : Resources.Paths.icons + "skillBookGuardian.png"},
+    "mesmerSkillBooks" : {"label" : "Mesmer training", "url" : Resources.Paths.icons + "skillBookMesmer.png"},
+    "eleSkillBooks" : {"label" : "Elementalist training", "url" : Resources.Paths.icons + "skillBookEle.png"},
+    "engiSkillBooks" : {"label" : "Engineer training", "url" : Resources.Paths.icons + "skillBookEngi.png"},
+    "thiefSkillBooks" : {"label" : "Thief training", "url" : Resources.Paths.icons + "skillBookThief.png"}
+  }
 }
-
+//{{{
 Areas = [
 { name : "Divinity's Reach", rangeLvl : "",
      summary : {
@@ -131,20 +138,54 @@ Areas = [
      "neLat" : "17.025272685376905", "neLng" : "5.526123046875", "swLat" : "6.263804863758637", "swLng" : "-10.099023437500023"
  }
 ]
+//}}}
+Markers.train = {
+  name : "Train",
+  markerGroup : [{
+    name : "Rangers",
+    slug : "rangerSkillBooks",
+    markers : []
+  },
+  {
+    name : "Necromancer",
+    slug : "necroSkillBooks",
+    markers : []
+  },
+  {
+    name : "Warrior",
+    slug : "warriorSkillBooks",
+    markers : []
+  },
+  {
+    name : "Guardian",
+    slug : "guardianSkillBooks",
+    markers : []
+  },
+  {
+    name : "Mesmer",
+    slug : "mesmerSkillBooks",
+    markers : []
+  },
+  {
+    name : "Elementalist",
+    slug : "eleSkillBooks",
+    markers : []
+  },
+  {
+    name : "Engineer",
+    slug : "engiSkillBooks",
+    markers : []
+  },
+  {
+    name : "Thief",
+    slug : "thiefSkillBooks",
+    markers : []
+  }
+  ]
+}
 
-// Markers.merchants = {
-//   name : "Merchants",
-//   markerGroup : [{
-//     name : "Rangers skill books vendor",
-//     slug : "rangerSkillBooks",
-//     markers : [
-//     {"lat" : "29.78344945682068", "lng" : "-40.71533203125", "title" : "", "desc" : "", "wikiLink" : ""}
-//     ]
-//   }]
-// }
-
-Markers.generic = {
-  name : "Generic",
+Markers.explore = {
+  name : "Explore",
   markerGroup : [{
     name : "Hearts",
     slug : "hearts",

@@ -104,7 +104,7 @@ class CustomMap
     # @defaultLng = 18.28125
     @defaultLng = -36.32080078125
     
-    @defaultCat = "generic"
+    @defaultCat = "explore"
 
     @areaSummaryBoxes = []
     
@@ -813,7 +813,7 @@ extractUrlParams = ()->
     
 $ ()->
   myCustomMap = new CustomMap('#map')
-  markersOptionsMenuToggle = $('#options-toggle strong')
-  markersOptionsMenuToggle.click( () ->
-    myCustomMap.toggleMarkersOptionsMenu()
-  )
+  # markersOptionsMenuToggle = $('#options-toggle strong')
+  # markersOptionsMenuToggle.click( () ->
+    # myCustomMap.toggleMarkersOptionsMenu()
+  # )
