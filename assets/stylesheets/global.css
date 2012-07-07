@@ -317,26 +317,19 @@ html.move #map-mask {
   height: 32px;
   background: url('../images/layout/edit-options.png') 0 0 no-repeat;
 }
-#markers-options #edition-tools li a#add {
-  background-position: -32px 0px;
+#markers-options #edition-tools li a#destroy {
+  background-position: -256px 0px;
 }
-#markers-options #edition-tools li a#remove {
-  background-position: -64px 0px;
+#markers-options #edition-tools li a#send {
+  background-position: 0px 0px;
 }
-#markers-options #edition-tools li a#move {
-  background-position: -96px 0px;
+#markers-options #edition-tools li #destroy:hover,
+#markers-options #edition-tools li #destroy.active {
+  background-position: -256px -32px;
 }
-#markers-options #edition-tools li #add:hover,
-#markers-options #edition-tools li #add.active {
-  background-position: -32px -32px;
-}
-#markers-options #edition-tools li #remove:hover,
-#markers-options #edition-tools li #remove.active {
-  background-position: -64px -32px;
-}
-#markers-options #edition-tools li #move:hover,
-#markers-options #edition-tools li #move.active {
-  background-position: -96px -32px;
+#markers-options #edition-tools li #send:hover,
+#markers-options #edition-tools li #send.active {
+  background-position: 0px -32px;
 }
 
 .menu-marker {
@@ -613,7 +606,7 @@ div.area-summary-overlay ul.area-summary-list li .area-summary-icons {
 
 p.marker-permalink { text-align: right; }
 
-.confirm-box {
+.modal {
   position: absolute;
   display: block;
   z-index: 10;
@@ -638,12 +631,12 @@ p.marker-permalink { text-align: right; }
 }
 
 
-.confirm-box.visible {
+.modal.visible {
   top: 20%;
   opacity: 1;
 }
 
-.confirm-box.fadding {
+.modal.fadding {
   opacity: 0;
 }
 .overlay {
@@ -673,8 +666,14 @@ p.marker-permalink { text-align: right; }
   opacity: 0;
 }
 
-.confirm-box .padding {
+.modal .padding {
   padding: 10px;
+}
+.modal .loading {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 .confirm-box p.confirm-message {
   margin: 0 0 12px 0;

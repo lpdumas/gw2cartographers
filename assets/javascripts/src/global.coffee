@@ -22,7 +22,7 @@ for att in attToCheck
 class Modalbox
   constructor: () ->
     @modal   = $('<div class="modal"><div class="padding"></div></div>')
-    @overlay = $('<span class="overlay"></span>') 
+    @overlay = $('<span class="overlay"></span>')
     $('body').append(@modal)
     $('body').append(@overlay)
     
@@ -32,13 +32,18 @@ class Modalbox
     @modal.addClass('visible')
     @overlay.addClass('visible')
     
-  close: () =>
+  close: (callback) =>
+    callback = if _.isFunction(callback) then callback else ()->
     @modal.addClass('fadding')
     @overlay.addClass('fadding')
     t = setTimeout(()=>
       @modal.removeClass('visible fadding')
       @overlay.removeClass('visible fadding')
+      callback()
     , 150)
+  
+  setContent: (content) ->
+    @modal.find('.padding').html(content)
     
 ###
 #}}} 
@@ -98,7 +103,7 @@ class CustomMap
     @exportBtn        = $('#export')
     @exportWindow     = $('#export-windows')
     @markersOptionsMenu = $('#markers-options')
-    @editionsTools    = $('#edition-tools a')
+    @mapOptions    = $('#edition-tools a')
     # @defaultLat = 15.919073517982465
     @defaultLat = 26.765230565697536
     # @defaultLng = 18.28125
@@ -209,6 +214,9 @@ class CustomMap
           @addMarkerLink.bind('click', @toggleMarkerList)
           @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
           @exportBtn.bind('click', @handleExport)
+          $('#destroy').bind('click', @destroyLocalStorage)
+          $('#send').bind('click', @sendMapForApproval)
+
     
           @exportWindow.find('.close').click(()=>
             @exportWindow.hide()
@@ -361,6 +369,50 @@ class CustomMap
       @canRemoveMarker = true
       @markerList.removeClass('active')
       @addMarkerLink.removeClass('active')
+
+  destroyLocalStorage: (e) =>
+    confirmMessage = "This action will destroy you local change to the map. Are you sure you want to proceed?"
+    @confirmBox.initConfirmation(confirmMessage, (e)=>
+      if @getConfigFromLocalStorage()
+        localStorage.removeItem(@localStorageKey);
+        window.location = "/"
+    )
+  sendMapForApproval: (e) =>
+    this_ = $(e.currentTarget)
+    ajaxUrl = this_.attr('data-ajaxUrl')
+    modal = new Modalbox()
+    modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">')
+    confirmMessage = "Are you ready to send your map for approval?"
+    @confirmBox.initConfirmation(confirmMessage, (e)=>
+      modal.open()
+      
+      # request = $.ajax(
+      #   url: ajaxUrl
+      #   type: "GET"
+      #   dataType: "json"
+      #   data: @handleExport()
+      #   )
+      # 
+      # request.done((response) =>
+      #   modal.close(()=>
+      #     modal.setContent('<h1>Thank you!</h1>')
+      #     modal.open()
+      #   )
+      # )
+      # 
+      # request.fail((jqXHR, textStatus)=>
+      #   console.log 'fail'
+      # )
+      
+      # Simulating ajax call latency
+      t = setTimeout(()=>
+        modal.close(()=>
+          modal.setContent('<h1>Thank you!</h1>')
+          modal.open()
+        )
+        
+      , 500)
+    )
     
   handleExport:(e)=>
     exportMarkerObject = {}

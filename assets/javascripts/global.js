@@ -54,15 +54,21 @@
       return this.overlay.addClass('visible');
     };
 
-    Modalbox.prototype.close = function() {
+    Modalbox.prototype.close = function(callback) {
       var t,
         _this = this;
+      callback = _.isFunction(callback) ? callback : function() {};
       this.modal.addClass('fadding');
       this.overlay.addClass('fadding');
       return t = setTimeout(function() {
         _this.modal.removeClass('visible fadding');
-        return _this.overlay.removeClass('visible fadding');
+        _this.overlay.removeClass('visible fadding');
+        return callback();
       }, 150);
+    };
+
+    Modalbox.prototype.setContent = function(content) {
+      return this.modal.find('.padding').html(content);
     };
 
     return Modalbox;
@@ -134,6 +140,10 @@
 
       this.handleExport = __bind(this.handleExport, this);
 
+      this.sendMapForApproval = __bind(this.sendMapForApproval, this);
+
+      this.destroyLocalStorage = __bind(this.destroyLocalStorage, this);
+
       this.handleMarkerRemovalTool = __bind(this.handleMarkerRemovalTool, this);
 
       var _this = this;
@@ -153,7 +163,7 @@
       this.exportBtn = $('#export');
       this.exportWindow = $('#export-windows');
       this.markersOptionsMenu = $('#markers-options');
-      this.editionsTools = $('#edition-tools a');
+      this.mapOptions = $('#edition-tools a');
       this.defaultLat = 26.765230565697536;
       this.defaultLng = -36.32080078125;
       this.defaultCat = "explore";
@@ -256,6 +266,8 @@
             _this.addMarkerLink.bind('click', _this.toggleMarkerList);
             _this.removeMarkerLink.bind('click', _this.handleMarkerRemovalTool);
             _this.exportBtn.bind('click', _this.handleExport);
+            $('#destroy').bind('click', _this.destroyLocalStorage);
+            $('#send').bind('click', _this.sendMapForApproval);
             return _this.exportWindow.find('.close').click(function() {
               return _this.exportWindow.hide();
             });
@@ -515,6 +527,38 @@
         this.markerList.removeClass('active');
         return this.addMarkerLink.removeClass('active');
       }
+    };
+
+    CustomMap.prototype.destroyLocalStorage = function(e) {
+      var confirmMessage,
+        _this = this;
+      confirmMessage = "This action will destroy you local change to the map. Are you sure you want to proceed?";
+      return this.confirmBox.initConfirmation(confirmMessage, function(e) {
+        if (_this.getConfigFromLocalStorage()) {
+          localStorage.removeItem(_this.localStorageKey);
+          return window.location = "/";
+        }
+      });
+    };
+
+    CustomMap.prototype.sendMapForApproval = function(e) {
+      var ajaxUrl, confirmMessage, modal, this_,
+        _this = this;
+      this_ = $(e.currentTarget);
+      ajaxUrl = this_.attr('data-ajaxUrl');
+      modal = new Modalbox();
+      modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">');
+      confirmMessage = "Are you ready to send your map for approval?";
+      return this.confirmBox.initConfirmation(confirmMessage, function(e) {
+        var t;
+        modal.open();
+        return t = setTimeout(function() {
+          return modal.close(function() {
+            modal.setContent('<h1>Thank you!</h1>');
+            return modal.open();
+          });
+        }, 500);
+      });
     };
 
     CustomMap.prototype.handleExport = function(e) {
