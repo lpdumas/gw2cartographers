@@ -1,7 +1,12 @@
-<a href="javascript:" title="Edit infos" class="edit button"></a>
-<a href="javascript:" title="Share marker" class="share button"></a>
+<ul class="iw-options-list">
+    <li><a href="javascript:" title="Share marker" data-action="share" class="share button"></a></li>
+    <li><a href="javascript:" title="Edit infos" data-action="edit" class="edit button"></a></li>
+    <li><a href="javascript:" title="Move marker" data-action="move" class="move button"></a></li>
+    <li><a href="javascript:" title="Delete marker" data-action="delete" class="delete button"></a></li>
+</ul>
+
 <% if (title !== "" && desc !== "") { %>
-<div class="marker-desc active <%= type %>-marker">
+<div data-target="read" class="marker-desc active <%= type %>-marker">
     <h1><%= title %></h1>
     <p class="desc">
         <%= desc %> 
@@ -11,12 +16,12 @@
     <% }%>
 </div>
 <% } else { %>
-<div class="marker-desc active">
+<div data-target="read" class="marker-desc active">
     <h1>We need your help for this marker!</h1>
-    <p>Click on the edit button (top right of this box).</p>
+    <p>Click on the edit button (top left of this box).</p>
 </div>
 <% } %>
-<form action="javacript:" class="edit-form" id="edit-form-<%= id %>">
+<form action="javacript:" class="edit-form toggling-tab" data-target="edit" id="edit-form-<%= id %>">
     <label>
         <span class="label">Title</span>
         <input type="text" name="marker-title" value="<%= title %>" >
@@ -31,7 +36,10 @@
     </label>
     <button type='button'>save</button>
 </form>
-<div class="share-input">
+<div class="share-input toggling-tab" data-target="share">
     <span class="label">Share link</span>
     <input type="text" readonly name="share-link" value="http://gw2cartographers.com?lat=<%= lat %>&amp;lng=<%= lng %>" >
+</div>
+<div class="moving toggling-tab" data-target="move">
+    <h1>You can now move the marker</h1>
 </div>

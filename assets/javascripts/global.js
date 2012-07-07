@@ -130,8 +130,6 @@
     function CustomMap(id) {
       this.toggleMarkerList = __bind(this.toggleMarkerList, this);
 
-      this.handleEdition = __bind(this.handleEdition, this);
-
       this.handleAddTool = __bind(this.handleAddTool, this);
 
       this.handleExport = __bind(this.handleExport, this);
@@ -258,7 +256,6 @@
             _this.addMarkerLink.bind('click', _this.toggleMarkerList);
             _this.removeMarkerLink.bind('click', _this.handleMarkerRemovalTool);
             _this.exportBtn.bind('click', _this.handleExport);
-            _this.editionsTools.bind('click', _this.handleEdition);
             return _this.exportWindow.find('.close').click(function() {
               return _this.exportWindow.hide();
             });
@@ -317,6 +314,18 @@
           onSave: function(newInfo) {
             return _this.updateMarkerInfos(newInfo);
           },
+          deleteCalled: function(marker) {
+            return _this.removeMarker(marker.__gm_id, markersType, markersCat);
+          },
+          moveCalled: function(marker) {
+            if (marker.getDraggable()) {
+              marker.setDraggable(false);
+              return marker.setCursor("pointer");
+            } else {
+              marker.setDraggable(true);
+              return marker.setCursor("move");
+            }
+          },
           template: _this.editInfoWindowTemplate
         });
       };
@@ -339,12 +348,6 @@
       marker["wikiLink"] = "" + markerInfo.wikiLink;
       marker["type"] = "" + markersType;
       marker["cat"] = "" + markersCat;
-      google.maps.event.addListener(marker, 'dragend', function(e) {
-        _this.saveToLocalStorage();
-        if (marker["infoWindow"] != null) {
-          return marker["infoWindow"].updatePos();
-        }
-      });
       if (markerInfo.lat.toString() === this.getStartLat() && markerInfo.lng.toString() === this.getStartLng()) {
         if (!(marker["infoWindow"] != null)) {
           createInfoWindow(marker);
@@ -353,38 +356,28 @@
           marker["infoWindow"].open();
         }
       }
+      google.maps.event.addListener(marker, 'dragend', function(e) {
+        _this.saveToLocalStorage();
+        if (marker["infoWindow"] != null) {
+          return marker["infoWindow"].updatePos();
+        }
+      });
       google.maps.event.addListener(marker, 'click', function(e) {
-        var closeCurrentInfoWindow;
-        closeCurrentInfoWindow = function() {};
-        switch (_this.appState) {
-          case "remove":
-            return _this.removeMarker(marker.__gm_id, markersType, markersCat);
-          case "move":
-            if (marker.getDraggable()) {
-              marker.setDraggable(false);
-              return marker.setCursor("pointer");
-            } else {
-              marker.setDraggable(true);
-              return marker.setCursor("move");
+        if (marker["infoWindow"] != null) {
+          if (_this.currentOpenedInfoWindow === marker["infoWindow"]) {
+            return _this.currentOpenedInfoWindow.close();
+          } else {
+            if (_this.currentOpenedInfoWindow) {
+              _this.currentOpenedInfoWindow.close();
             }
-            break;
-          default:
-            if (marker["infoWindow"] != null) {
-              if (_this.currentOpenedInfoWindow === marker["infoWindow"]) {
-                return _this.currentOpenedInfoWindow.close();
-              } else {
-                if (_this.currentOpenedInfoWindow) {
-                  _this.currentOpenedInfoWindow.close();
-                }
-                return marker["infoWindow"].open();
-              }
-            } else {
-              createInfoWindow(marker);
-              if (_this.currentOpenedInfoWindow) {
-                _this.currentOpenedInfoWindow.close();
-              }
-              return marker["infoWindow"].open();
-            }
+            return marker["infoWindow"].open();
+          }
+        } else {
+          createInfoWindow(marker);
+          if (_this.currentOpenedInfoWindow) {
+            _this.currentOpenedInfoWindow.close();
+          }
+          return marker["infoWindow"].open();
         }
       });
       _ref = this.gMarker[markersCat]["markerGroup"];
@@ -578,28 +571,6 @@
         draggable: true
       };
       return this.addMarker(newMarkerInfo, markerType, markerCat, true);
-    };
-
-    CustomMap.prototype.handleEdition = function(e) {
-      var elements, this_, _j, _len1, _ref;
-      this_ = $(e.currentTarget);
-      _ref = this.editionsTools;
-      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-        elements = _ref[_j];
-        if (elements !== e.currentTarget) {
-          $(elements).removeClass('active');
-        }
-      }
-      this_.toggleClass('active');
-      this.html.removeClass('add remove move send');
-      this.appState = "read";
-      if (this_.hasClass('active')) {
-        this.appState = this_.attr('id');
-        this.html.addClass(this_.attr('id'));
-      }
-      if (this.appState === "read") {
-        return this.setDraggableMarker();
-      }
     };
 
     CustomMap.prototype.getStartLat = function() {
@@ -799,36 +770,20 @@
         template = _.template(e);
         html = $(template(Resources));
         html.find(".trigger").bind('click', function(e) {
-          var coord, item, markerCat, markerType, myGroupTrigger, newMarkerInfo;
+          var item, markerCat, markerType, myGroupTrigger;
           item = $(e.currentTarget);
           myGroupTrigger = item.closest(".menu-marker").find('.group-toggling');
           markerType = item.attr('data-type');
           markerCat = item.attr('data-cat');
-          switch (_this.appState) {
-            case "read":
-            case "move":
-            case "remove":
-              if (_this.canToggleMarkers) {
-                if (item.hasClass('off')) {
-                  _this.setMarkersVisibilityByType(true, markerType, markerCat);
-                  item.removeClass('off');
-                  return myGroupTrigger.removeClass('off');
-                } else {
-                  _this.setMarkersVisibilityByType(false, markerType, markerCat);
-                  return item.addClass('off');
-                }
-              }
-              break;
-            case "add":
-              coord = _this.map.getCenter();
-              newMarkerInfo = {
-                desc: "",
-                title: "",
-                lat: coord.lat(),
-                lng: coord.lng(),
-                draggable: true
-              };
-              return _this.addMarker(newMarkerInfo, markerType, markerCat);
+          if (_this.canToggleMarkers) {
+            if (item.hasClass('off')) {
+              _this.setMarkersVisibilityByType(true, markerType, markerCat);
+              item.removeClass('off');
+              return myGroupTrigger.removeClass('off');
+            } else {
+              _this.setMarkersVisibilityByType(false, markerType, markerCat);
+              return item.addClass('off');
+            }
           }
         });
         html.find('.group-toggling').bind('click', function(e) {
@@ -973,9 +928,7 @@
     function CustomInfoWindow(marker, content, opts) {
       this.handleSave = __bind(this.handleSave, this);
 
-      this.toggleShare = __bind(this.toggleShare, this);
-
-      this.toggleEditMod = __bind(this.toggleEditMod, this);
+      this.toggleSection = __bind(this.toggleSection, this);
 
       this.open = __bind(this.open, this);
 
@@ -994,6 +947,8 @@
       this.onClose = opts.onClose;
       this.onOpen = opts.onOpen;
       this.onSave = opts.onSave;
+      this.deleteCalled = opts.deleteCalled;
+      this.moveCalled = opts.moveCalled;
       this.closeBtn.bind('click', this.close);
     }
 
@@ -1014,9 +969,8 @@
     };
 
     CustomInfoWindow.prototype.bindButton = function() {
-      this.wrap.find('.edit').bind('click', this.toggleEditMod);
       this.wrap.find('button').bind('click', this.handleSave);
-      return this.wrap.find('.share').bind('click', this.toggleShare);
+      return this.wrap.find('.iw-options-list .button').bind('click', this.toggleSection);
     };
 
     CustomInfoWindow.prototype.onRemove = function() {
@@ -1084,47 +1038,33 @@
       });
     };
 
-    CustomInfoWindow.prototype.toggleEditMod = function(e) {
-      var buttons, editBox, markerDescBox, parent, shareBox, this_;
+    CustomInfoWindow.prototype.toggleSection = function(e) {
+      var action, activeTab, defaultTab, targetTab, this_;
       this_ = $(e.currentTarget);
-      parent = this.wrap;
-      buttons = parent.find('.button');
-      markerDescBox = parent.find('.marker-desc');
-      editBox = parent.find('.edit-form');
-      shareBox = parent.find('.share-input');
-      if (this_.hasClass('active')) {
-        markerDescBox.addClass('active');
-        buttons.removeClass('active');
-        editBox.removeClass('active');
-        return shareBox.removeClass('active');
-      } else {
-        buttons.removeClass('active');
-        markerDescBox.removeClass('active');
-        shareBox.removeClass('active');
-        this_.addClass('active');
-        return editBox.addClass('active');
+      action = this_.attr('data-action');
+      defaultTab = this.wrap.find('.marker-desc');
+      activeTab = this.wrap.find('.toggling-tab.active');
+      targetTab = $("[data-target='" + action + "']");
+      switch (action) {
+        case "move":
+        case "share":
+        case "edit":
+          this.wrap.find('.iw-options-list .button').removeClass('active');
+          if (targetTab.attr("data-target") === activeTab.attr("data-target")) {
+            targetTab.removeClass('active');
+            defaultTab.addClass('active');
+          } else {
+            this_.addClass('active');
+            activeTab.removeClass('active');
+            targetTab.addClass('active');
+            defaultTab.removeClass('active');
+          }
+          break;
+        case "delete":
+          this.deleteCalled(this.marker);
       }
-    };
-
-    CustomInfoWindow.prototype.toggleShare = function(e) {
-      var buttons, editBox, markerDescBox, parent, shareBox, this_;
-      this_ = $(e.currentTarget);
-      parent = this.wrap;
-      buttons = parent.find('.button');
-      markerDescBox = parent.find('.marker-desc');
-      editBox = parent.find('.edit-form');
-      shareBox = parent.find('.share-input');
-      if (this_.hasClass('active')) {
-        markerDescBox.addClass('active');
-        buttons.removeClass('active');
-        editBox.removeClass('active');
-        return shareBox.removeClass('active');
-      } else {
-        buttons.removeClass('active');
-        markerDescBox.removeClass('active');
-        editBox.removeClass('active');
-        this_.addClass('active');
-        return shareBox.addClass('active');
+      if (action === "move") {
+        return this.moveCalled(this.marker);
       }
     };
 

@@ -727,6 +727,7 @@ p.marker-permalink { text-align: right; }
   -ms-transition: opacity 150ms linear;
   -o-transition: opacity 150ms linear;
 }
+
 .customInfoWindow .close {
   position: absolute;
   cursor: pointer;
@@ -740,37 +741,64 @@ p.marker-permalink { text-align: right; }
 .customInfoWindow .close:hover {
   background-position: -160px bottom;
 }
-.customInfoWindow .edit {
+
+.customInfoWindow .iw-options-list {
   position: absolute;
-  cursor: pointer;
   top: -22px;
-  right: 12px;
+  left: -22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.customInfoWindow .iw-options-list li {
+  display: inline-block;
+}
+
+.customInfoWindow .iw-options-list li a{
   display: block;
+  position: relative;
+  cursor: pointer;
   width: 32px;
   height: 32px;
   background: url('../images/layout/edit-options.png') -128px top no-repeat;
 }
+.customInfoWindow .iw-options-list li a .edit {
+  background-position: -128px top;
+}
 
-.customInfoWindow .edit:hover,
-.customInfoWindow .edit.active {
+.customInfoWindow .iw-options-list li a.edit:hover,
+.customInfoWindow .iw-options-list li a.edit.active {
   background-position: -128px bottom;
   opacity: 1;
 }
 
-.customInfoWindow .share {
-  position: absolute;
-  cursor: pointer;
-  top: -22px;
-  right: 48px;
-  display: block;
-  width: 32px;
-  height: 32px;
-  background: url('../images/layout/edit-options.png') -192px top no-repeat;
+.customInfoWindow .iw-options-list li a.share {
+  background-position: -192px top;
 }
 
-.customInfoWindow .share:hover,
-.customInfoWindow .share.active {
+.customInfoWindow .iw-options-list li a.share:hover,
+.customInfoWindow .iw-options-list li a.share.active {
   background-position: -192px bottom;
+  opacity: 1;
+}
+
+.customInfoWindow .iw-options-list li a.delete {
+  background-position: -64px 0px;
+}
+
+.customInfoWindow .iw-options-list li a.delete:hover,
+.customInfoWindow .iw-options-list li a.delete.active {
+  background-position: -64px bottom;
+  opacity: 1;
+}
+
+.customInfoWindow .iw-options-list li a.move {
+  background-position: -96px top;
+}
+
+.customInfoWindow .iw-options-list li a.move:hover,
+.customInfoWindow .iw-options-list li a.move.active {
+  background-position: -96px bottom;
   opacity: 1;
 }
 
@@ -829,7 +857,8 @@ p.marker-permalink { text-align: right; }
   
   .customInfoWindow .edit-form,
   .customInfoWindow .marker-desc,
-  .customInfoWindow .share-input {
+  .customInfoWindow .share-input,
+  .customInfoWindow .moving {
     position: relative;
     z-index: 102;
     display: none;
@@ -841,10 +870,11 @@ p.marker-permalink { text-align: right; }
   
   .customInfoWindow .edit-form.active,
   .customInfoWindow .marker-desc.active,
-  .customInfoWindow .share-input.active {
+  .customInfoWindow .share-input.active,
+  .customInfoWindow .moving.active {
     display: block;
   }
-  .customInfoWindow .marker-desc h1 {
+  .customInfoWindow h1 {
     position: relative;
     font-size: 16px;
     font-size: 1.6rem;

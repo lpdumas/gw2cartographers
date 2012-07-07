@@ -209,7 +209,6 @@ class CustomMap
           @addMarkerLink.bind('click', @toggleMarkerList)
           @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
           @exportBtn.bind('click', @handleExport)
-          @editionsTools.bind('click', @handleEdition)
     
           @exportWindow.find('.close').click(()=>
             @exportWindow.hide()
@@ -256,6 +255,15 @@ class CustomMap
           @currentOpenedInfoWindow = infoWindow
         onSave  : (newInfo)=>
           @updateMarkerInfos(newInfo)
+        deleteCalled : (marker)=>
+          @removeMarker(marker.__gm_id, markersType, markersCat)
+        moveCalled : (marker) =>
+          if marker.getDraggable()
+            marker.setDraggable(false)
+            marker.setCursor("pointer")
+          else
+            marker.setDraggable(true)
+            marker.setCursor("move")
         template : @editInfoWindowTemplate
       )
       
@@ -280,12 +288,6 @@ class CustomMap
     marker["wikiLink"]  = "#{markerInfo.wikiLink}"
     marker["type"]  = "#{markersType}"
     marker["cat"]  = "#{markersCat}"
-    
-    google.maps.event.addListener(marker, 'dragend', (e)=>
-      @saveToLocalStorage()
-      if marker["infoWindow"]?
-        marker["infoWindow"].updatePos()
-    )
 
     if markerInfo.lat.toString() is @getStartLat() and markerInfo.lng.toString() is @getStartLng()
       if not marker["infoWindow"]?
@@ -294,32 +296,24 @@ class CustomMap
       else
         marker["infoWindow"].open()
         
+    google.maps.event.addListener(marker, 'dragend', (e)=>
+      @saveToLocalStorage()
+      if marker["infoWindow"]?
+        marker["infoWindow"].updatePos()
+    )
+
     google.maps.event.addListener(marker, 'click', (e)=>
-      closeCurrentInfoWindow = ()=>
-        
-      switch @appState
-        when "remove"
-          @removeMarker(marker.__gm_id, markersType, markersCat)
-        when "move"
-          if marker.getDraggable()
-            marker.setDraggable(false)
-            marker.setCursor("pointer")
-          else
-            marker.setDraggable(true)
-            marker.setCursor("move")
+      if marker["infoWindow"]?
+        if @currentOpenedInfoWindow is marker["infoWindow"]
+          @currentOpenedInfoWindow.close()
+          
         else
-          # Handling infoWindow, creating them is their're not
-          if marker["infoWindow"]?
-            if @currentOpenedInfoWindow is marker["infoWindow"]
-              @currentOpenedInfoWindow.close()
-              
-            else
-              if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-              marker["infoWindow"].open()
-          else  
-            createInfoWindow(marker)
-            if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-            marker["infoWindow"].open()
+          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+          marker["infoWindow"].open()
+      else  
+        createInfoWindow(marker)
+        if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+        marker["infoWindow"].open()
     )
     
     markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["markerGroup"] when markerType.slug is markersType
@@ -411,20 +405,6 @@ class CustomMap
       wikiLink  : ""
       draggable : true
     @addMarker(newMarkerInfo, markerType, markerCat, true)
-    
-  handleEdition:(e)=>
-    this_ = $(e.currentTarget)
-    $(elements).removeClass('active') for elements in @editionsTools when elements isnt e.currentTarget
-    this_.toggleClass('active')
-    @html.removeClass('add remove move send')
-
-    @appState = "read"
-    if this_.hasClass('active')
-      @appState = this_.attr('id')
-      @html.addClass(this_.attr('id'))
-    
-    if @appState is "read"
-      @setDraggableMarker()
     
   getStartLat:()->
     params = extractUrlParams()
@@ -527,33 +507,15 @@ class CustomMap
         myGroupTrigger = item.closest(".menu-marker").find('.group-toggling')
         markerType     = item.attr('data-type')
         markerCat      = item.attr('data-cat')
-        
-        # Binding different action to the click considering @appState
-        # read   -> Toggle on/off marker on map
-        # add    -> Add a draggable marker on center of map
-        # remove -> Delete all marker from clicked marker type
-        
-        switch @appState
-          when "read", "move", "remove"
-            if @canToggleMarkers
-              if item.hasClass('off')
-                @setMarkersVisibilityByType(true, markerType, markerCat)
-                item.removeClass('off')
-                myGroupTrigger.removeClass('off')
-              else
-                @setMarkersVisibilityByType(false, markerType, markerCat)
-                item.addClass('off')
-          when "add"
-            coord     = @map.getCenter()
-            newMarkerInfo =
-              desc      : ""
-              title     : ""
-              lat       : coord.lat()
-              lng       : coord.lng()
-              draggable : true
-            @addMarker(newMarkerInfo, markerType, markerCat)
-          # when "remove"
-            # @removeMarkerFromType(markerType, markerCat)
+
+        if @canToggleMarkers
+          if item.hasClass('off')
+            @setMarkersVisibilityByType(true, markerType, markerCat)
+            item.removeClass('off')
+            myGroupTrigger.removeClass('off')
+          else
+            @setMarkersVisibilityByType(false, markerType, markerCat)
+            item.addClass('off')
       
       html.find('.group-toggling').bind 'click', (e)=>
         this_ = $(e.currentTarget)
@@ -659,6 +621,8 @@ class CustomInfoWindow
     @onClose   = opts.onClose
     @onOpen    = opts.onOpen
     @onSave    = opts.onSave
+    @deleteCalled = opts.deleteCalled
+    @moveCalled = opts.moveCalled
     @closeBtn.bind('click', @close)
 
   CustomInfoWindow:: = new google.maps.OverlayView()
@@ -678,9 +642,8 @@ class CustomInfoWindow
       @bindButton()
       # @open()
   bindButton: () ->
-    @wrap.find('.edit').bind('click', @toggleEditMod)
     @wrap.find('button').bind('click', @handleSave)
-    @wrap.find('.share').bind('click', @toggleShare)
+    @wrap.find('.iw-options-list .button').bind('click', @toggleSection)
     
   onRemove :() ->
     # console.log @wrap.parent()
@@ -735,45 +698,29 @@ class CustomInfoWindow
       top: pos.y - 80
     )
     
-  toggleEditMod: (e)=>
+  toggleSection: (e) =>
     this_ = $(e.currentTarget)
-    parent = @wrap
-    buttons = parent.find('.button')
-    markerDescBox = parent.find('.marker-desc')
-    editBox = parent.find('.edit-form')
-    shareBox = parent.find('.share-input')
-    
-    if this_.hasClass('active')
-      markerDescBox.addClass('active')
-      buttons.removeClass('active')
-      editBox.removeClass('active')
-      shareBox.removeClass('active')
-    else
-      buttons.removeClass('active')
-      markerDescBox.removeClass('active')
-      shareBox.removeClass('active')
-      this_.addClass('active')
-      editBox.addClass('active')
+    action = this_.attr('data-action')
+    defaultTab = @wrap.find('.marker-desc')
+    activeTab = @wrap.find('.toggling-tab.active') 
+    targetTab = $("[data-target='#{action}']")
+
+    switch action
+      when "move", "share", "edit"
+        @wrap.find('.iw-options-list .button').removeClass('active')
+        if targetTab.attr("data-target") is activeTab.attr("data-target")
+          targetTab.removeClass('active')
+          defaultTab.addClass('active')
+        else
+          this_.addClass('active')
+          activeTab.removeClass('active')
+          targetTab.addClass('active')
+          defaultTab.removeClass('active')
+      when "delete"
+        @deleteCalled(@marker)
       
-  toggleShare:(e)=>
-    this_ = $(e.currentTarget)
-    parent = @wrap
-    buttons = parent.find('.button')
-    markerDescBox = parent.find('.marker-desc')
-    editBox = parent.find('.edit-form')
-    shareBox = parent.find('.share-input')
-    
-    if this_.hasClass('active')
-      markerDescBox.addClass('active')
-      buttons.removeClass('active')
-      editBox.removeClass('active')
-      shareBox.removeClass('active')
-    else
-      buttons.removeClass('active')
-      markerDescBox.removeClass('active')
-      editBox.removeClass('active')
-      this_.addClass('active')
-      shareBox.addClass('active')
+    if action is "move"
+      @moveCalled(@marker)
 
   handleSave: (e) =>
     this_ = $(e.currentTarget)
