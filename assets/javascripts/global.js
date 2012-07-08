@@ -267,7 +267,6 @@
             _this.removeMarkerLink.bind('click', _this.handleMarkerRemovalTool);
             _this.exportBtn.bind('click', _this.handleExport);
             $('#destroy').bind('click', _this.destroyLocalStorage);
-            $('#send').bind('click', _this.sendMapForApproval);
             return _this.exportWindow.find('.close').click(function() {
               return _this.exportWindow.hide();
             });

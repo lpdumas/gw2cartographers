@@ -215,7 +215,7 @@ class CustomMap
           @removeMarkerLink.bind('click', @handleMarkerRemovalTool)
           @exportBtn.bind('click', @handleExport)
           $('#destroy').bind('click', @destroyLocalStorage)
-          $('#send').bind('click', @sendMapForApproval)
+          # $('#send').bind('click', @sendMapForApproval)
 
     
           @exportWindow.find('.close').click(()=>
