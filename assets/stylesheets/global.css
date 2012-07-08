@@ -128,6 +128,17 @@ html, body {
   -o-transition: all 150ms linear;
 }
 
+#notice {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  width: 280px;
+  height: auto;
+  background: #000;
+  color: #fff;
+  opacity: 0.7;
+}
+
 html.no-pointerEvents #map-mask {
   display: none;
 }
@@ -164,20 +175,6 @@ html.move #map-mask {
   top: 50px;
 }
      
-#notice {
-  position: absolute;
-  display: block;
-  z-index: 5;
-  padding: 4px 10px;
-  width: 270px;
-  top: 10px;
-  left: 50%;
-  margin-left: -145px;
-  background: #e8ffeb;
-  color: #278900;
-  text-align: center;
-  cursor: pointer;
-}
 #coord {
     z-index: 10;
     display: block;
@@ -243,16 +240,19 @@ html.move #map-mask {
 #markers-options {
   position: fixed;
   z-index: 5;
-  top: -50px;
   top: 0px;
   min-height: 25px;
   width: 100%;
   padding: 0;
   background: #fff;
   opacity: 1;
+  -webkit-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
+  -moz-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
+  -ms-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
+  -o-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
 }
 #markers-options.active {
-  top: 0px;
+  top: -50px;
 }
 #markers-options.off { 
   top: -100px;
@@ -264,18 +264,22 @@ html.move #map-mask {
   z-index: 6;
   width: 100%;
   left: 0;
-  bottom: -53px;
+  bottom: -37px;
   text-align: center;
 }
 #markers-options span#options-toggle strong {
   display: inline-block;
   background: #fff;
-  padding: 15px 41px;
+  width: 120px;
+  height: 18px;
+  padding: 4px 0px 5px 0;
   font-size: 13px;
   font-size: 1.3rem;
   cursor: pointer;
   opacity: 1;
   background: url('../images/layout/btn-bg.png') center center no-repeat;
+  background-size: cover;
+  
   -webkit-transition: color 150ms linear;
   -moz-transition: color 150ms linear;
   -ms-transition: color 150ms linear;

@@ -280,7 +280,7 @@
       var confirmMessage,
         _this = this;
       if (App.localStorageAvailable && this.getConfigFromLocalStorage()) {
-        confirmMessage = "I have detected data stored in your local storage, Do you want to load it?";
+        confirmMessage = "I have detected data stored locally, Do you want to load it?";
         return this.confirmBox.initConfirmation(confirmMessage, function(e) {
           if (e) {
             _this.MarkersConfig = _this.getConfigFromLocalStorage();
@@ -1162,8 +1162,12 @@
   };
 
   $(function() {
-    var myCustomMap;
-    return myCustomMap = new CustomMap('#map');
+    var markersOptionsMenuToggle, myCustomMap;
+    myCustomMap = new CustomMap('#map');
+    markersOptionsMenuToggle = $('#options-toggle strong');
+    return markersOptionsMenuToggle.click(function() {
+      return myCustomMap.toggleMarkersOptionsMenu();
+    });
   });
 
 }).call(this);
