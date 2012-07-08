@@ -534,7 +534,7 @@
         _this = this;
       confirmMessage = "This action will destroy you local change to the map. Are you sure you want to proceed?";
       return this.confirmBox.initConfirmation(confirmMessage, function(e) {
-        if (_this.getConfigFromLocalStorage()) {
+        if (e && _this.getConfigFromLocalStorage()) {
           localStorage.removeItem(_this.localStorageKey);
           return window.location = "/";
         }

@@ -373,7 +373,7 @@ class CustomMap
   destroyLocalStorage: (e) =>
     confirmMessage = "This action will destroy you local change to the map. Are you sure you want to proceed?"
     @confirmBox.initConfirmation(confirmMessage, (e)=>
-      if @getConfigFromLocalStorage()
+      if e and @getConfigFromLocalStorage()
         localStorage.removeItem(@localStorageKey);
         window.location = "/"
     )
