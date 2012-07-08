@@ -26,12 +26,11 @@
     <div id="map-mask"></div>
 
     <div id="markers-options" class="group">
-        <span id="options-toggle"><strong>Markers options</strong></span>
+        <span id="options-toggle"><strong>Menu</strong></span>
         <div class="padding">
             <ul id="edition-tools">
-                <li><a href="javascript:" id="add" class="button" title="Add marker"></a></li>
-                <li><a href="javascript:" id="remove" class="button" title="Remove marker"/></a></li>
-                <li><a href="javascript:" id="move" class="button" title="Move markers"/></a></li>
+                <li><a href="javascript:" data-ajaxUrl="#" id="send" class="button" title="Send map for approval"/></a></li>
+                <li><a href="javascript:" id="destroy" class="button" title="Remove local storage data"/></a></li>
             </ul>
         </div>
         <span class="decorations"></span>
@@ -40,21 +39,21 @@
     <div id="map-container">
         <div id="map"><img id="loading" src="assets/images/loading.gif"  alt="Loading ..." /></div>
     </div>
-    <div id="coord"><span id="lat"></span><span id="long"></span></div>
     
-    
-    <a id="export" href="javascript:">Export</a>
-    <div id="export-windows">
-        <a href="javascript:" class="close">close</a>
-        <textarea name="export-content" class="content">
-        </textarea>
+    <div id="notice">
+        <div class="padding">
+            <p>The map edition tool is working. Every data is saved locally to your browser. You will soon be able to send them for approval, we will then decide what to put online.</p>
+            <p>Questions? <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#103;&#119;&#50;&#99;&#97;&#114;&#116;&#111;&#103;&#114;&#97;&#112;&#104;&#101;&#114;&#115;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">gw2cartographers@gmail.com</a></p>
+            <p><span>0.8 alpha | © 2011 ArenaNet, Inc. <a target="blank_" href="http://www.guildwars2.com/en/media/asset-kit/terms-of-use.html">Term of use</a></span></p>
+        </div>
     </div>
     
-    <span style="position: absolute; bottom: 5px; left: 100px; border: 0; z-index: 10; color: #fff;"><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#103;&#119;&#50;&#99;&#97;&#114;&#116;&#111;&#103;&#114;&#97;&#112;&#104;&#101;&#114;&#115;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">gw2cartographers@gmail.com</a> | v0.5 alpha | © 2011 ArenaNet, Inc. <a target="blank_" href="http://www.guildwars2.com/en/media/asset-kit/terms-of-use.html">Term of use</a></span>
+    
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="assets/javascripts/libs/jquery-latest.js"><\/script>')</script>
     <script src="assets/javascripts/libs/underscore.js"></script>
+
     <script src="assets/javascripts/config.js"></script>
     <script src="assets/javascripts/global.js"></script>
 
