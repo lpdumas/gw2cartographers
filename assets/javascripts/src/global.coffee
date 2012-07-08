@@ -407,7 +407,11 @@ class CustomMap
       # Simulating ajax call latency
       t = setTimeout(()=>
         modal.close(()=>
-          modal.setContent('<h1>Thank you!</h1>')
+          msg = """
+          <h1>Thank you!</h1>
+          <p>A team of dedicated grawls will sort that out.</p>
+          """
+          modal.setContent(msg)
           modal.open()
         )
         
