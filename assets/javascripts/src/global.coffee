@@ -812,6 +812,7 @@ extractUrlParams = ()->
     
 $ ()->
   myCustomMap = new CustomMap('#map')
+  
   markersOptionsMenuToggle = $('#options-toggle strong')
   markersOptionsMenuToggle.click( () ->
     myCustomMap.toggleMarkersOptionsMenu()
