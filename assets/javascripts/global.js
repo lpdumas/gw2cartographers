@@ -351,7 +351,7 @@
           colorShadow = 'blue';
         } else if (markerInfo.status === "status_removed") {
           colorShadow = 'red';
-        } else if (markerInfo.status === "status_modified_all") {
+        } else {
           colorShadow = 'yellow';
         }
         if (colorShadow != null) {

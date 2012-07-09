@@ -287,7 +287,7 @@ class CustomMap
             colorShadow = 'blue'
         else if markerInfo.status is "status_removed"
             colorShadow = 'red'
-        else if markerInfo.status is "status_modified_all"
+        else
             colorShadow = 'yellow'
             
         if colorShadow?
