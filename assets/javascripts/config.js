@@ -12,8 +12,7 @@ Resources.Icons = {
     "asurasgates" : {"label" : "Asura gates", "url" : Resources.Paths.icons + "asuraGate.png"},
     "scouts" : {"label" : "Scouts", "url" : Resources.Paths.icons + "scout.png"},
     "jumpingpuzzles" : {"label" : "Jumping puzzles", "url" : Resources.Paths.icons + "puzzle.png"}
-  }
-  ,
+  },
   "train" : {
     "rangerSkillBooks" : {"label" : "Ranger training", "url" : Resources.Paths.icons + "skillBookRanger.png"},
     "necroSkillBooks" : {"label" : "Necromancer training", "url" : Resources.Paths.icons + "skillBookNecro.png"},
@@ -23,6 +22,10 @@ Resources.Icons = {
     "eleSkillBooks" : {"label" : "Elementalist training", "url" : Resources.Paths.icons + "skillBookEle.png"},
     "engiSkillBooks" : {"label" : "Engineer training", "url" : Resources.Paths.icons + "skillBookEngi.png"},
     "thiefSkillBooks" : {"label" : "Thief training", "url" : Resources.Paths.icons + "skillBookThief.png"}
+  },
+  "pets" : {
+    "petAlpineWolf" : {"label" : "Alpine wolf", "url" : Resources.Paths.icons + "pets/petAlpineWolf.png"},
+    "petArctodus" : {"label" : "Arctodus", "url" : Resources.Paths.icons + "pets/petArctodus.png"}
   }
 }
 //{{{
@@ -139,6 +142,22 @@ Areas = [
  }
 ]
 //}}}
+
+Markers.pets = {
+  name : "Pets",
+  markerGroup : [{
+    name : "Alpine wolf",
+    slug : "petAlpineWolf",
+    markers : []
+  },
+  {
+    name : "Arctodus",
+    slug : "petArctodus",
+    markers : []
+  }
+  ]
+}
+
 Markers.train = {
   name : "Train",
   markerGroup : [{
