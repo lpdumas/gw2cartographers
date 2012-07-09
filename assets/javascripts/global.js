@@ -302,7 +302,7 @@
     };
 
     CustomMap.prototype.addMarker = function(markerInfo, markersType, markersCat, isNew) {
-      var createInfoWindow, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, _j, _len1, _ref, _results,
+      var colorShadow, createInfoWindow, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, shadow, _j, _len1, _ref, _results,
         _this = this;
       createInfoWindow = function(marker) {
         var editInfoWindowContent, templateInfo;
@@ -345,6 +345,23 @@
       iconmid = iconsize / 2;
       image = new google.maps.MarkerImage(this.getIconURLByType(markersType, markersCat), null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
       isMarkerDraggable = markerInfo.draggable != null ? markerInfo.draggable : false;
+      if (markerInfo.status != null) {
+        colorShadow = null;
+        if (markerInfo.status === "status_added") {
+          colorShadow = 'blue';
+        } else if (markerInfo.status === "status_removed") {
+          colorShadow = 'red';
+        } else if (markerInfo.status === "status_modified_all") {
+          colorShadow = 'yellow';
+        }
+        if (colorShadow != null) {
+          shadow = {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            strokeColor: colorShadow
+          };
+        }
+      }
       marker = new google.maps.Marker({
         position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng),
         map: this.map,
@@ -355,6 +372,9 @@
         title: "" + markerInfo.title,
         animation: isNew != null ? google.maps.Animation.DROP : false
       });
+      if (shadow != null) {
+        marker.setShadow(shadow);
+      }
       marker["title"] = "" + markerInfo.title;
       marker["desc"] = "" + markerInfo.desc;
       marker["wikiLink"] = "" + markerInfo.wikiLink;

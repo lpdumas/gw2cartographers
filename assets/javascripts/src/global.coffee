@@ -280,6 +280,19 @@ class CustomMap
     image = new google.maps.MarkerImage(@getIconURLByType(markersType, markersCat), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
     isMarkerDraggable = if markerInfo.draggable? then markerInfo.draggable else false
 
+    if markerInfo.status?
+        colorShadow = null;
+        
+        if markerInfo.status is "status_added"
+            colorShadow = 'blue'
+        else if markerInfo.status is "status_removed"
+            colorShadow = 'red'
+        else if markerInfo.status is "status_modified_all"
+            colorShadow = 'yellow'
+            
+        if colorShadow?
+            shadow = { path: google.maps.SymbolPath.CIRCLE, scale: 10, strokeColor: colorShadow }
+
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
@@ -290,6 +303,9 @@ class CustomMap
       title: "#{markerInfo.title}"
       animation: if isNew? then google.maps.Animation.DROP else no
     )
+    
+    if shadow?
+        marker.setShadow(shadow);
     
     marker["title"] = "#{markerInfo.title}"
     marker["desc"]  = "#{markerInfo.desc}"
