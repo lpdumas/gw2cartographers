@@ -207,6 +207,15 @@
       this.map = new google.maps.Map($(id)[0], this.gMapOptions);
       this.map.mapTypes.set('custom', this.customMapType);
       this.map.setMapTypeId('custom');
+      $('#change-menu .marker-type-link').click(function(e) {
+        var coordinates, marker, markerID;
+        markerID = parseInt($(e.currentTarget).attr('data-markerID'));
+        marker = _this.getMarkerByID(markerID);
+        if (marker != null) {
+          coordinates = new google.maps.LatLng(marker.lat, marker.lng);
+          return _this.map.panTo(coordinates);
+        }
+      });
       $.get('assets/javascripts/templates/confirmBox._', function(e) {
         var template;
         template = _.template(e);
@@ -817,6 +826,26 @@
         }
       }
       return false;
+    };
+
+    CustomMap.prototype.getMarkerByID = function(markerID) {
+      var key, marker, markerTypeObject, markersCat, markersObjects, _j, _k, _len1, _len2, _ref, _ref1, _ref2;
+      _ref = this.MarkersConfig;
+      for (markersCat in _ref) {
+        markersObjects = _ref[markersCat];
+        _ref1 = markersObjects.markerGroup;
+        for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
+          markerTypeObject = _ref1[key];
+          _ref2 = markerTypeObject.markers;
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            marker = _ref2[_k];
+            if (marker.id === markerID) {
+              return marker;
+            }
+          }
+        }
+      }
+      return null;
     };
 
     CustomMap.prototype.turnOfMenuIconsFromCat = function(markerCat) {
