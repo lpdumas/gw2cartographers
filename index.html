@@ -34,9 +34,10 @@
                     {% for change in changes  %}
                     <li class="type-menu-item">
                         <a class="marker-type-link" data-markerID="{{ change.id }}">
-                            <img src="assets/images/icons/32x32/{{ change.image }}" />
-                            <span>{{ change.name }}</span>
                             <span class="change-status {{ change.change.status }}"></span>
+                            <img src="{{ imagePath ~ change.image }}" />
+                            <span>{{ change.name }}</span>
+                            <input type="checkbox" checked />
                         </a>
                     </li>
                     {% endfor %}
