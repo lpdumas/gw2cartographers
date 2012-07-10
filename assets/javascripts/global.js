@@ -207,6 +207,15 @@
       this.map = new google.maps.Map($(id)[0], this.gMapOptions);
       this.map.mapTypes.set('custom', this.customMapType);
       this.map.setMapTypeId('custom');
+      $('#change-menu .marker-type-link').click(function(e) {
+        var coordinates, marker, markerID;
+        markerID = parseInt($(e.currentTarget).attr('data-markerID'));
+        marker = _this.getMarkerByID(markerID);
+        if (marker != null) {
+          coordinates = new google.maps.LatLng(marker.lat, marker.lng);
+          return _this.map.panTo(coordinates);
+        }
+      });
       $.get('assets/javascripts/templates/confirmBox._', function(e) {
         var template;
         template = _.template(e);
@@ -302,7 +311,7 @@
     };
 
     CustomMap.prototype.addMarker = function(markerInfo, markersType, markersCat, isNew) {
-      var createInfoWindow, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, _j, _len1, _ref, _results,
+      var colorShadow, createInfoWindow, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, shadow, _j, _len1, _ref, _results,
         _this = this;
       createInfoWindow = function(marker) {
         var editInfoWindowContent, templateInfo;
@@ -345,6 +354,23 @@
       iconmid = iconsize / 2;
       image = new google.maps.MarkerImage(this.getIconURLByType(markersType, markersCat), null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
       isMarkerDraggable = markerInfo.draggable != null ? markerInfo.draggable : false;
+      if (markerInfo.status != null) {
+        colorShadow = null;
+        if (markerInfo.status === "status_added") {
+          colorShadow = 'blue';
+        } else if (markerInfo.status === "status_removed") {
+          colorShadow = 'red';
+        } else {
+          colorShadow = 'yellow';
+        }
+        if (colorShadow != null) {
+          shadow = {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            strokeColor: colorShadow
+          };
+        }
+      }
       marker = new google.maps.Marker({
         position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng),
         map: this.map,
@@ -355,6 +381,9 @@
         title: "" + markerInfo.title,
         animation: isNew != null ? google.maps.Animation.DROP : false
       });
+      if (shadow != null) {
+        marker.setShadow(shadow);
+      }
       marker["title"] = "" + markerInfo.title;
       marker["desc"] = "" + markerInfo.desc;
       marker["wikiLink"] = "" + markerInfo.wikiLink;
@@ -797,6 +826,26 @@
         }
       }
       return false;
+    };
+
+    CustomMap.prototype.getMarkerByID = function(markerID) {
+      var key, marker, markerTypeObject, markersCat, markersObjects, _j, _k, _len1, _len2, _ref, _ref1, _ref2;
+      _ref = this.MarkersConfig;
+      for (markersCat in _ref) {
+        markersObjects = _ref[markersCat];
+        _ref1 = markersObjects.markerGroup;
+        for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
+          markerTypeObject = _ref1[key];
+          _ref2 = markerTypeObject.markers;
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            marker = _ref2[_k];
+            if (marker.id === markerID) {
+              return marker;
+            }
+          }
+        }
+      }
+      return null;
     };
 
     CustomMap.prototype.turnOfMenuIconsFromCat = function(markerCat) {

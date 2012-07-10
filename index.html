@@ -27,6 +27,23 @@
     <div id="map-mask"></div>
 
     <div id="markers-options" class="group">
+        <ul id="change-menu" class="menu-marker group">            
+            <li class="menu-item">
+                <a class="menu-title" href="#">Changements <span class="arrow"> ▼</span></a>
+                <ul class="type-menu group">
+                    {% for change in changes  %}
+                    <li class="type-menu-item">
+                        <a class="marker-type-link" data-markerID="{{ change.id }}">
+                            <span class="change-status {{ change.change.status }}"></span>
+                            <img src="{{ imagePath ~ change.image }}" />
+                            <span>{{ change.name }}</span>
+                            <input type="checkbox" checked />
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        </ul>
         <div class="padding">
             <ul id="edition-tools">
                 <li><a href="javascript:" data-ajaxUrl="#" id="send" class="button" title="Send map for approval"/></a></li>

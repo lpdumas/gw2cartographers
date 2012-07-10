@@ -149,6 +149,16 @@ class CustomMap
     @map = new google.maps.Map($(id)[0], @gMapOptions)
     @map.mapTypes.set('custom', @customMapType)
     @map.setMapTypeId('custom')
+    
+    $('#change-menu .marker-type-link').click((e) =>
+        
+        markerID = parseInt($(e.currentTarget).attr('data-markerID'))
+        marker = _this.getMarkerByID(markerID)
+        
+        if marker?
+            coordinates = new google.maps.LatLng(marker.lat, marker.lng);
+            _this.map.panTo(coordinates);
+    )
 
     $.get('assets/javascripts/templates/confirmBox._', (e)=>
       template = _.template(e);
@@ -280,6 +290,19 @@ class CustomMap
     image = new google.maps.MarkerImage(@getIconURLByType(markersType, markersCat), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
     isMarkerDraggable = if markerInfo.draggable? then markerInfo.draggable else false
 
+    if markerInfo.status?
+        colorShadow = null;
+        
+        if markerInfo.status is "status_added"
+            colorShadow = 'blue'
+        else if markerInfo.status is "status_removed"
+            colorShadow = 'red'
+        else
+            colorShadow = 'yellow'
+            
+        if colorShadow?
+            shadow = { path: google.maps.SymbolPath.CIRCLE, scale: 10, strokeColor: colorShadow }
+
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
@@ -290,6 +313,9 @@ class CustomMap
       title: "#{markerInfo.title}"
       animation: if isNew? then google.maps.Animation.DROP else no
     )
+    
+    if shadow?
+        marker.setShadow(shadow);
     
     marker["title"] = "#{markerInfo.title}"
     marker["desc"]  = "#{markerInfo.desc}"
@@ -541,7 +567,13 @@ class CustomMap
     for markersCat, markersObjects of @MarkersConfig
       for markerTypeObject, key in markersObjects.markerGroup
         return marker for marker in markerTypeObject.markers when marker.lat is lat and marker.lng is lng
-    return false  
+    return false
+
+  getMarkerByID:(markerID)->
+    for markersCat, markersObjects of @MarkersConfig
+        for markerTypeObject, key in markersObjects.markerGroup
+            return marker for marker in markerTypeObject.markers when marker.id is markerID
+    return null
       
   turnOfMenuIconsFromCat:(markerCat)->
     menu = $(".menu-item[data-markerCat='#{markerCat}']")
