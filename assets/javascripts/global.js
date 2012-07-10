@@ -216,6 +216,9 @@
           return _this.map.panTo(coordinates);
         }
       });
+      $('input#submit-changes').click(function() {
+        return $('#changes-to-merge').submit();
+      });
       $.get('assets/javascripts/templates/confirmBox._', function(e) {
         var template;
         template = _.template(e);
