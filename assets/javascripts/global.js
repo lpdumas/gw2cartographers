@@ -167,6 +167,7 @@
       this.defaultLat = 26.765230565697536;
       this.defaultLng = -36.32080078125;
       this.defaultCat = "explore";
+      this.defaultLang = "en";
       this.areaSummaryBoxes = [];
       this.canRemoveMarker = false;
       this.draggableMarker = false;
@@ -392,7 +393,7 @@
           return marker["infoWindow"].open();
         }
       });
-      _ref = this.gMarker[markersCat]["markerGroup"];
+      _ref = this.gMarker[markersCat]["marker_types"];
       _results = [];
       for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
         markerType = _ref[_j];
@@ -411,20 +412,20 @@
         markersObjects = _ref[markersCat];
         if (!(this.gMarker[markersCat] != null)) {
           this.gMarker[markersCat] = {};
-          this.gMarker[markersCat]["name"] = markersObjects.name;
-          this.gMarker[markersCat]["markerGroup"] = [];
+          this.gMarker[markersCat]["data_translation"] = markersObjects.data_translation;
+          this.gMarker[markersCat]["marker_types"] = [];
         }
         _results.push((function() {
           var _j, _len1, _ref1, _results1;
-          _ref1 = markersObjects.markerGroup;
+          _ref1 = markersObjects.marker_types;
           _results1 = [];
           for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
             markerTypeObject = _ref1[key];
             newmarkerTypeObject = {};
-            newmarkerTypeObject["name"] = markerTypeObject.name;
             newmarkerTypeObject["slug"] = markerTypeObject.slug;
+            newmarkerTypeObject["data_translation"] = markerTypeObject.data_translation;
             newmarkerTypeObject["markers"] = [];
-            this.gMarker[markersCat]["markerGroup"].push(newmarkerTypeObject);
+            this.gMarker[markersCat]["marker_types"].push(newmarkerTypeObject);
             _results1.push((function() {
               var _k, _len2, _ref2, _results2;
               _ref2 = markerTypeObject.markers;
@@ -459,7 +460,7 @@
         markersObjects = _ref[cat];
         _results.push((function() {
           var _j, _len1, _ref1, _results1;
-          _ref1 = markersObjects.markerGroup;
+          _ref1 = markersObjects.marker_types;
           _results1 = [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             markerTypeObject = _ref1[_j];
@@ -475,7 +476,7 @@
 
     CustomMap.prototype.setMarkersVisibilityByType = function(isVisible, type, cat) {
       var marker, markerTypeObject, _j, _len1, _ref, _results;
-      _ref = this.gMarker[cat]["markerGroup"];
+      _ref = this.gMarker[cat]["marker_types"];
       _results = [];
       for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
         markerTypeObject = _ref[_j];
@@ -497,7 +498,7 @@
 
     CustomMap.prototype.setMarkersVisibilityByCat = function(isVisible, cat) {
       var marker, markerTypeObject, _j, _len1, _ref, _results;
-      _ref = this.gMarker[cat]["markerGroup"];
+      _ref = this.gMarker[cat]["marker_types"];
       _results = [];
       for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
         markerTypeObject = _ref[_j];
@@ -572,16 +573,16 @@
         if (!(exportMarkerObject[markersCat] != null)) {
           exportMarkerObject[markersCat] = {};
           exportMarkerObject[markersCat]["name"] = markersObjects.name;
-          exportMarkerObject[markersCat]["markerGroup"] = [];
+          exportMarkerObject[markersCat]["marker_types"] = [];
         }
-        _ref1 = markersObjects.markerGroup;
+        _ref1 = markersObjects.marker_types;
         for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
           markerTypeObject = _ref1[key];
           newmarkerTypeObject = {};
           newmarkerTypeObject["name"] = markerTypeObject.name;
           newmarkerTypeObject["slug"] = markerTypeObject.slug;
           newmarkerTypeObject["markers"] = [];
-          exportMarkerObject[markersCat]["markerGroup"].push(newmarkerTypeObject);
+          exportMarkerObject[markersCat]["marker_types"].push(newmarkerTypeObject);
           _ref2 = markerTypeObject.markers;
           for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
             marker = _ref2[_k];
@@ -592,7 +593,7 @@
               "desc": marker.desc,
               "wikiLink": marker.wikiLink
             };
-            exportMarkerObject[markersCat]["markerGroup"][key]["markers"].push(nm);
+            exportMarkerObject[markersCat]["marker_types"][key]["markers"].push(nm);
           }
         }
       }
@@ -646,7 +647,7 @@
       return this.confirmBox.initConfirmation(confirmMessage, function(e) {
         var marker, markerKey, markerType, typeKey, _j, _len1, _ref, _results;
         if (e) {
-          _ref = _this.gMarker[mCat]["markerGroup"];
+          _ref = _this.gMarker[mCat]["marker_types"];
           _results = [];
           for (typeKey = _j = 0, _len1 = _ref.length; _j < _len1; typeKey = ++_j) {
             markerType = _ref[typeKey];
@@ -659,7 +660,7 @@
                 for (markerKey = _k = 0, _len2 = _ref1.length; _k < _len2; markerKey = ++_k) {
                   marker = _ref1[markerKey];
                   marker.setMap(null);
-                  this.gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
+                  this.gMarker[mCat]["marker_types"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
                     return m === marker;
                   });
                   _results1.push(this.saveToLocalStorage());
@@ -680,7 +681,7 @@
       return this.confirmBox.initConfirmation(confirmMessage, function(e) {
         var marker, markerKey, markerType, typeKey, _j, _k, _len1, _len2, _ref, _ref1;
         if (e) {
-          _ref = _this.gMarker[mCat]["markerGroup"];
+          _ref = _this.gMarker[mCat]["marker_types"];
           for (typeKey = _j = 0, _len1 = _ref.length; _j < _len1; typeKey = ++_j) {
             markerType = _ref[typeKey];
             if (markerType.slug === mType) {
@@ -694,7 +695,7 @@
                   marker.infoWindow.setMap(null);
                 }
                 marker.setMap(null);
-                _this.gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
+                _this.gMarker[mCat]["marker_types"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
                   return m === marker;
                 });
                 _this.saveToLocalStorage();
@@ -708,7 +709,7 @@
 
     CustomMap.prototype.updateMarkerInfos = function(newInfo) {
       var marker, markerKey, markerType, typeKey, _j, _k, _len1, _len2, _ref, _ref1;
-      _ref = this.gMarker[newInfo.cat]["markerGroup"];
+      _ref = this.gMarker[newInfo.cat]["marker_types"];
       for (typeKey = _j = 0, _len1 = _ref.length; _j < _len1; typeKey = ++_j) {
         markerType = _ref[typeKey];
         if (markerType.slug === newInfo.type) {
@@ -748,7 +749,7 @@
         markersObjects = _ref[type];
         _results.push((function() {
           var _j, _len1, _ref1, _results1;
-          _ref1 = markersObjects.markerGroup;
+          _ref1 = markersObjects.marker_types;
           _results1 = [];
           for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
             markerTypeObject = _ref1[key];
@@ -786,7 +787,7 @@
       _ref = this.MarkersConfig;
       for (markersCat in _ref) {
         markersObjects = _ref[markersCat];
-        _ref1 = markersObjects.markerGroup;
+        _ref1 = markersObjects.marker_types;
         for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
           markerTypeObject = _ref1[key];
           _ref2 = markerTypeObject.markers;

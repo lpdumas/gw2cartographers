@@ -110,6 +110,7 @@ class CustomMap
     @defaultLng = -36.32080078125
     
     @defaultCat = "explore"
+    @defaultLang = "en"
 
     @areaSummaryBoxes = []
     
@@ -161,12 +162,7 @@ class CustomMap
             $(target).bind('click', @handleAddTool)
           )
         )
-    
-        # Events
-        # google.maps.event.addListener(@map, 'click', (e)=>
-          # console.log '{"lat" : "'+e.latLng.lat()+'", "lng" : "'+e.latLng.lng()+'", "title" : "", "desc" : ""},'
-        # )
-    
+        
         google.maps.event.addListener(@map, 'zoom_changed', (e)=>
             zoomLevel = @map.getZoom()
             if zoomLevel == 4
@@ -324,38 +320,38 @@ class CustomMap
         marker["infoWindow"].open()
     )
     
-    markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["markerGroup"] when markerType.slug is markersType
+    markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["marker_types"] when markerType.slug is markersType
 
   setAllMarkers:()->
     for markersCat, markersObjects of @MarkersConfig
       if not @gMarker[markersCat]?
         @gMarker[markersCat] = {}
-        @gMarker[markersCat]["name"] = markersObjects.name
-        @gMarker[markersCat]["markerGroup"] = []
+        @gMarker[markersCat]["data_translation"] = markersObjects.data_translation
+        @gMarker[markersCat]["marker_types"] = []
         
-      for markerTypeObject, key in markersObjects.markerGroup
+      for markerTypeObject, key in markersObjects.marker_types
         newmarkerTypeObject = {}
-        newmarkerTypeObject["name"] = markerTypeObject.name
         newmarkerTypeObject["slug"] = markerTypeObject.slug
+        newmarkerTypeObject["data_translation"] = markerTypeObject.data_translation
         newmarkerTypeObject["markers"] = []
-        @gMarker[markersCat]["markerGroup"].push(newmarkerTypeObject)
-        
+        @gMarker[markersCat]["marker_types"].push(newmarkerTypeObject)
         @addMarker(marker, markerTypeObject.slug, markersCat) for marker in markerTypeObject.markers
-    
+      
+  
   getIconURLByType:(type, markersCat)->
     return Resources.Icons[markersCat][icon].url for icon of Resources.Icons[markersCat] when icon is type
 
   setAllMarkersVisibility:(isVisible)->
     for cat, markersObjects of @MarkersConfig
-      @setMarkersVisibilityByType(isVisible, markerTypeObject.slug, cat) for markerTypeObject in markersObjects.markerGroup when not $("[data-type='#{markerTypeObject.slug}']").hasClass('off')
+      @setMarkersVisibilityByType(isVisible, markerTypeObject.slug, cat) for markerTypeObject in markersObjects.marker_types when not $("[data-type='#{markerTypeObject.slug}']").hasClass('off')
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
-    for markerTypeObject in @gMarker[cat]["markerGroup"] when markerTypeObject.slug is type
+    for markerTypeObject in @gMarker[cat]["marker_types"] when markerTypeObject.slug is type
       marker.setVisible(isVisible) for marker in markerTypeObject.markers
 
   
   setMarkersVisibilityByCat:(isVisible, cat)->
-    for markerTypeObject in @gMarker[cat]["markerGroup"]
+    for markerTypeObject in @gMarker[cat]["marker_types"]
       marker.setVisible(isVisible) for marker in markerTypeObject.markers
 
   handleMarkerRemovalTool:(e)=>
@@ -424,14 +420,14 @@ class CustomMap
       if not exportMarkerObject[markersCat]?
         exportMarkerObject[markersCat] = {}
         exportMarkerObject[markersCat]["name"] = markersObjects.name
-        exportMarkerObject[markersCat]["markerGroup"] = []
+        exportMarkerObject[markersCat]["marker_types"] = []
         
-      for markerTypeObject, key in markersObjects.markerGroup
+      for markerTypeObject, key in markersObjects.marker_types
         newmarkerTypeObject = {}
         newmarkerTypeObject["name"] = markerTypeObject.name
         newmarkerTypeObject["slug"] = markerTypeObject.slug
         newmarkerTypeObject["markers"] = []
-        exportMarkerObject[markersCat]["markerGroup"].push(newmarkerTypeObject)
+        exportMarkerObject[markersCat]["marker_types"].push(newmarkerTypeObject)
         for marker in markerTypeObject.markers
           nm = 
             "lng" : marker.getPosition().lng()
@@ -439,7 +435,7 @@ class CustomMap
             "title" : marker.title
             "desc"  : marker.desc
             "wikiLink"  : marker.wikiLink
-          exportMarkerObject[markersCat]["markerGroup"][key]["markers"].push(nm)
+          exportMarkerObject[markersCat]["marker_types"][key]["markers"].push(nm)
 
     jsonString = JSON.stringify(exportMarkerObject)
     return jsonString
@@ -480,10 +476,10 @@ class CustomMap
     confirmMessage = "Delete all «#{mType}» markers on the map?"
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if e
-        for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
+        for markerType, typeKey in @gMarker[mCat]["marker_types"] when markerType.slug is mType
           for marker, markerKey in markerType.markers
             marker.setMap(null)
-            @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
+            @gMarker[mCat]["marker_types"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
               return m == marker
             )
             @saveToLocalStorage()
@@ -493,12 +489,12 @@ class CustomMap
     confirmMessage = "Are you sure you want to delete this marker?"
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if e
-        for markerType, typeKey in @gMarker[mCat]["markerGroup"] when markerType.slug is mType
+        for markerType, typeKey in @gMarker[mCat]["marker_types"] when markerType.slug is mType
           for marker, markerKey in markerType.markers when marker.__gm_id is id
             if marker.infoWindow?
               marker.infoWindow.setMap(null)
             marker.setMap(null)
-            @gMarker[mCat]["markerGroup"][typeKey]['markers'] = _.reject(markerType.markers, (m) =>
+            @gMarker[mCat]["marker_types"][typeKey]['markers'] = _.reject(markerType.markers, (m) =>
               return m == marker
               # return m.__gm_id == id
             )
@@ -507,7 +503,7 @@ class CustomMap
     )
   
   updateMarkerInfos: (newInfo)->
-    for markerType, typeKey in @gMarker[newInfo.cat]["markerGroup"] when markerType.slug is newInfo.type
+    for markerType, typeKey in @gMarker[newInfo.cat]["marker_types"] when markerType.slug is newInfo.type
       for marker, markerKey in markerType.markers when marker.__gm_id is newInfo.id
         marker.desc = newInfo.desc
         marker.title = newInfo.title
@@ -529,7 +525,7 @@ class CustomMap
       marker.setCursor('pointer')
       
     for type, markersObjects of @gMarker
-      for markerTypeObject, key in markersObjects.markerGroup
+      for markerTypeObject, key in markersObjects.marker_types
         unDrag(marker) for marker in markerTypeObject.markers
         
   toggleMarkerList: (e)=>
@@ -543,7 +539,7 @@ class CustomMap
 
   getMarkerByCoordinates:(lat, lng)->
     for markersCat, markersObjects of @MarkersConfig
-      for markerTypeObject, key in markersObjects.markerGroup
+      for markerTypeObject, key in markersObjects.marker_types
         return marker for marker in markerTypeObject.markers when marker.lat is lat and marker.lng is lng
     return false  
       
