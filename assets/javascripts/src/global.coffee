@@ -238,7 +238,7 @@ class CustomMap
     json = localStorage.getItem(@localStorageKey)
     return JSON.parse(json)
   
-  addMarker:(markerInfo, otherInfo, isNew, defaultValue, callBack)->
+  addMarker:(markerInfo, otherInfo, isNew, defaultValue) ->
     
     createInfoWindow = (marker) =>
       templateInfo = 
@@ -287,7 +287,7 @@ class CustomMap
       draggable: isMarkerDraggable
       cursor : if isMarkerDraggable then "move" else "pointer"
       title: markerInfo["data_translation"][window.LANG]["title"]
-      animation: if isNew? then google.maps.Animation.DROP else no
+      animation: if isNew then google.maps.Animation.DROP else no
     )
 
     if not defaultValue?
@@ -351,8 +351,8 @@ class CustomMap
           icon       : markerTypeObject.icon
         
         defaultValue = null
-        if markerTypeObject["data_translation"][window.LANG]["title"]? and markerTypeObject["data_translation"][window.LANG]["desc"]?
-          defaultValue = markerTypeObject["data_translation"]
+        # if markerTypeObject["data_translation"][window.LANG]["title"]? and markerTypeObject["data_translation"][window.LANG]["desc"]?
+          # defaultValue = markerTypeObject["data_translation"]
         
         # Passing false here so that the addmarker method won't threat this marker
         # has a new one (user added)

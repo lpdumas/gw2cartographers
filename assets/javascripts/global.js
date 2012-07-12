@@ -302,7 +302,7 @@
       return JSON.parse(json);
     };
 
-    CustomMap.prototype.addMarker = function(markerInfo, otherInfo, isNew, defaultValue, callBack) {
+    CustomMap.prototype.addMarker = function(markerInfo, otherInfo, isNew, defaultValue) {
       var createInfoWindow, iconPath, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, markersCat, markersType, _j, _len1, _ref, _results,
         _this = this;
       createInfoWindow = function(marker) {
@@ -357,7 +357,7 @@
         draggable: isMarkerDraggable,
         cursor: isMarkerDraggable ? "move" : "pointer",
         title: markerInfo["data_translation"][window.LANG]["title"],
-        animation: isNew != null ? google.maps.Animation.DROP : false
+        animation: isNew ? google.maps.Animation.DROP : false
       });
       if (!(defaultValue != null)) {
         marker["title"] = markerInfo["data_translation"][window.LANG]["title"];
@@ -441,9 +441,6 @@
               icon: markerTypeObject.icon
             };
             defaultValue = null;
-            if ((markerTypeObject["data_translation"][window.LANG]["title"] != null) && (markerTypeObject["data_translation"][window.LANG]["desc"] != null)) {
-              defaultValue = markerTypeObject["data_translation"];
-            }
             _results1.push((function() {
               var _k, _len2, _ref2, _results2;
               _ref2 = markerTypeObject.markers;
