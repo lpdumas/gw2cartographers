@@ -190,11 +190,7 @@ class CustomMap
         $.get('assets/javascripts/templates/customInfoWindow._', (e)=>
           @editInfoWindowTemplate = _.template(e)
           
-          @test = 0 
-          @countTotalMarker()
-          @setAllMarkers(()=>
-            console.log "finish"
-          )
+          @setAllMarkers()
           @initializeAreaSummaryBoxes()
     
           @markerList.find('span').bind('click', (e)=>
@@ -334,20 +330,8 @@ class CustomMap
     )
     
     markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["marker_types"] when markerType.slug is markersType
-    callBack()
-  
-  countTotalMarker:()->
-    for markersCat, markersObjects of @MarkersConfig
-      for markerTypeObject, key in markersObjects.marker_types
-        for marker in markerTypeObject.markers
-          @test++
           
-  setAllMarkers: (callback) ->
-    addCount = 0
-    myCallBack = ()=>
-      addCount++
-      if addCount is @test
-        callback()
+  setAllMarkers: () ->
     for markersCat, markersObjects of @MarkersConfig
       if not @gMarker[markersCat]?
         @gMarker[markersCat] = {}
@@ -372,7 +356,7 @@ class CustomMap
         
         # Passing false here so that the addmarker method won't threat this marker
         # has a new one (user added)
-        @addMarker(marker, otherInfo, false, defaultValue, myCallBack) for marker in markerTypeObject.markers
+        @addMarker(marker, otherInfo, false, defaultValue) for marker in markerTypeObject.markers
 
   setAllMarkersVisibility:(isVisible)->
     for cat, markersObjects of @MarkersConfig
@@ -490,10 +474,10 @@ class CustomMap
       icon : icon
     
     newMarkerInfo =
-      desc      : ""
-      title     : ""
       lat       : coord.lat()
       lng       : coord.lng()
+      desc      : ""
+      title     : ""
       wikiLink  : ""
       draggable : true
     @addMarker(newMarkerInfo, otherInfo, true)

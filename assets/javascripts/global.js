@@ -249,11 +249,7 @@
           _this.editInfoWindowTemplate = "";
           return $.get('assets/javascripts/templates/customInfoWindow._', function(e) {
             _this.editInfoWindowTemplate = _.template(e);
-            _this.test = 0;
-            _this.countTotalMarker();
-            _this.setAllMarkers(function() {
-              return console.log("finish");
-            });
+            _this.setAllMarkers();
             _this.initializeAreaSummaryBoxes();
             _this.markerList.find('span').bind('click', function(e) {
               var coord, img, markerType, markerinfo, this_;
@@ -307,7 +303,7 @@
     };
 
     CustomMap.prototype.addMarker = function(markerInfo, otherInfo, isNew, defaultValue, callBack) {
-      var createInfoWindow, iconPath, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, markersCat, markersType, _j, _len1, _ref,
+      var createInfoWindow, iconPath, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, markersCat, markersType, _j, _len1, _ref, _results,
         _this = this;
       createInfoWindow = function(marker) {
         var editInfoWindowContent, templateInfo;
@@ -407,54 +403,18 @@
         }
       });
       _ref = this.gMarker[markersCat]["marker_types"];
+      _results = [];
       for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
         markerType = _ref[_j];
         if (markerType.slug === markersType) {
-          markerType["markers"].push(marker);
+          _results.push(markerType["markers"].push(marker));
         }
-      }
-      return callBack();
-    };
-
-    CustomMap.prototype.countTotalMarker = function() {
-      var key, marker, markerTypeObject, markersCat, markersObjects, _ref, _results;
-      _ref = this.MarkersConfig;
-      _results = [];
-      for (markersCat in _ref) {
-        markersObjects = _ref[markersCat];
-        _results.push((function() {
-          var _j, _len1, _ref1, _results1;
-          _ref1 = markersObjects.marker_types;
-          _results1 = [];
-          for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
-            markerTypeObject = _ref1[key];
-            _results1.push((function() {
-              var _k, _len2, _ref2, _results2;
-              _ref2 = markerTypeObject.markers;
-              _results2 = [];
-              for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-                marker = _ref2[_k];
-                _results2.push(this.test++);
-              }
-              return _results2;
-            }).call(this));
-          }
-          return _results1;
-        }).call(this));
       }
       return _results;
     };
 
-    CustomMap.prototype.setAllMarkers = function(callback) {
-      var addCount, defaultValue, key, marker, markerTypeObject, markersCat, markersObjects, myCallBack, newmarkerTypeObject, otherInfo, _ref, _results,
-        _this = this;
-      addCount = 0;
-      myCallBack = function() {
-        addCount++;
-        if (addCount === _this.test) {
-          return callback();
-        }
-      };
+    CustomMap.prototype.setAllMarkers = function() {
+      var defaultValue, key, marker, markerTypeObject, markersCat, markersObjects, newmarkerTypeObject, otherInfo, _ref, _results;
       _ref = this.MarkersConfig;
       _results = [];
       for (markersCat in _ref) {
@@ -490,7 +450,7 @@
               _results2 = [];
               for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
                 marker = _ref2[_k];
-                _results2.push(this.addMarker(marker, otherInfo, false, defaultValue, myCallBack));
+                _results2.push(this.addMarker(marker, otherInfo, false, defaultValue));
               }
               return _results2;
             }).call(this));
@@ -666,10 +626,10 @@
         icon: icon
       };
       newMarkerInfo = {
-        desc: "",
-        title: "",
         lat: coord.lat(),
         lng: coord.lng(),
+        desc: "",
+        title: "",
         wikiLink: "",
         draggable: true
       };

@@ -750,7 +750,7 @@ Markers.explore = {
   },
   {
     slug: "dungeons",
-    icon : 'dungeon.png',
+    icon : 'dungeons.png',
     data_translation : {
       en : {name : "Dungeons"},
       fr : {name : "Donjons"}
