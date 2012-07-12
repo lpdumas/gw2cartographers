@@ -1,17 +1,19 @@
-Resources.Paths = {
-    "icons" : "assets/images/icons/32x32/"
+Metadata = {
+    "icons_path" : "assets/images/icons/32x32/",
+    "config_version" : "1.0",
+    "date_generation" : "2012-07-10"
 }
 
 Resources.Icons = {
   "explore" : {
-    "hearts" : {"label" : "Hearts", "url" : Resources.Paths.icons + "hearts.png"},
-    "waypoints" : {"label" : "Waypoints", "url" : Resources.Paths.icons + "waypoints.png"},
-    "skillpoints" : {"label" : "Skill points", "url" : Resources.Paths.icons + "skillpoints.png"},
-    "poi" : {"label" : "Points of interest", "url" : Resources.Paths.icons + "poi.png"},
-    "dungeons": {"label" : "Dungeons", "url" : Resources.Paths.icons + "dungeon.png"},
-    "asurasgates" : {"label" : "Asura gates", "url" : Resources.Paths.icons + "asuraGate.png"},
-    "scouts" : {"label" : "Scouts", "url" : Resources.Paths.icons + "scout.png"},
-    "jumpingpuzzles" : {"label" : "Jumping puzzles", "url" : Resources.Paths.icons + "puzzle.png"}
+    "hearts" : {"label" : "Hearts", "url" : Metadata.icons_path + "hearts.png"},
+    "waypoints" : {"label" : "Waypoints", "url" : Metadata.icons_path + "waypoints.png"},
+    "skillpoints" : {"label" : "Skill points", "url" : Metadata.icons_path + "skillpoints.png"},
+    "poi" : {"label" : "Points of interest", "url" : Metadata.icons_path + "poi.png"},
+    "dungeons": {"label" : "Dungeons", "url" : Metadata.icons_path + "dungeons.png"},
+    "asurasgates" : {"label" : "Asura gates", "url" : Metadata.icons_path + "asuraGate.png"},
+    "scouts" : {"label" : "Scouts", "url" : Metadata.icons_path + "scout.png"},
+    "jumpingpuzzles" : {"label" : "Jumping puzzles", "url" : Metadata.icons_path + "puzzle.png"}
   }
   // ,
   // "train" : {
@@ -199,50 +201,6 @@ Areas = [
 //   ]
 // }
 // 
-// Markers.train = {
-//   name : "Train",
-//   marker_typesmarker_types : [{
-//     name : "Rangers",
-//     slug : "rangerSkillBooks",
-//     markers : []
-//   },
-//   {
-//     name : "Necromancer",
-//     slug : "necroSkillBooks",
-//     markers : []
-//   },
-//   {
-//     name : "Warrior",
-//     slug : "warriorSkillBooks",
-//     markers : []
-//   },
-//   {
-//     name : "Guardian",
-//     slug : "guardianSkillBooks",
-//     markers : []
-//   },
-//   {
-//     name : "Mesmer",
-//     slug : "mesmerSkillBooks",
-//     markers : []
-//   },
-//   {
-//     name : "Elementalist",
-//     slug : "eleSkillBooks",
-//     markers : []
-//   },
-//   {
-//     name : "Engineer",
-//     slug : "engiSkillBooks",
-//     markers : []
-//   },
-//   {
-//     name : "Thief",
-//     slug : "thiefSkillBooks",
-//     markers : []
-//   }
-//   ]
-// }
 
 Markers.explore = {
   data_translation : { en : {name : "Explore"}, fr : {name : "Exploration"} },
@@ -859,4 +817,60 @@ Markers.explore = {
   }
   ]
 }
+
+Markers.train = {
+  data_translation : { en : {name : "Train"}, fr : {name : "Entraînement"} },
+  marker_types : [{
+    slug : "rangerSkillBooks",
+    icon : 'skillBookRanger.png',
+    data_translation : {
+       en : {name : "Rangers", title: "Training for rangers", desc: "Skill book vendor for rangers", wikiLink: ""},
+       fr : {name : "Rôdeur", title: "Entraînement pour les rôdeurs", desc: "Vendeur de livre de compétences pour rôdeur", wikiLink: ""}
+    },
+    markers : []
+  },
+  {
+    slug : "necroSkillBooks",
+    icon : 'skillBookNecro.png',
+    data_translation : {
+       en : {name : "Necromancer", title: "Training for necromancer", desc: "Skill book vendor for necromancer"},
+       fr : {name : "Nécromant", title: "Entraînement pour les nécromants", desc: "Vendeur de livre de compétences pour nécromant"}
+    },
+    name : "",
+    markers : []
+  }
+  // ,
+  //   {
+  //     name : "Warrior",
+  //     slug : "warriorSkillBooks",
+  //     markers : []
+  //   },
+  //   {
+  //     name : "Guardian",
+  //     slug : "guardianSkillBooks",
+  //     markers : []
+  //   },
+  //   {
+  //     name : "Mesmer",
+  //     slug : "mesmerSkillBooks",
+  //     markers : []
+  //   },
+  //   {
+  //     name : "Elementalist",
+  //     slug : "eleSkillBooks",
+  //     markers : []
+  //   },
+  //   {
+  //     name : "Engineer",
+  //     slug : "engiSkillBooks",
+  //     markers : []
+  //   },
+  //   {
+  //     name : "Thief",
+  //     slug : "thiefSkillBooks",
+  //     markers : []
+  //   }
+  ]
+}
+
 

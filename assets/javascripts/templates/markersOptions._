@@ -1,12 +1,12 @@
 <ul class="menu-marker group">
-<% _.each(Icons, function(iconsTypeObject, cat) { %>
+<% _.each(Markers, function(markerCat, cat) { %>
     <li class="menu-item" data-markerCat="<%= cat %>">
-        <a href="javascript:" class="menu-title"><%= Markers[cat].name %> <span class="arrow"> ▼</span></a>
+        <a href="javascript:" class="menu-title"><%= markerCat["data_translation"][window.LANG]["name"] %> <span class="arrow"> ▼</span></a>
         <ul class="type-menu group">
           <li class="type-menu-item"><a href="javascript:" class="group-toggling">Toggle all markers</a></li>
-          <% _.each(iconsTypeObject, function(iconsObject, type) { %>
+          <% _.each(markerCat["marker_types"], function(oMarkersInfo, type) { %>
           <li class="type-menu-item">
-              <a href="javascript:" class="marker-type-link trigger" data-type="<%= type %>" data-cat="<%= cat %>" title="Click to toggle"><img src="<%= iconsObject.url %>" alt="<%= iconsObject.label %>" /><span><%= iconsObject.label %></span></a>
+              <a href="javascript:" class="marker-type-link trigger" data-icon="<%=oMarkersInfo.icon%>" data-type="<%= oMarkersInfo.slug %>" data-cat="<%= cat %>" title="Click to toggle"><img src="<%= (Metadata.icons_path + oMarkersInfo.icon) %>" alt="<%= oMarkersInfo["data_translation"][window.LANG]["name"] %>" /><span><%= oMarkersInfo["data_translation"][window.LANG]["name"] %></span></a>
               <a href="javascript:" class="add button" title="Add marker"></a>
           </li> 
           <% }); %>

@@ -167,7 +167,7 @@
       this.defaultLat = 26.765230565697536;
       this.defaultLng = -36.32080078125;
       this.defaultCat = "explore";
-      this.defaultLang = "en";
+      window.LANG = "en";
       this.areaSummaryBoxes = [];
       this.canRemoveMarker = false;
       this.draggableMarker = false;
@@ -249,7 +249,11 @@
           _this.editInfoWindowTemplate = "";
           return $.get('assets/javascripts/templates/customInfoWindow._', function(e) {
             _this.editInfoWindowTemplate = _.template(e);
-            _this.setAllMarkers();
+            _this.test = 0;
+            _this.countTotalMarker();
+            _this.setAllMarkers(function() {
+              return console.log("finish");
+            });
             _this.initializeAreaSummaryBoxes();
             _this.markerList.find('span').bind('click', function(e) {
               var coord, img, markerType, markerinfo, this_;
@@ -302,19 +306,19 @@
       return JSON.parse(json);
     };
 
-    CustomMap.prototype.addMarker = function(markerInfo, markersType, markersCat, isNew) {
-      var createInfoWindow, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, _j, _len1, _ref, _results,
+    CustomMap.prototype.addMarker = function(markerInfo, otherInfo, isNew, defaultValue, callBack) {
+      var createInfoWindow, iconPath, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, markersCat, markersType, _j, _len1, _ref,
         _this = this;
       createInfoWindow = function(marker) {
         var editInfoWindowContent, templateInfo;
         templateInfo = {
           id: marker.__gm_id,
-          title: marker.title,
-          desc: marker.desc,
+          title: marker["title"],
+          desc: marker["desc"],
+          wikiLink: marker["wikiLink"],
           type: marker.type,
           lat: marker.position.lat(),
-          lng: marker.position.lng(),
-          wikiLink: marker.wikiLink
+          lng: marker.position.lng()
         };
         editInfoWindowContent = _this.editInfoWindowTemplate(templateInfo);
         return marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent, {
@@ -344,7 +348,10 @@
       };
       iconsize = 32;
       iconmid = iconsize / 2;
-      image = new google.maps.MarkerImage(this.getIconURLByType(markersType, markersCat), null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
+      iconPath = Metadata.icons_path + otherInfo.icon;
+      markersType = otherInfo.markersType;
+      markersCat = otherInfo.markersCat;
+      image = new google.maps.MarkerImage(iconPath, null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
       isMarkerDraggable = markerInfo.draggable != null ? markerInfo.draggable : false;
       marker = new google.maps.Marker({
         position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng),
@@ -353,14 +360,20 @@
         visible: markersCat === this.defaultCat || (isNew != null) ? true : false,
         draggable: isMarkerDraggable,
         cursor: isMarkerDraggable ? "move" : "pointer",
-        title: "" + markerInfo.title,
+        title: markerInfo["data_translation"][window.LANG]["title"],
         animation: isNew != null ? google.maps.Animation.DROP : false
       });
-      marker["title"] = "" + markerInfo.title;
-      marker["desc"] = "" + markerInfo.desc;
-      marker["wikiLink"] = "" + markerInfo.wikiLink;
-      marker["type"] = "" + markersType;
-      marker["cat"] = "" + markersCat;
+      if (!(defaultValue != null)) {
+        marker["title"] = markerInfo["data_translation"][window.LANG]["title"];
+        marker["desc"] = markerInfo["data_translation"][window.LANG]["desc"];
+        marker["wikiLink"] = markerInfo["data_translation"][window.LANG]["wikiLink"];
+      } else {
+        marker["title"] = defaultValue[window.LANG]["title"];
+        marker["desc"] = defaultValue[window.LANG]["desc"];
+        marker["wikiLink"] = defaultValue[window.LANG]["wikiLink"];
+      }
+      marker["type"] = markersType;
+      marker["cat"] = markersCat;
       if (markerInfo.lat.toString() === this.getStartLat() && markerInfo.lng.toString() === this.getStartLng()) {
         if (!(marker["infoWindow"] != null)) {
           createInfoWindow(marker);
@@ -394,18 +407,54 @@
         }
       });
       _ref = this.gMarker[markersCat]["marker_types"];
-      _results = [];
       for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
         markerType = _ref[_j];
         if (markerType.slug === markersType) {
-          _results.push(markerType["markers"].push(marker));
+          markerType["markers"].push(marker);
         }
+      }
+      return callBack();
+    };
+
+    CustomMap.prototype.countTotalMarker = function() {
+      var key, marker, markerTypeObject, markersCat, markersObjects, _ref, _results;
+      _ref = this.MarkersConfig;
+      _results = [];
+      for (markersCat in _ref) {
+        markersObjects = _ref[markersCat];
+        _results.push((function() {
+          var _j, _len1, _ref1, _results1;
+          _ref1 = markersObjects.marker_types;
+          _results1 = [];
+          for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
+            markerTypeObject = _ref1[key];
+            _results1.push((function() {
+              var _k, _len2, _ref2, _results2;
+              _ref2 = markerTypeObject.markers;
+              _results2 = [];
+              for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+                marker = _ref2[_k];
+                _results2.push(this.test++);
+              }
+              return _results2;
+            }).call(this));
+          }
+          return _results1;
+        }).call(this));
       }
       return _results;
     };
 
-    CustomMap.prototype.setAllMarkers = function() {
-      var key, marker, markerTypeObject, markersCat, markersObjects, newmarkerTypeObject, _ref, _results;
+    CustomMap.prototype.setAllMarkers = function(callback) {
+      var addCount, defaultValue, key, marker, markerTypeObject, markersCat, markersObjects, myCallBack, newmarkerTypeObject, otherInfo, _ref, _results,
+        _this = this;
+      addCount = 0;
+      myCallBack = function() {
+        addCount++;
+        if (addCount === _this.test) {
+          return callback();
+        }
+      };
       _ref = this.MarkersConfig;
       _results = [];
       for (markersCat in _ref) {
@@ -426,13 +475,22 @@
             newmarkerTypeObject["data_translation"] = markerTypeObject.data_translation;
             newmarkerTypeObject["markers"] = [];
             this.gMarker[markersCat]["marker_types"].push(newmarkerTypeObject);
+            otherInfo = {
+              markersCat: markersCat,
+              markersType: markerTypeObject.slug,
+              icon: markerTypeObject.icon
+            };
+            defaultValue = null;
+            if ((markerTypeObject["data_translation"][window.LANG]["title"] != null) && (markerTypeObject["data_translation"][window.LANG]["desc"] != null)) {
+              defaultValue = markerTypeObject["data_translation"];
+            }
             _results1.push((function() {
               var _k, _len2, _ref2, _results2;
               _ref2 = markerTypeObject.markers;
               _results2 = [];
               for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
                 marker = _ref2[_k];
-                _results2.push(this.addMarker(marker, markerTypeObject.slug, markersCat));
+                _results2.push(this.addMarker(marker, otherInfo, false, defaultValue, myCallBack));
               }
               return _results2;
             }).call(this));
@@ -441,15 +499,6 @@
         }).call(this));
       }
       return _results;
-    };
-
-    CustomMap.prototype.getIconURLByType = function(type, markersCat) {
-      var icon;
-      for (icon in Resources.Icons[markersCat]) {
-        if (icon === type) {
-          return Resources.Icons[markersCat][icon].url;
-        }
-      }
     };
 
     CustomMap.prototype.setAllMarkersVisibility = function(isVisible) {
@@ -572,14 +621,15 @@
         markersObjects = _ref[markersCat];
         if (!(exportMarkerObject[markersCat] != null)) {
           exportMarkerObject[markersCat] = {};
-          exportMarkerObject[markersCat]["name"] = markersObjects.name;
+          console.log(markersObjects);
+          exportMarkerObject[markersCat]["data_translation"] = markersObjects["data_translation"];
           exportMarkerObject[markersCat]["marker_types"] = [];
         }
         _ref1 = markersObjects.marker_types;
         for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
           markerTypeObject = _ref1[key];
           newmarkerTypeObject = {};
-          newmarkerTypeObject["name"] = markerTypeObject.name;
+          newmarkerTypeObject["data_translation"] = markerTypeObject["data_translation"];
           newmarkerTypeObject["slug"] = markerTypeObject.slug;
           newmarkerTypeObject["markers"] = [];
           exportMarkerObject[markersCat]["marker_types"].push(newmarkerTypeObject);
@@ -602,13 +652,19 @@
     };
 
     CustomMap.prototype.handleAddTool = function(e) {
-      var coord, markerCat, markerLink, markerType, newMarkerInfo, parent, this_;
+      var coord, icon, markerCat, markerLink, markerType, newMarkerInfo, otherInfo, parent, this_;
       this_ = $(e.currentTarget);
       parent = this_.closest('.type-menu-item');
       markerLink = parent.find('.marker-type-link');
       markerType = markerLink.attr('data-type');
       markerCat = markerLink.attr('data-cat');
+      icon = markerLink.attr('data-icon');
       coord = this.map.getCenter();
+      otherInfo = {
+        markerCat: markerCat,
+        markerType: markerType,
+        icon: icon
+      };
       newMarkerInfo = {
         desc: "",
         title: "",
@@ -617,7 +673,7 @@
         wikiLink: "",
         draggable: true
       };
-      return this.addMarker(newMarkerInfo, markerType, markerCat, true);
+      return this.addMarker(newMarkerInfo, otherInfo, true);
     };
 
     CustomMap.prototype.getStartLat = function() {
@@ -815,7 +871,7 @@
       return markersOptions = $.get('assets/javascripts/templates/markersOptions._', function(e) {
         var markerCat, template, _results;
         template = _.template(e);
-        html = $(template(Resources));
+        html = $(template(_this.MarkersConfig));
         html.find(".trigger").bind('click', function(e) {
           var item, markerCat, markerType, myGroupTrigger;
           item = $(e.currentTarget);

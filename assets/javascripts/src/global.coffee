@@ -110,8 +110,7 @@ class CustomMap
     @defaultLng = -36.32080078125
     
     @defaultCat = "explore"
-    @defaultLang = "en"
-
+    window.LANG = "en"
     @areaSummaryBoxes = []
     
     @canRemoveMarker  = false
@@ -190,8 +189,12 @@ class CustomMap
         @editInfoWindowTemplate = ""
         $.get('assets/javascripts/templates/customInfoWindow._', (e)=>
           @editInfoWindowTemplate = _.template(e)
-      
-          @setAllMarkers()
+          
+          @test = 0 
+          @countTotalMarker()
+          @setAllMarkers(()=>
+            console.log "finish"
+          )
           @initializeAreaSummaryBoxes()
     
           @markerList.find('span').bind('click', (e)=>
@@ -239,17 +242,17 @@ class CustomMap
     json = localStorage.getItem(@localStorageKey)
     return JSON.parse(json)
   
-  addMarker:(markerInfo, markersType, markersCat, isNew)->
-
-    createInfoWindow = (marker)=>
+  addMarker:(markerInfo, otherInfo, isNew, defaultValue, callBack)->
+    
+    createInfoWindow = (marker) =>
       templateInfo = 
         id : marker.__gm_id
-        title : marker.title
-        desc  : marker.desc
+        title: marker["title"]
+        desc: marker["desc"]
+        wikiLink  : marker["wikiLink"]
         type  : marker.type
         lat   : marker.position.lat()
         lng   : marker.position.lng()
-        wikiLink  : marker.wikiLink
     
       editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
       marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent,
@@ -273,7 +276,11 @@ class CustomMap
       
     iconsize = 32;
     iconmid = iconsize / 2;
-    image = new google.maps.MarkerImage(@getIconURLByType(markersType, markersCat), null, null,new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
+    iconPath = Metadata.icons_path + otherInfo.icon
+    markersType = otherInfo.markersType
+    markersCat = otherInfo.markersCat
+    
+    image = new google.maps.MarkerImage(iconPath, null, null, new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
     isMarkerDraggable = if markerInfo.draggable? then markerInfo.draggable else false
 
     marker = new google.maps.Marker(
@@ -283,16 +290,22 @@ class CustomMap
       visible: if markersCat is @defaultCat || isNew? then yes else no
       draggable: isMarkerDraggable
       cursor : if isMarkerDraggable then "move" else "pointer"
-      title: "#{markerInfo.title}"
+      title: markerInfo["data_translation"][window.LANG]["title"]
       animation: if isNew? then google.maps.Animation.DROP else no
     )
-    
-    marker["title"] = "#{markerInfo.title}"
-    marker["desc"]  = "#{markerInfo.desc}"
-    marker["wikiLink"]  = "#{markerInfo.wikiLink}"
-    marker["type"]  = "#{markersType}"
-    marker["cat"]  = "#{markersCat}"
 
+    if not defaultValue?
+      marker["title"] = markerInfo["data_translation"][window.LANG]["title"]
+      marker["desc"] = markerInfo["data_translation"][window.LANG]["desc"]
+      marker["wikiLink"] = markerInfo["data_translation"][window.LANG]["wikiLink"]
+    else
+      marker["title"] = defaultValue[window.LANG]["title"]
+      marker["desc"] = defaultValue[window.LANG]["desc"]
+      marker["wikiLink"] = defaultValue[window.LANG]["wikiLink"]
+      
+    marker["type"]  = markersType
+    marker["cat"]  = markersCat
+    
     if markerInfo.lat.toString() is @getStartLat() and markerInfo.lng.toString() is @getStartLng()
       if not marker["infoWindow"]?
         createInfoWindow(marker)
@@ -321,8 +334,20 @@ class CustomMap
     )
     
     markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["marker_types"] when markerType.slug is markersType
-
-  setAllMarkers:()->
+    callBack()
+  
+  countTotalMarker:()->
+    for markersCat, markersObjects of @MarkersConfig
+      for markerTypeObject, key in markersObjects.marker_types
+        for marker in markerTypeObject.markers
+          @test++
+          
+  setAllMarkers: (callback) ->
+    addCount = 0
+    myCallBack = ()=>
+      addCount++
+      if addCount is @test
+        callback()
     for markersCat, markersObjects of @MarkersConfig
       if not @gMarker[markersCat]?
         @gMarker[markersCat] = {}
@@ -335,11 +360,19 @@ class CustomMap
         newmarkerTypeObject["data_translation"] = markerTypeObject.data_translation
         newmarkerTypeObject["markers"] = []
         @gMarker[markersCat]["marker_types"].push(newmarkerTypeObject)
-        @addMarker(marker, markerTypeObject.slug, markersCat) for marker in markerTypeObject.markers
-      
-  
-  getIconURLByType:(type, markersCat)->
-    return Resources.Icons[markersCat][icon].url for icon of Resources.Icons[markersCat] when icon is type
+        
+        otherInfo = 
+          markersCat : markersCat
+          markersType : markerTypeObject.slug
+          icon       : markerTypeObject.icon
+        
+        defaultValue = null
+        if markerTypeObject["data_translation"][window.LANG]["title"]? and markerTypeObject["data_translation"][window.LANG]["desc"]?
+          defaultValue = markerTypeObject["data_translation"]
+        
+        # Passing false here so that the addmarker method won't threat this marker
+        # has a new one (user added)
+        @addMarker(marker, otherInfo, false, defaultValue, myCallBack) for marker in markerTypeObject.markers
 
   setAllMarkersVisibility:(isVisible)->
     for cat, markersObjects of @MarkersConfig
@@ -419,12 +452,13 @@ class CustomMap
     for markersCat, markersObjects of @gMarker
       if not exportMarkerObject[markersCat]?
         exportMarkerObject[markersCat] = {}
-        exportMarkerObject[markersCat]["name"] = markersObjects.name
+        console.log markersObjects
+        exportMarkerObject[markersCat]["data_translation"] = markersObjects["data_translation"]
         exportMarkerObject[markersCat]["marker_types"] = []
         
       for markerTypeObject, key in markersObjects.marker_types
         newmarkerTypeObject = {}
-        newmarkerTypeObject["name"] = markerTypeObject.name
+        newmarkerTypeObject["data_translation"] = markerTypeObject["data_translation"]
         newmarkerTypeObject["slug"] = markerTypeObject.slug
         newmarkerTypeObject["markers"] = []
         exportMarkerObject[markersCat]["marker_types"].push(newmarkerTypeObject)
@@ -448,7 +482,13 @@ class CustomMap
     markerLink = parent.find('.marker-type-link')
     markerType = markerLink.attr('data-type')
     markerCat  = markerLink.attr('data-cat')
+    icon       = markerLink.attr('data-icon')
     coord      = @map.getCenter()
+    otherInfo =
+      markerCat : markerCat
+      markerType : markerType
+      icon : icon
+    
     newMarkerInfo =
       desc      : ""
       title     : ""
@@ -456,7 +496,7 @@ class CustomMap
       lng       : coord.lng()
       wikiLink  : ""
       draggable : true
-    @addMarker(newMarkerInfo, markerType, markerCat, true)
+    @addMarker(newMarkerInfo, otherInfo, true)
     
   getStartLat:()->
     params = extractUrlParams()
@@ -551,7 +591,7 @@ class CustomMap
   addMenuIcons:(callback)->
     markersOptions = $.get('assets/javascripts/templates/markersOptions._', (e)=>
       template = _.template(e);
-      html = $(template(Resources))
+      html = $(template(@MarkersConfig))
       
       # Binding click on marker icon in markers option list
       html.find(".trigger").bind 'click', (e) =>
