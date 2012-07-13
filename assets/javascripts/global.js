@@ -134,8 +134,6 @@
   CustomMap = (function() {
 
     function CustomMap(id) {
-      this.toggleMarkerList = __bind(this.toggleMarkerList, this);
-
       this.handleAddTool = __bind(this.handleAddTool, this);
 
       this.handleExport = __bind(this.handleExport, this);
@@ -143,8 +141,6 @@
       this.sendMapForApproval = __bind(this.sendMapForApproval, this);
 
       this.destroyLocalStorage = __bind(this.destroyLocalStorage, this);
-
-      this.handleMarkerRemovalTool = __bind(this.handleMarkerRemovalTool, this);
 
       var _this = this;
       this.localStorageKey = "gw2c_markers_config_01";
@@ -156,10 +152,7 @@
       this.lngContainer = $('#long');
       this.latContainer = $('#lat');
       this.devModInput = $('#dev-mod');
-      this.optionsBox = $('#options-box');
       this.addMarkerLink = $('#add-marker');
-      this.removeMarkerLink = $('#remove-marker');
-      this.markerList = $('#marker-list');
       this.exportBtn = $('#export');
       this.exportWindow = $('#export-windows');
       this.markersOptionsMenu = $('#markers-options');
@@ -169,7 +162,7 @@
       this.defaultCat = "explore";
       window.LANG = "en";
       this.areaSummaryBoxes = [];
-      this.canRemoveMarker = false;
+      this.markersImages = {};
       this.draggableMarker = false;
       this.visibleMarkers = true;
       this.canToggleMarkers = true;
@@ -213,7 +206,6 @@
         template = _.template(e);
         _this.confirmBox = new Confirmbox(template);
         return _this.handleLocalStorageLoad(function() {
-          console.log(_this.MarkersConfig);
           _this.addMenuIcons(function() {
             _this.addTools = $('.menu-marker a.add');
             return _this.addTools.each(function(index, target) {
@@ -252,27 +244,8 @@
             _this.editInfoWindowTemplate = _.template(e);
             _this.setAllMarkers();
             _this.initializeAreaSummaryBoxes();
-            _this.markerList.find('span').bind('click', function(e) {
-              var coord, img, markerType, markerinfo, this_;
-              this_ = $(e.currentTarget);
-              markerType = this_.attr('data-type');
-              coord = _this.map.getCenter();
-              markerinfo = {
-                "lng": coord.lng(),
-                "lat": coord.lat(),
-                "title": "--"
-              };
-              img = "" + _this.iconsPath + "/" + markerType + ".png";
-              return _this.addMarkers(markerinfo, img, markerType);
-            });
-            _this.addMarkerLink.bind('click', _this.toggleMarkerList);
-            _this.removeMarkerLink.bind('click', _this.handleMarkerRemovalTool);
-            _this.exportBtn.bind('click', _this.handleExport);
             $('#destroy').bind('click', _this.destroyLocalStorage);
-            $('#send').bind('click', _this.sendMapForApproval);
-            return _this.exportWindow.find('.close').click(function() {
-              return _this.exportWindow.hide();
-            });
+            return $('#send').bind('click', _this.sendMapForApproval);
           });
         });
       });
@@ -304,7 +277,7 @@
     };
 
     CustomMap.prototype.addMarker = function(markerInfo, otherInfo, isNew, defaultValue) {
-      var createInfoWindow, iconPath, iconmid, iconsize, image, isMarkerDraggable, marker, markersCat, markersType,
+      var createInfoWindow, iconPath, iconmid, iconsize, image, isMarkerDraggable, marker, markerVisibility, markersCat, markersType,
         _this = this;
       createInfoWindow = function(marker) {
         var editInfoWindowContent, templateInfo;
@@ -313,6 +286,7 @@
           title: marker["data_translation"][window.LANG]["title"],
           desc: marker["data_translation"][window.LANG]["desc"],
           wikiLink: marker["data_translation"][window.LANG]["wikiLink"],
+          hasDefaultValue: marker["hasDefaultValue"],
           type: marker.type,
           lat: marker.position.lat(),
           lng: marker.position.lng()
@@ -346,24 +320,30 @@
       iconsize = 32;
       iconmid = iconsize / 2;
       iconPath = Metadata.icons_path + otherInfo.icon;
-      markersType = otherInfo.markersType;
-      markersCat = otherInfo.markersCat;
-      image = new google.maps.MarkerImage(iconPath, null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
+      markersType = otherInfo["markersType"];
+      markersCat = otherInfo["markersCat"];
+      markerVisibility = markersCat === this.defaultCat || isNew ? true : false;
+      if (!(this.markersImages[markersType] != null)) {
+        image = new google.maps.MarkerImage(iconPath, null, null, new google.maps.Point(iconmid, iconmid), new google.maps.Size(iconsize, iconsize));
+        this.markersImages[markersType] = image;
+      }
       isMarkerDraggable = markerInfo.draggable != null ? markerInfo.draggable : false;
       marker = new google.maps.Marker({
         position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng),
         map: this.map,
-        icon: image,
-        visible: markersCat === this.defaultCat || (isNew != null) ? true : false,
+        icon: this.markersImages[markersType],
+        visible: markerVisibility,
         draggable: isMarkerDraggable,
         cursor: isMarkerDraggable ? "move" : "pointer",
-        title: markerInfo["data_translation"][window.LANG]["title"],
+        title: defaultValue != null ? defaultValue[window.LANG]["title"] : markerInfo["data_translation"][window.LANG]["title"],
         animation: isNew ? google.maps.Animation.DROP : false
       });
       if (defaultValue != null) {
         marker["data_translation"] = defaultValue;
+        marker["hasDefaultValue"] = true;
       } else {
         marker["data_translation"] = markerInfo["data_translation"];
+        marker["hasDefaultValue"] = false;
       }
       marker["type"] = markersType;
       marker["cat"] = markersCat;
@@ -449,19 +429,19 @@
     };
 
     CustomMap.prototype.setAllMarkersVisibility = function(isVisible) {
-      var cat, markerTypeObject, markersObjects, _ref, _results;
-      _ref = this.MarkersConfig;
+      var cat, markerType, markerTypeObject, markersObjects, _ref, _results;
+      _ref = this.gMarker;
       _results = [];
       for (cat in _ref) {
         markersObjects = _ref[cat];
         _results.push((function() {
-          var _j, _len1, _ref1, _results1;
+          var _ref1, _results1;
           _ref1 = markersObjects.marker_types;
           _results1 = [];
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            markerTypeObject = _ref1[_j];
+          for (markerType in _ref1) {
+            markerTypeObject = _ref1[markerType];
             if (!$("[data-type='" + markerTypeObject.slug + "']").hasClass('off')) {
-              _results1.push(this.setMarkersVisibilityByType(isVisible, markerTypeObject.slug, cat));
+              _results1.push(this.setMarkersVisibilityByType(isVisible, markerType, cat));
             }
           }
           return _results1;
@@ -471,59 +451,34 @@
     };
 
     CustomMap.prototype.setMarkersVisibilityByType = function(isVisible, type, cat) {
-      var marker, markerTypeObject, _j, _len1, _ref, _results;
-      _ref = this.gMarker[cat]["marker_types"];
+      var marker, _j, _len1, _ref, _results;
+      _ref = this.gMarker[cat]["marker_types"][type]["markers"];
       _results = [];
       for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-        markerTypeObject = _ref[_j];
-        if (markerTypeObject.slug === type) {
-          _results.push((function() {
-            var _k, _len2, _ref1, _results1;
-            _ref1 = markerTypeObject.markers;
-            _results1 = [];
-            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-              marker = _ref1[_k];
-              _results1.push(marker.setVisible(isVisible));
-            }
-            return _results1;
-          })());
-        }
+        marker = _ref[_j];
+        _results.push(marker.setVisible(isVisible));
       }
       return _results;
     };
 
     CustomMap.prototype.setMarkersVisibilityByCat = function(isVisible, cat) {
-      var marker, markerTypeObject, _j, _len1, _ref, _results;
+      var marker, markerType, markerTypeObject, _ref, _results;
       _ref = this.gMarker[cat]["marker_types"];
       _results = [];
-      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-        markerTypeObject = _ref[_j];
+      for (markerType in _ref) {
+        markerTypeObject = _ref[markerType];
         _results.push((function() {
-          var _k, _len2, _ref1, _results1;
+          var _j, _len1, _ref1, _results1;
           _ref1 = markerTypeObject.markers;
           _results1 = [];
-          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-            marker = _ref1[_k];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            marker = _ref1[_j];
             _results1.push(marker.setVisible(isVisible));
           }
           return _results1;
         })());
       }
       return _results;
-    };
-
-    CustomMap.prototype.handleMarkerRemovalTool = function(e) {
-      if (this.removeMarkerLink.hasClass('active')) {
-        this.removeMarkerLink.removeClass('active');
-        this.optionsBox.removeClass('red');
-        return this.canRemoveMarker = false;
-      } else {
-        this.removeMarkerLink.addClass('active');
-        this.optionsBox.addClass('red');
-        this.canRemoveMarker = true;
-        this.markerList.removeClass('active');
-        return this.addMarkerLink.removeClass('active');
-      }
     };
 
     CustomMap.prototype.destroyLocalStorage = function(e) {
@@ -568,7 +523,6 @@
         markersObjects = _ref[markersCat];
         if (!(exportMarkerObject[markersCat] != null)) {
           exportMarkerObject[markersCat] = {};
-          console.log(markersObjects);
           exportMarkerObject[markersCat]["data_translation"] = markersObjects["data_translation"];
           exportMarkerObject[markersCat]["marker_types"] = {};
         }
@@ -601,7 +555,8 @@
     };
 
     CustomMap.prototype.handleAddTool = function(e) {
-      var coord, icon, markerCat, markerLink, markerType, newMarkerInfo, otherInfo, parent, this_;
+      var coord, defaultValue, getValue, icon, markerCat, markerLink, markerType, newMarker, newMarkerInfo, otherInfo, parent, this_,
+        _this = this;
       this_ = $(e.currentTarget);
       parent = this_.closest('.type-menu-item');
       markerLink = parent.find('.marker-type-link');
@@ -609,20 +564,47 @@
       markerCat = markerLink.attr('data-cat');
       icon = markerLink.attr('data-icon');
       coord = this.map.getCenter();
+      getValue = function(cat, type) {
+        var defaultValue;
+        defaultValue = null;
+        if ((_this.MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["desc"] != null) && (_this.MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["title"] != null)) {
+          defaultValue = $.extend(true, {}, _this.MarkersConfig[cat]["marker_types"][type]["data_translation"]);
+        }
+        return defaultValue;
+      };
+      defaultValue = getValue(markerCat, markerType);
       otherInfo = {
-        markerCat: markerCat,
-        markerType: markerType,
+        markersCat: markerCat,
+        markersType: markerType,
         icon: icon
       };
-      newMarkerInfo = {
-        lat: coord.lat(),
-        lng: coord.lng(),
-        desc: "",
-        title: "",
-        wikiLink: "",
-        draggable: true
-      };
-      return this.addMarker(newMarkerInfo, otherInfo, true);
+      if (defaultValue) {
+        newMarkerInfo = {
+          lat: coord.lat(),
+          lng: coord.lng(),
+          draggable: true
+        };
+      } else {
+        newMarkerInfo = {
+          lat: coord.lat(),
+          lng: coord.lng(),
+          data_translation: {
+            en: {
+              title: "",
+              desc: "",
+              wikiLink: ""
+            },
+            fr: {
+              title: "",
+              desc: "",
+              wikiLink: ""
+            }
+          },
+          draggable: true
+        };
+      }
+      newMarker = this.addMarker(newMarkerInfo, otherInfo, true, defaultValue);
+      return this.gMarker[markerCat]["marker_types"][markerType]["markers"].push(newMarker);
     };
 
     CustomMap.prototype.getStartLat = function() {
@@ -684,7 +666,7 @@
               marker.infoWindow.setMap(null);
             }
             marker.setMap(null);
-            _this.gMarker[mCat]["marker_types"][mType]['markers'] = _.reject(markerType.markers, function(m) {
+            _this.gMarker[mCat]["marker_types"][mType]['markers'] = _.reject(_this.gMarker[mCat]["marker_types"][mType]["markers"], function(m) {
               return m === marker;
             });
             _this.saveToLocalStorage();
@@ -703,9 +685,9 @@
           continue;
         }
         if (marker["data_translation"] != null) {
-          marker["data_translation"][window.LANG]["desc"];
-          marker["data_translation"][window.LANG]["title"];
-          marker["data_translation"][window.LANG]["wikiLink"];
+          marker["data_translation"][window.LANG]["desc"] = newInfo.desc;
+          marker["data_translation"][window.LANG]["title"] = newInfo.title;
+          marker["data_translation"][window.LANG]["wikiLink"] = newInfo.wikiLink;
         } else {
           marker.desc = newInfo.desc;
           marker.title = newInfo.title;
@@ -721,18 +703,6 @@
       if (App.localStorageAvailable) {
         json = this.handleExport();
         return localStorage.setItem(this.localStorageKey, json);
-      }
-    };
-
-    CustomMap.prototype.toggleMarkerList = function(e) {
-      var this_;
-      this_ = $(e.currentTarget);
-      this.markerList.toggleClass('active');
-      this_.toggleClass('active');
-      if (this_.hasClass('active')) {
-        this.removeMarkerLink.removeClass('active');
-        this.optionsBox.removeClass('red');
-        return this.canRemoveMarker = false;
       }
     };
 
@@ -1085,7 +1055,8 @@
         type: this.marker.type,
         cat: this.marker.cat,
         lat: this.marker.position.lat(),
-        lng: this.marker.position.lng()
+        lng: this.marker.position.lng(),
+        hasDefaultValue: this.marker["hasDefaultValue"]
       };
       this.wrap.find('.padding').html(this.template(newInfo));
       this.bindButton();

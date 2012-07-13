@@ -1,6 +1,8 @@
 <ul class="iw-options-list">
     <li><a href="javascript:" title="Share marker" data-action="share" class="share button"></a></li>
+    <% if (!hasDefaultValue) { %>
     <li><a href="javascript:" title="Edit infos" data-action="edit" class="edit button"></a></li>
+    <% }%>
     <li><a href="javascript:" title="Move marker" data-action="move" class="move button"></a></li>
     <li><a href="javascript:" title="Delete marker" data-action="delete" class="delete button"></a></li>
 </ul>
