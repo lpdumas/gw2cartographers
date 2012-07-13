@@ -119,22 +119,6 @@ Areas = [
 ]
 //}}}
 
-// Markers.pets = {
-//   name : "Pets",
-//   marker_types : [{
-//     name : "Alpine wolf",
-//     slug : "petAlpineWolf",
-//     markers : []
-//   },
-//   {
-//     name : "Arctodus",
-//     slug : "petArctodus",
-//     markers : []
-//   }
-//   ]
-// }
-// 
-
 Markers.explore = {
   data_translation : { en : {name : "Explore"}, fr : {name : "Exploration"} },
   marker_types : {
@@ -775,39 +759,40 @@ Markers.train = {
       name : "",
       markers : []
     }
-  // ,
-  //   {
-  //     name : "Warrior",
-  //     slug : "warriorSkillBooks",
-  //     markers : []
-  //   },
-  //   {
-  //     name : "Guardian",
-  //     slug : "guardianSkillBooks",
-  //     markers : []
-  //   },
-  //   {
-  //     name : "Mesmer",
-  //     slug : "mesmerSkillBooks",
-  //     markers : []
-  //   },
-  //   {
-  //     name : "Elementalist",
-  //     slug : "eleSkillBooks",
-  //     markers : []
-  //   },
-  //   {
-  //     name : "Engineer",
-  //     slug : "engiSkillBooks",
-  //     markers : []
-  //   },
-  //   {
-  //     name : "Thief",
-  //     slug : "thiefSkillBooks",
-  //     markers : []
-  //   }
   }
 }
+
+// ,
+//   {
+//     name : "Warrior",
+//     slug : "warriorSkillBooks",
+//     markers : []
+//   },
+//   {
+//     name : "Guardian",
+//     slug : "guardianSkillBooks",
+//     markers : []
+//   },
+//   {
+//     name : "Mesmer",
+//     slug : "mesmerSkillBooks",
+//     markers : []
+//   },
+//   {
+//     name : "Elementalist",
+//     slug : "eleSkillBooks",
+//     markers : []
+//   },
+//   {
+//     name : "Engineer",
+//     slug : "engiSkillBooks",
+//     markers : []
+//   },
+//   {
+//     name : "Thief",
+//     slug : "thiefSkillBooks",
+//     markers : []
+//   }
 
 // "train" : {
 //   "rangerSkillBooks" : {"label" : "Ranger training", "url" : Resources.Paths.icons + "skillBookRanger.png"},
