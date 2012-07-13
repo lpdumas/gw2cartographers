@@ -354,7 +354,9 @@ html.move #map-mask {
   display: inline-block;
   color: #333;
 }
-
+.menu-marker .menu-item.off .menu-title{
+  text-decoration: line-through;
+}
 
 .menu-marker .menu-title {
   position: relative;

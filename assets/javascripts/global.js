@@ -440,7 +440,7 @@
           _results1 = [];
           for (markerType in _ref1) {
             markerTypeObject = _ref1[markerType];
-            if (!$("[data-type='" + markerTypeObject.slug + "']").hasClass('off')) {
+            if (!$("[data-type='" + markerType + "']").hasClass('off')) {
               _results1.push(this.setMarkersVisibilityByType(isVisible, markerType, cat));
             }
           }
@@ -729,6 +729,8 @@
     CustomMap.prototype.turnOfMenuIconsFromCat = function(markerCat) {
       var menu;
       menu = $(".menu-item[data-markerCat='" + markerCat + "']");
+      menu.addClass('off');
+      console.log(menu);
       menu.find('.group-toggling').addClass('off');
       return menu.find('.trigger').addClass('off');
     };
@@ -741,15 +743,17 @@
         template = _.template(e);
         html = $(template(_this.MarkersConfig));
         html.find(".trigger").bind('click', function(e) {
-          var item, markerCat, markerType, myGroupTrigger;
+          var item, markerCat, markerType, myGroupTrigger, myMenuItem;
           item = $(e.currentTarget);
           myGroupTrigger = item.closest(".menu-marker").find('.group-toggling');
+          myMenuItem = item.closest(".menu-item");
           markerType = item.attr('data-type');
           markerCat = item.attr('data-cat');
           if (_this.canToggleMarkers) {
             if (item.hasClass('off')) {
               _this.setMarkersVisibilityByType(true, markerType, markerCat);
               item.removeClass('off');
+              myMenuItem.removeClass('off');
               return myGroupTrigger.removeClass('off');
             } else {
               _this.setMarkersVisibilityByType(false, markerType, markerCat);
@@ -764,10 +768,12 @@
           markerCat = menuItem.attr('data-markerCat');
           if (this_.hasClass('off')) {
             this_.removeClass('off');
+            menuItem.removeClass('off');
             _this.setMarkersVisibilityByCat(true, markerCat);
             return menuItem.find('.trigger').removeClass('off');
           } else {
             this_.addClass('off');
+            menuItem.addClass('off');
             _this.setMarkersVisibilityByCat(false, markerCat);
             return menuItem.find('.trigger').addClass('off');
           }

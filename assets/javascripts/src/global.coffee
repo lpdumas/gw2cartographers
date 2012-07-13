@@ -343,7 +343,7 @@ class CustomMap
         
   setAllMarkersVisibility:(isVisible)->
     for cat, markersObjects of @gMarker
-      @setMarkersVisibilityByType(isVisible, markerType, cat) for markerType, markerTypeObject of markersObjects.marker_types when not $("[data-type='#{markerTypeObject.slug}']").hasClass('off')
+      @setMarkersVisibilityByType(isVisible, markerType, cat) for markerType, markerTypeObject of markersObjects.marker_types when not $("[data-type='#{markerType}']").hasClass('off')
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
     marker.setVisible(isVisible) for marker in @gMarker[cat]["marker_types"][type]["markers"]
@@ -545,6 +545,8 @@ class CustomMap
       
   turnOfMenuIconsFromCat:(markerCat)->
     menu = $(".menu-item[data-markerCat='#{markerCat}']")
+    menu.addClass('off')
+    console.log menu
     menu.find('.group-toggling').addClass('off')
     menu.find('.trigger').addClass('off')
   
@@ -557,6 +559,7 @@ class CustomMap
       html.find(".trigger").bind 'click', (e) =>
         item           = $(e.currentTarget)
         myGroupTrigger = item.closest(".menu-marker").find('.group-toggling')
+        myMenuItem     = item.closest(".menu-item")
         markerType     = item.attr('data-type')
         markerCat      = item.attr('data-cat')
 
@@ -564,6 +567,7 @@ class CustomMap
           if item.hasClass('off')
             @setMarkersVisibilityByType(true, markerType, markerCat)
             item.removeClass('off')
+            myMenuItem.removeClass('off')
             myGroupTrigger.removeClass('off')
           else
             @setMarkersVisibilityByType(false, markerType, markerCat)
@@ -575,10 +579,12 @@ class CustomMap
         markerCat = menuItem.attr('data-markerCat')
         if this_.hasClass('off')
           this_.removeClass('off')
+          menuItem.removeClass('off')
           @setMarkersVisibilityByCat(on, markerCat)
           menuItem.find('.trigger').removeClass('off')
         else
           this_.addClass('off')
+          menuItem.addClass('off')
           @setMarkersVisibilityByCat(off, markerCat)
           menuItem.find('.trigger').addClass('off')
             
