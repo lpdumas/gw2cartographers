@@ -213,6 +213,7 @@
         template = _.template(e);
         _this.confirmBox = new Confirmbox(template);
         return _this.handleLocalStorageLoad(function() {
+          console.log(_this.MarkersConfig);
           _this.addMenuIcons(function() {
             _this.addTools = $('.menu-marker a.add');
             return _this.addTools.each(function(index, target) {
@@ -303,15 +304,15 @@
     };
 
     CustomMap.prototype.addMarker = function(markerInfo, otherInfo, isNew, defaultValue) {
-      var createInfoWindow, iconPath, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, markersCat, markersType, _j, _len1, _ref, _results,
+      var createInfoWindow, iconPath, iconmid, iconsize, image, isMarkerDraggable, marker, markersCat, markersType,
         _this = this;
       createInfoWindow = function(marker) {
         var editInfoWindowContent, templateInfo;
         templateInfo = {
           id: marker.__gm_id,
-          title: marker["title"],
-          desc: marker["desc"],
-          wikiLink: marker["wikiLink"],
+          title: marker["data_translation"][window.LANG]["title"],
+          desc: marker["data_translation"][window.LANG]["desc"],
+          wikiLink: marker["data_translation"][window.LANG]["wikiLink"],
           type: marker.type,
           lat: marker.position.lat(),
           lng: marker.position.lng()
@@ -359,14 +360,10 @@
         title: markerInfo["data_translation"][window.LANG]["title"],
         animation: isNew ? google.maps.Animation.DROP : false
       });
-      if (!(defaultValue != null)) {
-        marker["title"] = markerInfo["data_translation"][window.LANG]["title"];
-        marker["desc"] = markerInfo["data_translation"][window.LANG]["desc"];
-        marker["wikiLink"] = markerInfo["data_translation"][window.LANG]["wikiLink"];
+      if (defaultValue != null) {
+        marker["data_translation"] = defaultValue;
       } else {
-        marker["title"] = defaultValue[window.LANG]["title"];
-        marker["desc"] = defaultValue[window.LANG]["desc"];
-        marker["wikiLink"] = defaultValue[window.LANG]["wikiLink"];
+        marker["data_translation"] = markerInfo["data_translation"];
       }
       marker["type"] = markersType;
       marker["cat"] = markersCat;
@@ -402,19 +399,11 @@
           return marker["infoWindow"].open();
         }
       });
-      _ref = this.gMarker[markersCat]["marker_types"];
-      _results = [];
-      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-        markerType = _ref[_j];
-        if (markerType.slug === markersType) {
-          _results.push(markerType["markers"].push(marker));
-        }
-      }
-      return _results;
+      return marker;
     };
 
     CustomMap.prototype.setAllMarkers = function() {
-      var defaultValue, key, marker, markerTypeObject, markersCat, markersObjects, newmarkerTypeObject, otherInfo, _ref, _results;
+      var defaultValue, marker, markerType, markerTypeObject, markersCat, markersObjects, newMarker, otherInfo, _ref, _results;
       _ref = this.MarkersConfig;
       _results = [];
       for (markersCat in _ref) {
@@ -422,32 +411,33 @@
         if (!(this.gMarker[markersCat] != null)) {
           this.gMarker[markersCat] = {};
           this.gMarker[markersCat]["data_translation"] = markersObjects.data_translation;
-          this.gMarker[markersCat]["marker_types"] = [];
+          this.gMarker[markersCat]["marker_types"] = {};
         }
         _results.push((function() {
-          var _j, _len1, _ref1, _results1;
+          var _ref1, _results1;
           _ref1 = markersObjects.marker_types;
           _results1 = [];
-          for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
-            markerTypeObject = _ref1[key];
-            newmarkerTypeObject = {};
-            newmarkerTypeObject["slug"] = markerTypeObject.slug;
-            newmarkerTypeObject["data_translation"] = markerTypeObject.data_translation;
-            newmarkerTypeObject["markers"] = [];
-            this.gMarker[markersCat]["marker_types"].push(newmarkerTypeObject);
+          for (markerType in _ref1) {
+            markerTypeObject = _ref1[markerType];
+            this.gMarker[markersCat]["marker_types"][markerType] = $.extend(true, {}, markerTypeObject);
+            this.gMarker[markersCat]["marker_types"][markerType]["markers"] = [];
             otherInfo = {
               markersCat: markersCat,
-              markersType: markerTypeObject.slug,
+              markersType: markerType,
               icon: markerTypeObject.icon
             };
             defaultValue = null;
+            if ((markerTypeObject["data_translation"][window.LANG]["title"] != null) && (markerTypeObject["data_translation"][window.LANG]["desc"] != null)) {
+              defaultValue = markerTypeObject["data_translation"];
+            }
             _results1.push((function() {
-              var _k, _len2, _ref2, _results2;
+              var _j, _len1, _ref2, _results2;
               _ref2 = markerTypeObject.markers;
               _results2 = [];
-              for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-                marker = _ref2[_k];
-                _results2.push(this.addMarker(marker, otherInfo, false, defaultValue));
+              for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+                marker = _ref2[_j];
+                newMarker = this.addMarker(marker, otherInfo, false, defaultValue);
+                _results2.push(this.gMarker[markersCat]["marker_types"][markerType]["markers"].push(newMarker));
               }
               return _results2;
             }).call(this));
@@ -571,7 +561,7 @@
     };
 
     CustomMap.prototype.handleExport = function(e) {
-      var exportMarkerObject, jsonString, key, marker, markerTypeObject, markersCat, markersObjects, newmarkerTypeObject, nm, _j, _k, _len1, _len2, _ref, _ref1, _ref2;
+      var exportMarkerObject, jsonString, marker, markerType, markerTypeObject, markersCat, markersObjects, nm, _j, _len1, _ref, _ref1, _ref2;
       exportMarkerObject = {};
       _ref = this.gMarker;
       for (markersCat in _ref) {
@@ -580,27 +570,29 @@
           exportMarkerObject[markersCat] = {};
           console.log(markersObjects);
           exportMarkerObject[markersCat]["data_translation"] = markersObjects["data_translation"];
-          exportMarkerObject[markersCat]["marker_types"] = [];
+          exportMarkerObject[markersCat]["marker_types"] = {};
         }
         _ref1 = markersObjects.marker_types;
-        for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
-          markerTypeObject = _ref1[key];
-          newmarkerTypeObject = {};
-          newmarkerTypeObject["data_translation"] = markerTypeObject["data_translation"];
-          newmarkerTypeObject["slug"] = markerTypeObject.slug;
-          newmarkerTypeObject["markers"] = [];
-          exportMarkerObject[markersCat]["marker_types"].push(newmarkerTypeObject);
+        for (markerType in _ref1) {
+          markerTypeObject = _ref1[markerType];
+          exportMarkerObject[markersCat]["marker_types"][markerType] = $.extend(true, {}, markerTypeObject);
+          exportMarkerObject[markersCat]["marker_types"][markerType]["markers"] = [];
           _ref2 = markerTypeObject.markers;
-          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-            marker = _ref2[_k];
-            nm = {
-              "lng": marker.getPosition().lng(),
-              "lat": marker.getPosition().lat(),
-              "title": marker.title,
-              "desc": marker.desc,
-              "wikiLink": marker.wikiLink
-            };
-            exportMarkerObject[markersCat]["marker_types"][key]["markers"].push(nm);
+          for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+            marker = _ref2[_j];
+            if (marker["data_translation"] != null) {
+              nm = {
+                "lng": marker.getPosition().lng(),
+                "lat": marker.getPosition().lat(),
+                "data_translation": $.extend(true, {}, marker["data_translation"])
+              };
+            } else {
+              nm = {
+                "lng": marker.getPosition().lng(),
+                "lat": marker.getPosition().lat()
+              };
+            }
+            exportMarkerObject[markersCat]["marker_types"][markerType]["markers"].push(nm);
           }
         }
       }
@@ -658,29 +650,17 @@
         _this = this;
       confirmMessage = "Delete all «" + mType + "» markers on the map?";
       return this.confirmBox.initConfirmation(confirmMessage, function(e) {
-        var marker, markerKey, markerType, typeKey, _j, _len1, _ref, _results;
+        var marker, markerKey, _j, _len1, _ref, _results;
         if (e) {
-          _ref = _this.gMarker[mCat]["marker_types"];
+          _ref = _this.gMarker[mCat]["marker_types"][mType]["markers"];
           _results = [];
-          for (typeKey = _j = 0, _len1 = _ref.length; _j < _len1; typeKey = ++_j) {
-            markerType = _ref[typeKey];
-            if (markerType.slug === mType) {
-              _results.push((function() {
-                var _k, _len2, _ref1, _results1,
-                  _this = this;
-                _ref1 = markerType.markers;
-                _results1 = [];
-                for (markerKey = _k = 0, _len2 = _ref1.length; _k < _len2; markerKey = ++_k) {
-                  marker = _ref1[markerKey];
-                  marker.setMap(null);
-                  this.gMarker[mCat]["marker_types"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
-                    return m === marker;
-                  });
-                  _results1.push(this.saveToLocalStorage());
-                }
-                return _results1;
-              }).call(_this));
-            }
+          for (markerKey = _j = 0, _len1 = _ref.length; _j < _len1; markerKey = ++_j) {
+            marker = _ref[markerKey];
+            marker.setMap(null);
+            _this.gMarker[mCat]["marker_types"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
+              return m === marker;
+            });
+            _results.push(_this.saveToLocalStorage());
           }
           return _results;
         }
@@ -692,53 +672,47 @@
         _this = this;
       confirmMessage = "Are you sure you want to delete this marker?";
       return this.confirmBox.initConfirmation(confirmMessage, function(e) {
-        var marker, markerKey, markerType, typeKey, _j, _k, _len1, _len2, _ref, _ref1;
+        var marker, markerKey, _j, _len1, _ref;
         if (e) {
-          _ref = _this.gMarker[mCat]["marker_types"];
-          for (typeKey = _j = 0, _len1 = _ref.length; _j < _len1; typeKey = ++_j) {
-            markerType = _ref[typeKey];
-            if (markerType.slug === mType) {
-              _ref1 = markerType.markers;
-              for (markerKey = _k = 0, _len2 = _ref1.length; _k < _len2; markerKey = ++_k) {
-                marker = _ref1[markerKey];
-                if (!(marker.__gm_id === id)) {
-                  continue;
-                }
-                if (marker.infoWindow != null) {
-                  marker.infoWindow.setMap(null);
-                }
-                marker.setMap(null);
-                _this.gMarker[mCat]["marker_types"][typeKey]['markers'] = _.reject(markerType.markers, function(m) {
-                  return m === marker;
-                });
-                _this.saveToLocalStorage();
-                return true;
-              }
+          _ref = _this.gMarker[mCat]["marker_types"][mType]["markers"];
+          for (markerKey = _j = 0, _len1 = _ref.length; _j < _len1; markerKey = ++_j) {
+            marker = _ref[markerKey];
+            if (!(marker.__gm_id === id)) {
+              continue;
             }
+            if (marker.infoWindow != null) {
+              marker.infoWindow.setMap(null);
+            }
+            marker.setMap(null);
+            _this.gMarker[mCat]["marker_types"][mType]['markers'] = _.reject(markerType.markers, function(m) {
+              return m === marker;
+            });
+            _this.saveToLocalStorage();
+            return true;
           }
         }
       });
     };
 
     CustomMap.prototype.updateMarkerInfos = function(newInfo) {
-      var marker, markerKey, markerType, typeKey, _j, _k, _len1, _len2, _ref, _ref1;
-      _ref = this.gMarker[newInfo.cat]["marker_types"];
-      for (typeKey = _j = 0, _len1 = _ref.length; _j < _len1; typeKey = ++_j) {
-        markerType = _ref[typeKey];
-        if (markerType.slug === newInfo.type) {
-          _ref1 = markerType.markers;
-          for (markerKey = _k = 0, _len2 = _ref1.length; _k < _len2; markerKey = ++_k) {
-            marker = _ref1[markerKey];
-            if (!(marker.__gm_id === newInfo.id)) {
-              continue;
-            }
-            marker.desc = newInfo.desc;
-            marker.title = newInfo.title;
-            marker.wikiLink = newInfo.wikiLink;
-            this.saveToLocalStorage();
-            return;
-          }
+      var marker, markerKey, _j, _len1, _ref;
+      _ref = this.gMarker[newInfo.cat]["marker_types"][newInfo.type]["markers"];
+      for (markerKey = _j = 0, _len1 = _ref.length; _j < _len1; markerKey = ++_j) {
+        marker = _ref[markerKey];
+        if (!(marker.__gm_id === newInfo.id)) {
+          continue;
         }
+        if (marker["data_translation"] != null) {
+          marker["data_translation"][window.LANG]["desc"];
+          marker["data_translation"][window.LANG]["title"];
+          marker["data_translation"][window.LANG]["wikiLink"];
+        } else {
+          marker.desc = newInfo.desc;
+          marker.title = newInfo.title;
+          marker.wikiLink = newInfo.wikiLink;
+        }
+        this.saveToLocalStorage();
+        return;
       }
     };
 
@@ -748,39 +722,6 @@
         json = this.handleExport();
         return localStorage.setItem(this.localStorageKey, json);
       }
-    };
-
-    CustomMap.prototype.setDraggableMarker = function(val) {
-      var key, marker, markerTypeObject, markersObjects, type, unDrag, _ref, _results;
-      unDrag = function(marker) {
-        marker.setDraggable(false);
-        return marker.setCursor('pointer');
-      };
-      _ref = this.gMarker;
-      _results = [];
-      for (type in _ref) {
-        markersObjects = _ref[type];
-        _results.push((function() {
-          var _j, _len1, _ref1, _results1;
-          _ref1 = markersObjects.marker_types;
-          _results1 = [];
-          for (key = _j = 0, _len1 = _ref1.length; _j < _len1; key = ++_j) {
-            markerTypeObject = _ref1[key];
-            _results1.push((function() {
-              var _k, _len2, _ref2, _results2;
-              _ref2 = markerTypeObject.markers;
-              _results2 = [];
-              for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-                marker = _ref2[_k];
-                _results2.push(unDrag(marker));
-              }
-              return _results2;
-            })());
-          }
-          return _results1;
-        })());
-      }
-      return _results;
     };
 
     CustomMap.prototype.toggleMarkerList = function(e) {
