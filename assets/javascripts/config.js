@@ -4,73 +4,6 @@ Metadata = {
     "date_generation" : "2012-07-10"
 }
 
-Resources.Icons = {
-  "explore" : {
-    "hearts" : {"label" : "Hearts", "url" : Metadata.icons_path + "hearts.png"},
-    "waypoints" : {"label" : "Waypoints", "url" : Metadata.icons_path + "waypoints.png"},
-    "skillpoints" : {"label" : "Skill points", "url" : Metadata.icons_path + "skillpoints.png"},
-    "poi" : {"label" : "Points of interest", "url" : Metadata.icons_path + "poi.png"},
-    "dungeons": {"label" : "Dungeons", "url" : Metadata.icons_path + "dungeons.png"},
-    "asurasgates" : {"label" : "Asura gates", "url" : Metadata.icons_path + "asuraGate.png"},
-    "scouts" : {"label" : "Scouts", "url" : Metadata.icons_path + "scout.png"},
-    "jumpingpuzzles" : {"label" : "Jumping puzzles", "url" : Metadata.icons_path + "puzzle.png"}
-  }
-  // ,
-  // "train" : {
-  //   "rangerSkillBooks" : {"label" : "Ranger training", "url" : Resources.Paths.icons + "skillBookRanger.png"},
-  //   "necroSkillBooks" : {"label" : "Necromancer training", "url" : Resources.Paths.icons + "skillBookNecro.png"},
-  //   "warriorSkillBooks" : {"label" : "Warrior training", "url" : Resources.Paths.icons + "skillBookWarrior.png"},
-  //   "guardianSkillBooks" : {"label" : "Guardian training", "url" : Resources.Paths.icons + "skillBookGuardian.png"},
-  //   "mesmerSkillBooks" : {"label" : "Mesmer training", "url" : Resources.Paths.icons + "skillBookMesmer.png"},
-  //   "eleSkillBooks" : {"label" : "Elementalist training", "url" : Resources.Paths.icons + "skillBookEle.png"},
-  //   "engiSkillBooks" : {"label" : "Engineer training", "url" : Resources.Paths.icons + "skillBookEngi.png"},
-  //   "thiefSkillBooks" : {"label" : "Thief training", "url" : Resources.Paths.icons + "skillBookThief.png"}
-  // },
-  // "pets" : {
-  //   "petArctodus" : {"label" : "Arctodus", "url" : Resources.Paths.icons + "pets/petArctodus.png"},
-  //   "petBlackBear" : {"label" : "Black bear", "url" : Resources.Paths.icons + "pets/petBlackBear.png"},
-  //   "petBrownBear" : {"label" : "Brown bear", "url" : Resources.Paths.icons + "pets/petBrownBear.png"},
-  //   "petMurellow" : {"label" : "Murellow", "url" : Resources.Paths.icons + "pets/petMurellow.png"},
-  //   "petPolarBear" : {"label" : "Polar bear", "url" : Resources.Paths.icons + "pets/petPolarBear.png"},
-  //   "petBlackMoa" : {"label" : "Black moa", "url" : Resources.Paths.icons + "pets/petBlackMoa.png"},
-  //   "petBlueMoa" : {"label" : "Blue moa", "url" : Resources.Paths.icons + "pets/petBlueMoa.png"},
-  //   "petRedMoa" : {"label" : "Red moa", "url" : Resources.Paths.icons + "pets/petRedMoa.png"},
-  //   "petWhiteMoa" : {"label" : "White moa", "url" : Resources.Paths.icons + "pets/petWhiteMoa.png"},
-  //   "petFlamingo" : {"label" : "Flamingo", "url" : Resources.Paths.icons + "pets/petFlamingo.png"},
-  //   "petBoar" : {"label" : "Boar", "url" : Resources.Paths.icons + "pets/petBoar.png"},
-  //   "petPig" : {"label" : "Pig", "url" : Resources.Paths.icons + "pets/petPig.png"},
-  //   "petSiamoth" : {"label" : "Siamoth", "url" : Resources.Paths.icons + "pets/petSiamoth.png"},
-  //   "petWarthog" : {"label" : "Warthog", "url" : Resources.Paths.icons + "pets/petWarthog.png"},
-  //   "petCarrion" : {"label" : "Carrion devourer", "url" : Resources.Paths.icons + "pets/petCarrion.png"},
-  //   "petLashTail" : {"label" : "Lashtail devourer", "url" : Resources.Paths.icons + "pets/petLashTail.png"},
-  //   "petWhiptail" : {"label" : "Whiptail devourer", "url" : Resources.Paths.icons + "pets/petWhiptail.png"},
-  //   "petBlackWidow" : {"label" : "Black widow", "url" : Resources.Paths.icons + "pets/petBlackWidow.png"},
-  //   "petCaveSpider" : {"label" : "Cave spider", "url" : Resources.Paths.icons + "pets/petCaveSpider.png"},
-  //   "petForestSpider" : {"label" : "Forest spider", "url" : Resources.Paths.icons + "pets/petForestSpider.png"},
-  //   "petJungleSpider" : {"label" : "Jungle spider", "url" : Resources.Paths.icons + "pets/petJungleSpider.png"},
-  //   "petAlpineWolf" : {"label" : "Alpine wolf", "url" : Resources.Paths.icons + "pets/petAlpineWolf.png"},
-  //   "petDog" : {"label" : "Krytan drakehound", "url" : Resources.Paths.icons + "pets/petDog.png"},
-  //   "petFernHound" : {"label" : "Fern hound", "url" : Resources.Paths.icons + "pets/petFernHound.png"},
-  //   "petHyena" : {"label" : "Hyena", "url" : Resources.Paths.icons + "pets/petHyena.png"},
-  //   "petWolf" : {"label" : "Wolf", "url" : Resources.Paths.icons + "pets/petWolf.png"},
-  //   "petEagle" : {"label" : "Eagle", "url" : Resources.Paths.icons + "pets/petEagle.png"},
-  //   "petOwl" : {"label" : "Owl", "url" : Resources.Paths.icons + "pets/petOwl.png"},
-  //   "petRaven" : {"label" : "Raven", "url" : Resources.Paths.icons + "pets/petRaven.png"},
-  //   "petWhiteRaven" : {"label" : "White raven", "url" : Resources.Paths.icons + "pets/petWhiteRaven.png"},
-  //   "petIceDrake" : {"label" : "Ice drake", "url" : Resources.Paths.icons + "pets/petIceDrake.png"},
-  //   "petMarshDrake" : {"label" : "Marsh drake", "url" : Resources.Paths.icons + "pets/petMarshDrake.png"},
-  //   "petRiverDrake" : {"label" : "River drake", "url" : Resources.Paths.icons + "pets/petRiverDrake.png"},
-  //   "petSalamanderDrake" : {"label" : "Salamander drake", "url" : Resources.Paths.icons + "pets/petSalamanderDrake.png"},
-  //   "petJaguar" : {"label" : "Jaguar", "url" : Resources.Paths.icons + "pets/petJaguar.png"},
-  //   "petJungleStalker" : {"label" : "Jungle stalker", "url" : Resources.Paths.icons + "pets/petJungleStalker.png"},
-  //   "petLynx" : {"label" : "Lynx", "url" : Resources.Paths.icons + "pets/petLynx.png"},
-  //   "petSnowLeopard" : {"label" : "Snow leopard", "url" : Resources.Paths.icons + "pets/petSnowLeopard.png"},
-  //   "petArmorFish" : {"label" : "Armor fish", "url" : Resources.Paths.icons + "pets/petArmorFish.png"},
-  //   "petJellyFish1" : {"label" : "Jelly fish 01", "url" : Resources.Paths.icons + "pets/petJellyFish1.png"},
-  //   "petJellyFish2" : {"label" : "Jelly fish 02", "url" : Resources.Paths.icons + "pets/petJellyFish2.png"},
-  //   "petShark" : {"label" : "Shark", "url" : Resources.Paths.icons + "pets/petShark.png"}
-  // }
-}
 //{{{
 Areas = [
 { name : "Divinity's Reach", rangeLvl : "",
@@ -876,4 +809,58 @@ Markers.train = {
   }
 }
 
+// "train" : {
+//   "rangerSkillBooks" : {"label" : "Ranger training", "url" : Resources.Paths.icons + "skillBookRanger.png"},
+//   "necroSkillBooks" : {"label" : "Necromancer training", "url" : Resources.Paths.icons + "skillBookNecro.png"},
+//   "warriorSkillBooks" : {"label" : "Warrior training", "url" : Resources.Paths.icons + "skillBookWarrior.png"},
+//   "guardianSkillBooks" : {"label" : "Guardian training", "url" : Resources.Paths.icons + "skillBookGuardian.png"},
+//   "mesmerSkillBooks" : {"label" : "Mesmer training", "url" : Resources.Paths.icons + "skillBookMesmer.png"},
+//   "eleSkillBooks" : {"label" : "Elementalist training", "url" : Resources.Paths.icons + "skillBookEle.png"},
+//   "engiSkillBooks" : {"label" : "Engineer training", "url" : Resources.Paths.icons + "skillBookEngi.png"},
+//   "thiefSkillBooks" : {"label" : "Thief training", "url" : Resources.Paths.icons + "skillBookThief.png"}
+// },
+// "pets" : {
+//   "petArctodus" : {"label" : "Arctodus", "url" : Resources.Paths.icons + "pets/petArctodus.png"},
+//   "petBlackBear" : {"label" : "Black bear", "url" : Resources.Paths.icons + "pets/petBlackBear.png"},
+//   "petBrownBear" : {"label" : "Brown bear", "url" : Resources.Paths.icons + "pets/petBrownBear.png"},
+//   "petMurellow" : {"label" : "Murellow", "url" : Resources.Paths.icons + "pets/petMurellow.png"},
+//   "petPolarBear" : {"label" : "Polar bear", "url" : Resources.Paths.icons + "pets/petPolarBear.png"},
+//   "petBlackMoa" : {"label" : "Black moa", "url" : Resources.Paths.icons + "pets/petBlackMoa.png"},
+//   "petBlueMoa" : {"label" : "Blue moa", "url" : Resources.Paths.icons + "pets/petBlueMoa.png"},
+//   "petRedMoa" : {"label" : "Red moa", "url" : Resources.Paths.icons + "pets/petRedMoa.png"},
+//   "petWhiteMoa" : {"label" : "White moa", "url" : Resources.Paths.icons + "pets/petWhiteMoa.png"},
+//   "petFlamingo" : {"label" : "Flamingo", "url" : Resources.Paths.icons + "pets/petFlamingo.png"},
+//   "petBoar" : {"label" : "Boar", "url" : Resources.Paths.icons + "pets/petBoar.png"},
+//   "petPig" : {"label" : "Pig", "url" : Resources.Paths.icons + "pets/petPig.png"},
+//   "petSiamoth" : {"label" : "Siamoth", "url" : Resources.Paths.icons + "pets/petSiamoth.png"},
+//   "petWarthog" : {"label" : "Warthog", "url" : Resources.Paths.icons + "pets/petWarthog.png"},
+//   "petCarrion" : {"label" : "Carrion devourer", "url" : Resources.Paths.icons + "pets/petCarrion.png"},
+//   "petLashTail" : {"label" : "Lashtail devourer", "url" : Resources.Paths.icons + "pets/petLashTail.png"},
+//   "petWhiptail" : {"label" : "Whiptail devourer", "url" : Resources.Paths.icons + "pets/petWhiptail.png"},
+//   "petBlackWidow" : {"label" : "Black widow", "url" : Resources.Paths.icons + "pets/petBlackWidow.png"},
+//   "petCaveSpider" : {"label" : "Cave spider", "url" : Resources.Paths.icons + "pets/petCaveSpider.png"},
+//   "petForestSpider" : {"label" : "Forest spider", "url" : Resources.Paths.icons + "pets/petForestSpider.png"},
+//   "petJungleSpider" : {"label" : "Jungle spider", "url" : Resources.Paths.icons + "pets/petJungleSpider.png"},
+//   "petAlpineWolf" : {"label" : "Alpine wolf", "url" : Resources.Paths.icons + "pets/petAlpineWolf.png"},
+//   "petDog" : {"label" : "Krytan drakehound", "url" : Resources.Paths.icons + "pets/petDog.png"},
+//   "petFernHound" : {"label" : "Fern hound", "url" : Resources.Paths.icons + "pets/petFernHound.png"},
+//   "petHyena" : {"label" : "Hyena", "url" : Resources.Paths.icons + "pets/petHyena.png"},
+//   "petWolf" : {"label" : "Wolf", "url" : Resources.Paths.icons + "pets/petWolf.png"},
+//   "petEagle" : {"label" : "Eagle", "url" : Resources.Paths.icons + "pets/petEagle.png"},
+//   "petOwl" : {"label" : "Owl", "url" : Resources.Paths.icons + "pets/petOwl.png"},
+//   "petRaven" : {"label" : "Raven", "url" : Resources.Paths.icons + "pets/petRaven.png"},
+//   "petWhiteRaven" : {"label" : "White raven", "url" : Resources.Paths.icons + "pets/petWhiteRaven.png"},
+//   "petIceDrake" : {"label" : "Ice drake", "url" : Resources.Paths.icons + "pets/petIceDrake.png"},
+//   "petMarshDrake" : {"label" : "Marsh drake", "url" : Resources.Paths.icons + "pets/petMarshDrake.png"},
+//   "petRiverDrake" : {"label" : "River drake", "url" : Resources.Paths.icons + "pets/petRiverDrake.png"},
+//   "petSalamanderDrake" : {"label" : "Salamander drake", "url" : Resources.Paths.icons + "pets/petSalamanderDrake.png"},
+//   "petJaguar" : {"label" : "Jaguar", "url" : Resources.Paths.icons + "pets/petJaguar.png"},
+//   "petJungleStalker" : {"label" : "Jungle stalker", "url" : Resources.Paths.icons + "pets/petJungleStalker.png"},
+//   "petLynx" : {"label" : "Lynx", "url" : Resources.Paths.icons + "pets/petLynx.png"},
+//   "petSnowLeopard" : {"label" : "Snow leopard", "url" : Resources.Paths.icons + "pets/petSnowLeopard.png"},
+//   "petArmorFish" : {"label" : "Armor fish", "url" : Resources.Paths.icons + "pets/petArmorFish.png"},
+//   "petJellyFish1" : {"label" : "Jelly fish 01", "url" : Resources.Paths.icons + "pets/petJellyFish1.png"},
+//   "petJellyFish2" : {"label" : "Jelly fish 02", "url" : Resources.Paths.icons + "pets/petJellyFish2.png"},
+//   "petShark" : {"label" : "Shark", "url" : Resources.Paths.icons + "pets/petShark.png"}
+// }
 
