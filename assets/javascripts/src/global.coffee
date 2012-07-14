@@ -159,6 +159,10 @@ class CustomMap
             coordinates = new google.maps.LatLng(marker.lat, marker.lng);
             _this.map.panTo(coordinates);
     )
+    
+    $('input#submit-changes').click(() =>
+       $('#changes-to-merge').submit();
+    )
 
     $.get('assets/javascripts/templates/confirmBox._', (e)=>
       template = _.template(e);

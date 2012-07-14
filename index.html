@@ -19,7 +19,7 @@
   <script type="text/javascript">var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-32685708-1']);_gaq.push(['_trackPageview']);(function() {var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();
   </script>
   <script type="text/javascript">
-    var Markers = {}, Resources = {};
+    var Markers = {}, Metadata = {};
     {{ js_generated|raw }}
   </script>
 </head>
@@ -29,25 +29,30 @@
     <div id="markers-options" class="group">
         <ul id="change-menu" class="menu-marker group">            
             <li class="menu-item">
-                <a class="menu-title" href="#">Changements <span class="arrow"> ▼</span></a>
+                <a class="menu-title" href="#">Changes <span class="arrow"> ▼</span></a>
                 <ul class="type-menu group">
+                    <form id="changes-to-merge" method="post" action="{{ path('admin_merge_changes') }}">
                     {% for change in changes  %}
                     <li class="type-menu-item">
-                        <a class="marker-type-link" data-markerID="{{ change.id }}">
+                        <a class="marker-type-link" data-markerID="{{ change.markerID }}">
                             <span class="change-status {{ change.change.status }}"></span>
                             <img src="{{ imagePath ~ change.image }}" />
                             <span>{{ change.name }}</span>
-                            <input type="checkbox" checked />
+                            <input type="checkbox" name="{{ change.id }}" checked />
                         </a>
                     </li>
                     {% endfor %}
+                    <input type="hidden" name="revID" value="{{ revID }}" />
+                    <input type="submit" value="submit" />
+                    </form>
                 </ul>
             </li>
         </ul>
         <div class="padding">
             <ul id="edition-tools">
-                <li><a href="javascript:" data-ajaxUrl="#" id="send" class="button" title="Send map for approval"/></a></li>
-                <li><a href="javascript:" id="destroy" class="button" title="Remove local storage data"/></a></li>
+                <li><input id="submit-changes" type="submit" value="Merge selected changes" /></li>
+                <!--<li><a href="javascript:" data-ajaxUrl="#" id="send" class="button" title="Send map for approval"/></a></li>
+                <li><a href="javascript:" id="destroy" class="button" title="Remove local storage data"/></a></li>-->
             </ul>
         </div>
         <span class="decorations"></span>

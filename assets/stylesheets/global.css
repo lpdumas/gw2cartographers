@@ -72,6 +72,7 @@ html, body {
 
 .padding {
   padding: 0 20px;
+  display: inline-block;
 }
 .shy {
   position: absolute;
@@ -880,27 +881,7 @@ p.marker-permalink { text-align: right; }
     margin: 0 0 10px 0;
   }
 
-  #change-menu {
-      display: inline-block;
-  }
-
-  #change-menu a.marker-type-link {
-      padding: 9px 5px 9px 35px;
-  }
-
-  #change-menu li span.change-status {
-      position: absolute;
-      top: 50%;
-      left: 0px;
-      margin-top: -10px;
-      width: 5px;
-      height: 20px;
-  }
-
-  #change-menu li .status_added { background: blue; }
-  #change-menu li .status_removed { background: red; }
-  #change-menu li .status_modified_all,
-  #change-menu li .status_modified_data,
-  #change-menu li .status_modified_coordinates { background: yellow; }
-
+#change-menu {
+    display: inline-block;
+}
 /*}}}*/
