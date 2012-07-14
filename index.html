@@ -34,7 +34,7 @@
                     <form id="changes-to-merge" method="post" action="{{ path('admin_merge_changes') }}">
                     {% for change in changes  %}
                     <li class="type-menu-item">
-                        <a class="marker-type-link" data-markerID="{{ change.id }}">
+                        <a class="marker-type-link" data-markerID="{{ change.markerID }}">
                             <span class="change-status {{ change.change.status }}"></span>
                             <img src="{{ imagePath ~ change.image }}" />
                             <span>{{ change.name }}</span>
@@ -42,6 +42,8 @@
                         </a>
                     </li>
                     {% endfor %}
+                    <input type="hidden" name="revID" value="{{ revID }}" />
+                    <input type="submit" value="submit" />
                     </form>
                 </ul>
             </li>
