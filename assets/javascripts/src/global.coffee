@@ -147,16 +147,6 @@ class CustomMap
     @map = new google.maps.Map($(id)[0], @gMapOptions)
     @map.mapTypes.set('custom', @customMapType)
     @map.setMapTypeId('custom')
-    
-    $('#change-menu .marker-type-link').click((e) =>
-        
-        markerID = parseInt($(e.currentTarget).attr('data-markerID'))
-        marker = _this.getMarkerByID(markerID)
-        
-        if marker?
-            coordinates = new google.maps.LatLng(marker.lat, marker.lng);
-            _this.map.panTo(coordinates);
-    )
 
     $.get('assets/javascripts/templates/confirmBox._', (e)=>
       template = _.template(e);
@@ -580,13 +570,7 @@ class CustomMap
     for markersCat, markersObjects of @MarkersConfig
       for markerTypeObject, key in markersObjects.marker_types
         return marker for marker in markerTypeObject.markers when marker.lat is lat and marker.lng is lng
-    return false
-
-  getMarkerByID:(markerID)->
-    for markersCat, markersObjects of @MarkersConfig
-        for markerTypeObject, key in markersObjects.markerGroup
-            return marker for marker in markerTypeObject.markers when marker.id is markerID
-    return null
+    return false  
       
   turnOfMenuIconsFromCat:(markerCat)->
     menu = $(".menu-item[data-markerCat='#{markerCat}']")
