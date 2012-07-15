@@ -123,7 +123,6 @@ Markers.explore = {
   data_translation : { en : {name : "Explore"}, fr : {name : "Exploration"} },
   marker_types : {
     "hearts" : {
-      slug : "hearts",
       icon : 'hearts.png',
       data_translation : {
         en : {name : "Hearts"},
@@ -236,7 +235,6 @@ Markers.explore = {
       ]
     },
     "waypoints" : {
-      slug : "waypoints",
       icon : 'waypoints.png',
       data_translation : {
         en : {name : "Waypoints"},
@@ -443,7 +441,6 @@ Markers.explore = {
       ]
     },
     "poi" : {
-      slug : "poi",
       icon : 'poi.png',
       data_translation : {
         en : {name : "Points of interest"},
@@ -598,7 +595,6 @@ Markers.explore = {
       ]
     },
     "skillpoints" : {
-      slug: "skillpoints",
       icon : 'skillpoints.png',
       data_translation : {
         en : {name : "Skill points"},
@@ -667,7 +663,6 @@ Markers.explore = {
       ]
     },
     "dungeons" : {
-      slug: "dungeons",
       icon : 'dungeons.png',
       data_translation : {
         en : {name : "Dungeons"},
@@ -679,7 +674,6 @@ Markers.explore = {
       ]
     },
     "asurasgates" : {
-      slug: "asurasgates",
       icon : 'asuraGate.png',
       data_translation : {
         en : {name : "Asura gates"},
@@ -710,7 +704,6 @@ Markers.explore = {
       ]
     },
     "jumpingpuzzles" : {
-      slug: "jumpingpuzzles",
       icon : 'puzzle.png',
       data_translation : {
         en : {name : "Jumping puzzles"},
@@ -726,7 +719,6 @@ Markers.explore = {
     },
   
     "scouts" : {
-      slug: "scouts",
       icon : 'scout.png',
       data_translation : {
         en : {name : "Scouts"},
@@ -741,7 +733,6 @@ Markers.train = {
   data_translation : { en : {name : "Train"}, fr : {name : "Entraînement"} },
   marker_types : {
     "rangerSkillBooks" : {
-      slug : "rangerSkillBooks",
       icon : 'skillBookRanger.png',
       data_translation : {
          en : {name : "Rangers", title: "Training for rangers", desc: "Skill book vendor for rangers", wikiLink: ""},
@@ -750,60 +741,72 @@ Markers.train = {
       markers : []
     },
     "necroSkillBooks" : {
-      slug : "necroSkillBooks",
       icon : 'skillBookNecro.png',
       data_translation : {
-         en : {name : "Necromancer", title: "Training for necromancer", desc: "Skill book vendor for necromancer"},
-         fr : {name : "Nécromant", title: "Entraînement pour les nécromants", desc: "Vendeur de livre de compétences pour nécromant"}
+         en : {name : "Necromancer", title: "Training for necromancer", desc: "Skill book vendor for necromancer", wikiLink: ""},
+         fr : {name : "Nécromant", title: "Entraînement pour les nécromants", desc: "Vendeur de livre de compétences pour nécromant", wikiLink: ""}
       },
       name : "",
       markers : []
-    }
+    },
+    "warriorSkillBooks" : {
+      icon : 'skillBookWarrior.png',
+      data_translation : {
+         en : {name : "Warrior", title: "Training for warrior", desc: "Skill book vendor for warrior", wikiLink: ""},
+         fr : {name : "Guerrier", title: "Entraînement pour les guerrier", desc: "Vendeur de livre de compétences pour guerrier", wikiLink: ""}
+      },
+      name : "",
+      markers : []
+    },
+    "guardianSkillBooks" : {
+      icon : 'skillBookGuardian.png',
+      data_translation : {
+         en : {name : "Guardian", title: "Training for guardian", desc: "Skill book vendor for guardian", wikiLink: ""},
+         fr : {name : "Gardien", title: "Entraînement pour les gardien", desc: "Vendeur de livre de compétences pour gardien", wikiLink: ""}
+      },
+      name : "",
+      markers : []
+    },
+    "mesmerSkillBooks" : {
+      icon : 'skillBookMesmer.png',
+      data_translation : {
+         en : {name : "Mesmer", title: "Training for mesmer", desc: "Skill book vendor for mesmer", wikiLink: ""},
+         fr : {name : "Envoûteur", title: "Entraînement pour les envoûteur", desc: "Vendeur de livre de compétences pour envoûteur", wikiLink: ""}
+      },
+      name : "",
+      markers : []
+    },
+    "eleSkillBooks" : {
+      icon : 'skillBookEle.png',
+      data_translation : {
+         en : {name : "Elementalist", title: "Training for elementalist", desc: "Skill book vendor for elementalist", wikiLink: ""},
+         fr : {name : "Élémentaliste", title: "Entraînement pour les élémentaliste", desc: "Vendeur de livre de compétences pour élémentaliste", wikiLink: ""}
+      },
+      name : "",
+      markers : []
+    },
+    "engiSkillBooks" : {
+      icon : 'skillBookEngi.png',
+      data_translation : {
+         en : {name : "Engineer", title: "Training for engineer", desc: "Skill book vendor for engineer", wikiLink: ""},
+         fr : {name : "Ingénieur", title: "Entraînement pour les ingénieur", desc: "Vendeur de livre de compétences pour ingénieur", wikiLink: ""}
+      },
+      name : "",
+      markers : []
+    },
+    "thiefSkillBooks" : {
+      icon : 'skillBookThief.png',
+      data_translation : {
+         en : {name : "Thief", title: "Training for thief", desc: "Skill book vendor for thief", wikiLink: ""},
+         fr : {name : "Voleur", title: "Entraînement pour les voleur", desc: "Vendeur de livre de compétences pour voleur", wikiLink: ""}
+      },
+      name : "",
+      markers : []
+    },
+    
   }
 }
 
-// ,
-//   {
-//     name : "Warrior",
-//     slug : "warriorSkillBooks",
-//     markers : []
-//   },
-//   {
-//     name : "Guardian",
-//     slug : "guardianSkillBooks",
-//     markers : []
-//   },
-//   {
-//     name : "Mesmer",
-//     slug : "mesmerSkillBooks",
-//     markers : []
-//   },
-//   {
-//     name : "Elementalist",
-//     slug : "eleSkillBooks",
-//     markers : []
-//   },
-//   {
-//     name : "Engineer",
-//     slug : "engiSkillBooks",
-//     markers : []
-//   },
-//   {
-//     name : "Thief",
-//     slug : "thiefSkillBooks",
-//     markers : []
-//   }
-
-// "train" : {
-//   "rangerSkillBooks" : {"label" : "Ranger training", "url" : Resources.Paths.icons + "skillBookRanger.png"},
-//   "necroSkillBooks" : {"label" : "Necromancer training", "url" : Resources.Paths.icons + "skillBookNecro.png"},
-//   "warriorSkillBooks" : {"label" : "Warrior training", "url" : Resources.Paths.icons + "skillBookWarrior.png"},
-//   "guardianSkillBooks" : {"label" : "Guardian training", "url" : Resources.Paths.icons + "skillBookGuardian.png"},
-//   "mesmerSkillBooks" : {"label" : "Mesmer training", "url" : Resources.Paths.icons + "skillBookMesmer.png"},
-//   "eleSkillBooks" : {"label" : "Elementalist training", "url" : Resources.Paths.icons + "skillBookEle.png"},
-//   "engiSkillBooks" : {"label" : "Engineer training", "url" : Resources.Paths.icons + "skillBookEngi.png"},
-//   "thiefSkillBooks" : {"label" : "Thief training", "url" : Resources.Paths.icons + "skillBookThief.png"}
-// },
 // "pets" : {
 //   "petArctodus" : {"label" : "Arctodus", "url" : Resources.Paths.icons + "pets/petArctodus.png"},
 //   "petBlackBear" : {"label" : "Black bear", "url" : Resources.Paths.icons + "pets/petBlackBear.png"},
