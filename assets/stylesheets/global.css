@@ -72,6 +72,7 @@ html, body {
 
 .padding {
   padding: 0 20px;
+  display: inline-block;
 }
 .shy {
   position: absolute;
@@ -890,4 +891,8 @@ p.marker-permalink { text-align: right; }
   #change-menu li .status_modified_data,
   #change-menu li .status_modified_coordinates { background: yellow; }
 
+/*}}}*/
+#change-menu {
+    display: inline-block;
+}
 /*}}}*/
