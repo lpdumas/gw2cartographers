@@ -272,8 +272,7 @@ class CustomMap
       @markersImages[markersType] = image
     
     isMarkerDraggable = if markerInfo.draggable? then markerInfo.draggable else false
-<<<<<<< HEAD
-
+    
     if markerInfo.status?
         colorShadow = null;
         
@@ -287,9 +286,6 @@ class CustomMap
         if colorShadow?
             shadow = { path: google.maps.SymbolPath.CIRCLE, scale: 10, strokeColor: colorShadow }
 
-=======
-    
->>>>>>> master
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
@@ -300,17 +296,9 @@ class CustomMap
       title: if defaultValue? then defaultValue[window.LANG]["title"] else markerInfo["data_translation"][window.LANG]["title"]
       animation: if isNew then google.maps.Animation.DROP else no
     )
-<<<<<<< HEAD
     
     if shadow?
         marker.setShadow(shadow);
-    
-    marker["title"] = "#{markerInfo.title}"
-    marker["desc"]  = "#{markerInfo.desc}"
-    marker["wikiLink"]  = "#{markerInfo.wikiLink}"
-    marker["type"]  = "#{markersType}"
-    marker["cat"]  = "#{markersCat}"
-=======
 
     if defaultValue?
       marker["data_translation"] = defaultValue
@@ -321,7 +309,6 @@ class CustomMap
 
     marker["type"]  = markersType
     marker["cat"]  = markersCat
->>>>>>> master
 
     if markerInfo.lat.toString() is @getStartLat() and markerInfo.lng.toString() is @getStartLng()
       if not marker["infoWindow"]?
@@ -863,14 +850,7 @@ extractUrlParams = ()->
     
 $ ()->
   myCustomMap = new CustomMap('#map')
-<<<<<<< HEAD
-  # markersOptionsMenuToggle = $('#options-toggle strong')
-  # markersOptionsMenuToggle.click( () ->
-    # myCustomMap.toggleMarkersOptionsMenu()
-  # )
-=======
   markersOptionsMenuToggle = $('#options-toggle strong')
   markersOptionsMenuToggle.click( () ->
     myCustomMap.toggleMarkersOptionsMenu()
   )
->>>>>>> master

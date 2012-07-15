@@ -285,13 +285,8 @@
       return JSON.parse(json);
     };
 
-<<<<<<< HEAD
-    CustomMap.prototype.addMarker = function(markerInfo, markersType, markersCat, isNew) {
-      var colorShadow, createInfoWindow, iconmid, iconsize, image, isMarkerDraggable, marker, markerType, shadow, _j, _len1, _ref, _results,
-=======
     CustomMap.prototype.addMarker = function(markerInfo, otherInfo, isNew, defaultValue) {
-      var createInfoWindow, iconPath, iconmid, iconsize, image, isMarkerDraggable, marker, markerVisibility, markersCat, markersType,
->>>>>>> master
+      var colorShadow, createInfoWindow, iconPath, iconmid, iconsize, image, isMarkerDraggable, marker, markerVisibility, markersCat, markersType, shadow,
         _this = this;
       createInfoWindow = function(marker) {
         var editInfoWindowContent, templateInfo;
@@ -369,16 +364,9 @@
         title: defaultValue != null ? defaultValue[window.LANG]["title"] : markerInfo["data_translation"][window.LANG]["title"],
         animation: isNew ? google.maps.Animation.DROP : false
       });
-<<<<<<< HEAD
       if (shadow != null) {
         marker.setShadow(shadow);
       }
-      marker["title"] = "" + markerInfo.title;
-      marker["desc"] = "" + markerInfo.desc;
-      marker["wikiLink"] = "" + markerInfo.wikiLink;
-      marker["type"] = "" + markersType;
-      marker["cat"] = "" + markersCat;
-=======
       if (defaultValue != null) {
         marker["data_translation"] = defaultValue;
         marker["hasDefaultValue"] = true;
@@ -388,7 +376,6 @@
       }
       marker["type"] = markersType;
       marker["cat"] = markersCat;
->>>>>>> master
       if (markerInfo.lat.toString() === this.getStartLat() && markerInfo.lng.toString() === this.getStartLng()) {
         if (!(marker["infoWindow"] != null)) {
           createInfoWindow(marker);
