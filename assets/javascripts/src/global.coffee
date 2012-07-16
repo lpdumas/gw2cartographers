@@ -436,6 +436,7 @@ class CustomMap
     parent     = this_.closest('.type-menu-item')
     markerLink = parent.find('.marker-type-link')
     markerType = markerLink.attr('data-type')
+    console.log markerLink
     markerCat  = markerLink.attr('data-cat')
     icon       = markerLink.attr('data-icon')
     coord      = @map.getCenter()
