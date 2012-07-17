@@ -427,6 +427,7 @@ class CustomMap
           exportMarkerObject[markersCat]["marker_types"][markerType]["markers"].push(nm)
 
     jsonString = JSON.stringify(exportMarkerObject)
+    console.log jsonString
     return jsonString
     # @exportWindow.find('.content').html(jsonString)
     # @exportWindow.show();

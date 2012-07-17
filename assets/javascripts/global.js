@@ -557,6 +557,7 @@
         }
       }
       jsonString = JSON.stringify(exportMarkerObject);
+      console.log(jsonString);
       return jsonString;
     };
 
