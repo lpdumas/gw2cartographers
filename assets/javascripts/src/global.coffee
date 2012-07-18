@@ -190,7 +190,9 @@ class CustomMap
           
           @setAllMarkers()
           @initializeAreaSummaryBoxes()
-          
+          google.maps.event.addListener(@map, 'click', (e)=>
+            console.log "Lat : #{e.latLng.lat()}, Lng : #{e.latLng.lng()}"
+          )
           # UI
           $('#destroy').bind('click', @destroyLocalStorage)
           $('#send').bind('click', @sendMapForApproval)
@@ -427,7 +429,6 @@ class CustomMap
           exportMarkerObject[markersCat]["marker_types"][markerType]["markers"].push(nm)
 
     jsonString = JSON.stringify(exportMarkerObject)
-    console.log jsonString
     return jsonString
     # @exportWindow.find('.content').html(jsonString)
     # @exportWindow.show();
@@ -437,7 +438,6 @@ class CustomMap
     parent     = this_.closest('.type-menu-item')
     markerLink = parent.find('.marker-type-link')
     markerType = markerLink.attr('data-type')
-    console.log markerLink
     markerCat  = markerLink.attr('data-cat')
     icon       = markerLink.attr('data-icon')
     coord      = @map.getCenter()
@@ -548,7 +548,6 @@ class CustomMap
   turnOfMenuIconsFromCat:(markerCat)->
     menu = $(".menu-item[data-markerCat='#{markerCat}']")
     menu.addClass('off')
-    console.log menu
     menu.find('.group-toggling').addClass('off')
     menu.find('.trigger').addClass('off')
   
