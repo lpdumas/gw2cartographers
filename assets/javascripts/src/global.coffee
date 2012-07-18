@@ -226,7 +226,7 @@ class CustomMap
         id : marker.__gm_id
         title: marker["data_translation"][window.LANG]["title"]
         desc: marker["data_translation"][window.LANG]["desc"]
-        wikiLink  : marker["data_translation"][window.LANG]["wikiLink"]
+        wikiLink  : marker["data_translation"][window.LANG]["link_wiki"]
         hasDefaultValue : marker["hasDefaultValue"]
         type  : marker.type
         lat   : marker.position.lat()
@@ -524,7 +524,7 @@ class CustomMap
       if marker["data_translation"]?
         marker["data_translation"][window.LANG]["desc"] = newInfo.desc
         marker["data_translation"][window.LANG]["title"] = newInfo.title
-        marker["data_translation"][window.LANG]["wikiLink"] = newInfo.wikiLink 
+        marker["data_translation"][window.LANG]["link_wiki"] = newInfo.wikiLink 
       else
         marker.desc = newInfo.desc
         marker.title = newInfo.title
