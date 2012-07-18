@@ -103,10 +103,10 @@ class CustomMap
     @markersOptionsMenu = $('#markers-options')
     @mapOptions    = $('#edition-tools a')
     # @defaultLat = 15.919073517982465
-    @defaultLat = 26.765230565697536
+    @startLat = if @getStartLat() then @getStartLat() else 26.765230565697536
     # @defaultLng = 18.28125
-    @defaultLng = -36.32080078125
-    
+    @startLng = if @getStartLng() then @getStartLng() else -36.32080078125
+    extractUrlParams()
     @defaultCat = "explore"
     window.LANG = "en"
     @areaSummaryBoxes = []
@@ -117,7 +117,7 @@ class CustomMap
     @canToggleMarkers = true
     @currentOpenedInfoWindow = false
     @gMapOptions   = 
-      center: new google.maps.LatLng(@getStartLat(), @getStartLng())
+      center: new google.maps.LatLng(@startLat, @startLng)
       zoom: 6
       minZoom: 3
       maxZoom: @maxZoom
@@ -286,7 +286,7 @@ class CustomMap
     marker["type"]  = markersType
     marker["cat"]  = markersCat
 
-    if markerInfo.lat.toString() is @getStartLat() and markerInfo.lng.toString() is @getStartLng()
+    if markerInfo.lat.toString() is @startLat and markerInfo.lng.toString() is @startLng
       if not marker["infoWindow"]?
         createInfoWindow(marker)
         marker["infoWindow"].open()
@@ -429,6 +429,7 @@ class CustomMap
           exportMarkerObject[markersCat]["marker_types"][markerType]["markers"].push(nm)
 
     jsonString = JSON.stringify(exportMarkerObject)
+    # console.log jsonString
     return jsonString
     # @exportWindow.find('.content').html(jsonString)
     # @exportWindow.show();
@@ -481,14 +482,14 @@ class CustomMap
     if params['lat']?
         params['lat']
     else
-        @defaultLat
+        false
     
   getStartLng:()->
       params = extractUrlParams()
       if params['lng']?
           params['lng']
       else
-          @defaultLng
+          false
     
   removeMarkerFromType:(mType, mCat)->
     confirmMessage = "Delete all «#{mType}» markers on the map?"
@@ -813,8 +814,9 @@ extractUrlParams = ()->
     parameters = location.search.substring(1).split('&')
     f = []
     for element in parameters
-        x = element.split('=')
-        f[x[0]]=x[1]
+      x = element.split('=')      
+      f[x[0]] = x[1]
+      console.log f
     f
     
 $ ()->

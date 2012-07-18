@@ -163,8 +163,9 @@
       this.exportWindow = $('#export-windows');
       this.markersOptionsMenu = $('#markers-options');
       this.mapOptions = $('#edition-tools a');
-      this.defaultLat = 26.765230565697536;
-      this.defaultLng = -36.32080078125;
+      this.startLat = this.getStartLat() ? this.getStartLat() : 26.765230565697536;
+      this.startLng = this.getStartLng() ? this.getStartLng() : -36.32080078125;
+      extractUrlParams();
       this.defaultCat = "explore";
       window.LANG = "en";
       this.areaSummaryBoxes = [];
@@ -174,7 +175,7 @@
       this.canToggleMarkers = true;
       this.currentOpenedInfoWindow = false;
       this.gMapOptions = {
-        center: new google.maps.LatLng(this.getStartLat(), this.getStartLng()),
+        center: new google.maps.LatLng(this.startLat, this.startLng),
         zoom: 6,
         minZoom: 3,
         maxZoom: this.maxZoom,
@@ -356,7 +357,7 @@
       }
       marker["type"] = markersType;
       marker["cat"] = markersCat;
-      if (markerInfo.lat.toString() === this.getStartLat() && markerInfo.lng.toString() === this.getStartLng()) {
+      if (markerInfo.lat.toString() === this.startLat && markerInfo.lng.toString() === this.startLng) {
         if (!(marker["infoWindow"] != null)) {
           createInfoWindow(marker);
           marker["infoWindow"].open();
@@ -622,7 +623,7 @@
       if (params['lat'] != null) {
         return params['lat'];
       } else {
-        return this.defaultLat;
+        return false;
       }
     };
 
@@ -632,7 +633,7 @@
       if (params['lng'] != null) {
         return params['lng'];
       } else {
-        return this.defaultLng;
+        return false;
       }
     };
 
@@ -1103,6 +1104,7 @@
       element = parameters[_j];
       x = element.split('=');
       f[x[0]] = x[1];
+      console.log(f);
     }
     return f;
   };
