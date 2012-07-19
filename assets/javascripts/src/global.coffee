@@ -165,20 +165,6 @@ class CustomMap
     @map = new google.maps.Map($(id)[0], @gMapOptions)
     @map.mapTypes.set('custom', @customMapType)
     @map.setMapTypeId('custom')
-    
-    $('#change-menu .marker-type-link').click((e) =>
-        
-        markerID = parseInt($(e.currentTarget).attr('data-markerID'))
-        marker = _this.getMarkerByID(markerID)
-        
-        if marker?
-            coordinates = new google.maps.LatLng(marker.lat, marker.lng);
-            _this.map.panTo(coordinates);
-    )
-    
-    $('input#submit-changes').click(() =>
-       $('#changes-to-merge').submit();
-    )
 
     $.get('assets/javascripts/templates/confirmBox._', (e)=>
       template = _.template(e);

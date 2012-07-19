@@ -232,18 +232,6 @@
       this.map = new google.maps.Map($(id)[0], this.gMapOptions);
       this.map.mapTypes.set('custom', this.customMapType);
       this.map.setMapTypeId('custom');
-      $('#change-menu .marker-type-link').click(function(e) {
-        var coordinates, marker, markerID;
-        markerID = parseInt($(e.currentTarget).attr('data-markerID'));
-        marker = _this.getMarkerByID(markerID);
-        if (marker != null) {
-          coordinates = new google.maps.LatLng(marker.lat, marker.lng);
-          return _this.map.panTo(coordinates);
-        }
-      });
-      $('input#submit-changes').click(function() {
-        return $('#changes-to-merge').submit();
-      });
       $.get('assets/javascripts/templates/confirmBox._', function(e) {
         var template;
         template = _.template(e);
