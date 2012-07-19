@@ -185,7 +185,13 @@
         }
         return dcat;
       })();
-      window.LANG = "en";
+      window.LANG = (function() {
+        if ((_this.urlParams['lang'] != null) && (_this.urlParams['lang'] === 'fr' || _this.urlParams['lang'] === 'en')) {
+          return _this.urlParams['lang'];
+        } else {
+          return "en";
+        }
+      })();
       this.areaSummaryBoxes = [];
       this.markersImages = {};
       this.draggableMarker = false;

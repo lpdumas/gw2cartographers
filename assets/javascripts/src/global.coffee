@@ -121,7 +121,12 @@ class CustomMap
             dcat = @urlParams['cat']
       dcat
     )()
-    window.LANG = "en"
+    window.LANG = (()=>
+      if @urlParams['lang']? and (@urlParams['lang'] is 'fr' or @urlParams['lang'] is 'en')
+        return @urlParams['lang']
+      else
+        return "en"
+    )()
     @areaSummaryBoxes = []
     @markersImages = {}
     
