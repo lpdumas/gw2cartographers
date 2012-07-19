@@ -201,6 +201,7 @@ class CustomMap
     
         #marker
         @gMarker = {}
+        @currentMapVersion = 1;
 
         @editInfoWindowTemplate = ""
         $.get('assets/javascripts/templates/customInfoWindow._', (e)=>
@@ -244,7 +245,7 @@ class CustomMap
         id : marker.__gm_id
         title: marker["data_translation"][window.LANG]["title"]
         desc: marker["data_translation"][window.LANG]["desc"]
-        wikiLink  : marker["data_translation"][window.LANG]["wikiLink"]
+        wikiLink  : marker["data_translation"][window.LANG]["link_wiki"]
         hasDefaultValue : marker["hasDefaultValue"]
         type  : marker.type
         lat   : marker.position.lat()
@@ -301,6 +302,7 @@ class CustomMap
       marker["data_translation"] = markerInfo["data_translation"]
       marker["hasDefaultValue"] = false
 
+    marker["id_marker"] = markerInfo["id"]
     marker["type"]  = markersType
     marker["cat"]  = markersCat
 
@@ -335,6 +337,9 @@ class CustomMap
     marker
           
   setAllMarkers: () ->
+
+    @currentMapVersion = Metadata.version;
+      
     for markersCat, markersObjects of @MarkersConfig
       if not @gMarker[markersCat]?
         @gMarker[markersCat] = {}
@@ -387,39 +392,22 @@ class CustomMap
     modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">')
     confirmMessage = Traduction["notice"]["dataApproval"][window.LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
-      if e
-        modal.open()
-      
-        # request = $.ajax(
-        #   url: ajaxUrl
-        #   type: "GET"
-        #   dataType: "json"
-        #   data: @handleExport()
-        #   )
-        # 
-        # request.done((response) =>
-        #   modal.close(()=>
-        #     modal.setContent('<h1>Thank you!</h1>')
-        #     modal.open()
-        #   )
-        # )
-        # 
-        # request.fail((jqXHR, textStatus)=>
-        #   console.log 'fail'
-        # )
-      
-        # Simulating ajax call latency
-        t = setTimeout(()=>
-          modal.close(()=>
-            msg = """
-            <h1>Thank you!</h1>
-            <p>A team of dedicated grawls will sort that out.</p>
-            """
-            modal.setContent(msg)
-            modal.open()
-          )
         
-        , 500)
+        if(e == true)
+            request = $.ajax({
+              url: ajaxUrl,
+              type: "POST",
+              dataType: 'json',
+              crossDomain: true,
+              data: { "json" : _this.handleExport() },
+              beforeSend: (x) =>
+                  if x && x.overrideMimeType
+                      x.overrideMimeType("application/json;charset=UTF-8")
+               ,
+               success: (result) =>
+                   modal.setContent(result.message)
+                   modal.open()
+            })
     )
     
   handleExport:(e)=>
@@ -444,10 +432,16 @@ class CustomMap
             nm = 
               "lng" : marker.getPosition().lng()
               "lat" : marker.getPosition().lat()
-              
+ 
           exportMarkerObject[markersCat]["marker_types"][markerType]["markers"].push(nm)
+          nm["id"] = marker["id_marker"];
 
-    jsonString = JSON.stringify(exportMarkerObject)
+    finalExport = {};
+    finalExport["version"] = @currentMapVersion;
+    finalExport["creation_date"] = "null";
+    finalExport["markers"] = exportMarkerObject;
+
+    jsonString = JSON.stringify(finalExport);
     # console.log jsonString
     return jsonString
     # @exportWindow.find('.content').html(jsonString)
@@ -475,11 +469,13 @@ class CustomMap
     
     if defaultValue
       newMarkerInfo =
+        id        : -1
         lat       : coord.lat()
         lng       : coord.lng()
         draggable : true
     else
       newMarkerInfo =
+        id        : -1
         lat       : coord.lat()
         lng       : coord.lng()
         data_translation : 
@@ -517,7 +513,7 @@ class CustomMap
       if marker["data_translation"]?
         marker["data_translation"][window.LANG]["desc"] = newInfo.desc
         marker["data_translation"][window.LANG]["title"] = newInfo.title
-        marker["data_translation"][window.LANG]["wikiLink"] = newInfo.wikiLink 
+        marker["data_translation"][window.LANG]["link_wiki"] = newInfo.wikiLink 
       else
         marker.desc = newInfo.desc
         marker.title = newInfo.title
