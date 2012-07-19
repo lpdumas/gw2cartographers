@@ -6,7 +6,12 @@ Metadata = {
 
 //{{{
 Areas = [
-{ name : "Divinity's Reach", rangeLvl : "",
+{ 
+  data_translation: {
+    en : {name : "Divinity's Reach"},
+    fr : {name : "Le Promontoire divin"}
+  },
+  rangeLvl : "",
      summary : {
          "hearts" : 0,
          "waypoints" : 13,
@@ -16,7 +21,12 @@ Areas = [
      },
      "neLat" : "43.19591001164034", "neLng" : "-31.519775390625", "swLat" : "33.44977658311853", "swLng" : "-45.955810546875"
  },
- { name : "Queensdale",  rangeLvl : "1 - 17",
+ { 
+   data_translation: {
+     en : {name : "Queensdale"},
+     fr : {name : "La Vallée de la reine"}
+   },  
+   rangeLvl : "1 - 17",
      summary : {
          "hearts" : 17,
          "waypoints" : 16,
@@ -26,7 +36,12 @@ Areas = [
      },
      "neLat" : "33.38558626887102", "neLng" : "-23.8623046875", "swLat" : "18.406654713919085", "swLng" : "-48.27392578125"
  },
- { name : "Kessex Hills",  rangeLvl : "15 - 25",
+ { 
+   data_translation: {
+     en : {name : "Kessex Hills"},
+     fr : {name : "Collines de Kesse"}
+   },       
+   rangeLvl : "15 - 25",
      summary : {
          "hearts" : 14,
          "waypoints" : 18,
@@ -36,7 +51,12 @@ Areas = [
      },
      "neLat" : "16.299051014581906", "neLng" : "-22.357177734375", "swLat" : "2.0210651187670785", "swLng" : "-51.888427734375"
  },
- { name : "Gendarran Fields",  rangeLvl : "25 - 35",
+ { 
+   data_translation: {
+     en : {name : "Gendarran Fields"},
+     fr : {name : "Champs de Gendarran"}
+   },   
+   rangeLvl : "25 - 35",
      summary : {
          "hearts" : 11,
          "waypoints" : 22,
@@ -46,7 +66,12 @@ Areas = [
      },
      "neLat" : "27.994401411046223", "neLng" : "8.756103515625", "swLat" : "16.467694748289034", "swLng" : "-20.863037109375"
  },
- { name : "Black Citadel",  rangeLvl : "",
+ { 
+   data_translation: {
+     en : {name : "Black Citadel"},
+     fr : {name : "La Citadelle noire"}
+   },   
+   rangeLvl : "",
      summary : {
          "hearts" : 0,
          "waypoints" : 12,
@@ -56,7 +81,12 @@ Areas = [
      },
      "neLat" : "8.12449129086128", "neLng" : "52.723388671875", "swLat" : "19.87005983797404", "swLng" : "66.258544921875"
  },
- { name : "Plains of Ashford",  rangeLvl : "1 - 15",
+ { 
+   data_translation: {
+     en : {name : "Plains of Ashford"},
+     fr : {name : "Plaines d'Ashford"}
+   },   
+   rangeLvl : "1 - 15",
      summary : {
          "hearts" : 16,
          "waypoints" : 18,
@@ -66,7 +96,12 @@ Areas = [
      },
      "neLat" : "19.808054128088664", "neLng" : "94.515380859375", "swLat" : "6.48998333267074", "swLng" : "65.423583984375"
  },
- { name : "Diessa Plateau",  rangeLvl : "15 - 25",
+ { 
+   data_translation: {
+     en : {name : "Diessa Plateau"},
+     fr : {name : "Plateau de Diessa"}
+   },   
+   rangeLvl : "15 - 25",
      summary : {
          "hearts" : 15,
          "waypoints" : 19,
@@ -76,7 +111,12 @@ Areas = [
      },
      "neLat" : "20.385825381874362", "neLng" : "54.129638671875", "swLat" : "35.173808317999665", "swLng" : "78.826904296875"
  },
- { name : "Hoelbrak",  rangeLvl : "",
+ { 
+   data_translation: {
+     en : {name : "Hoelbrak"},
+     fr : {name : "Hoelbrak"}
+   },   
+   rangeLvl : "",
      summary : {
          "hearts" : 0,
          "waypoints" : 14,
@@ -86,7 +126,12 @@ Areas = [
      },
      "neLat" : "21.514406720030383", "neLng" : "39.715576171875", "swLat" : "9.600749932246949", "swLng" : "23.631591796875 "
  },
- { name : "Wayfarer Foothills",  rangeLvl : "1 - 15",
+ { 
+   data_translation: {
+     en : {name : "Wayfarer Foothills"},
+     fr : {name : "Contreforts du Voyageur"}
+   },  
+   rangeLvl : "1 - 15",
      summary : {
          "hearts" : 16,
          "waypoints" : 17,
@@ -96,7 +141,12 @@ Areas = [
      },
      "neLat" : "21.0229825464275", "neLng" : "39.957275390625", "swLat" : "33.92512970007205", "swLng" : "53.668212890625"
  },
- { name : "Snowden Drifts",  rangeLvl : "15 - 25",
+ { 
+   data_translation: {
+     en : {name : "Snowden Drifts"},
+     fr : {name : "Congères d'Antreneige"}
+   },  
+   rangeLvl : "15 - 25",
      summary : {
          "hearts" : 13,
          "waypoints" : 18,
@@ -106,7 +156,12 @@ Areas = [
      },
      "neLat" : "34.7957615347304", "neLng" : "39.364013671875", "swLat" : "22.32975230437656", "swLng" : "10.272216796875"
  },
- { name : "Lion's Arch",  rangeLvl : "",
+ { 
+   data_translation: {
+     en : {name : "Lion's Arch"},
+     fr : {name : "L'Arche du lion"}
+   },  
+   rangeLvl : "",
      summary : {
          "hearts" : 0,
          "waypoints" : 13,
