@@ -457,7 +457,9 @@ class CustomMap
     coord      = @map.getCenter()
     getValue = (cat, type)=>
       defaultValue = null
-      if @MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["desc"]? and @MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["title"]?
+      defaultDesc = @MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["desc"]
+      defaultTitle = @MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["title"]
+      if (defaultDesc? or defaultTitle is "") and defaultTitle?
         defaultValue = $.extend(true, {}, @MarkersConfig[cat]["marker_types"][type]["data_translation"])
       return defaultValue
     
