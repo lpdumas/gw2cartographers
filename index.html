@@ -22,7 +22,7 @@
     var Markers = {}, Metadata = {};
     {{ js_generated|raw }}
   </script>
-  <script src="assets/javascripts/config.js"></script>
+  <!--<script src="assets/javascripts/config.js"></script>-->
   <script src="assets/javascripts/traductions.js"></script>
 </head>
 <body>
@@ -44,8 +44,6 @@
                         </a>
                     </li>
                     {% endfor %}
-                    <input type="hidden" name="revID" value="{{ revID }}" />
-                    <input type="submit" value="submit" />
                     </form>
                 </ul>
             </li>
