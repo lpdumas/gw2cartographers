@@ -1,4 +1,4 @@
-App = {}
+window.App = {}
 App.opacity = false
 App.pointerEvents = false
 App.localStorageAvailable = (()->
@@ -221,7 +221,7 @@ class CustomMap
     
   handleLocalStorageLoad: (callback)->
     if App.localStorageAvailable and @getConfigFromLocalStorage()
-      confirmMessage = "I have detected data stored locally, Do you want to load it?"
+      confirmMessage = Traduction["notice"]["localDetected"][window.LANG]
       @confirmBox.initConfirmation(confirmMessage, (e)=>
         if e
           @MarkersConfig = @getConfigFromLocalStorage()
@@ -374,7 +374,7 @@ class CustomMap
       marker.setVisible(isVisible) for marker in markerTypeObject.markers
 
   destroyLocalStorage: (e) =>
-    confirmMessage = "This action will destroy you local change to the map. Are you sure you want to proceed?"
+    confirmMessage = Traduction["notice"]["dataDestruction"][window.LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if e and @getConfigFromLocalStorage()
         localStorage.removeItem(@localStorageKey);
@@ -385,40 +385,41 @@ class CustomMap
     ajaxUrl = this_.attr('data-ajaxUrl')
     modal = new Modalbox()
     modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">')
-    confirmMessage = "Are you ready to send your map for approval?"
+    confirmMessage = Traduction["notice"]["dataApproval"][window.LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
-      modal.open()
+      if e
+        modal.open()
       
-      # request = $.ajax(
-      #   url: ajaxUrl
-      #   type: "GET"
-      #   dataType: "json"
-      #   data: @handleExport()
-      #   )
-      # 
-      # request.done((response) =>
-      #   modal.close(()=>
-      #     modal.setContent('<h1>Thank you!</h1>')
-      #     modal.open()
-      #   )
-      # )
-      # 
-      # request.fail((jqXHR, textStatus)=>
-      #   console.log 'fail'
-      # )
+        # request = $.ajax(
+        #   url: ajaxUrl
+        #   type: "GET"
+        #   dataType: "json"
+        #   data: @handleExport()
+        #   )
+        # 
+        # request.done((response) =>
+        #   modal.close(()=>
+        #     modal.setContent('<h1>Thank you!</h1>')
+        #     modal.open()
+        #   )
+        # )
+        # 
+        # request.fail((jqXHR, textStatus)=>
+        #   console.log 'fail'
+        # )
       
-      # Simulating ajax call latency
-      t = setTimeout(()=>
-        modal.close(()=>
-          msg = """
-          <h1>Thank you!</h1>
-          <p>A team of dedicated grawls will sort that out.</p>
-          """
-          modal.setContent(msg)
-          modal.open()
-        )
+        # Simulating ajax call latency
+        t = setTimeout(()=>
+          modal.close(()=>
+            msg = """
+            <h1>Thank you!</h1>
+            <p>A team of dedicated grawls will sort that out.</p>
+            """
+            modal.setContent(msg)
+            modal.open()
+          )
         
-      , 500)
+        , 500)
     )
     
   handleExport:(e)=>
@@ -495,20 +496,8 @@ class CustomMap
     newMarker = @addMarker(newMarkerInfo, otherInfo, true, defaultValue)
     @gMarker[markerCat]["marker_types"][markerType]["markers"].push(newMarker)
     
-  removeMarkerFromType:(mType, mCat)->
-    confirmMessage = "Delete all «#{mType}» markers on the map?"
-    @confirmBox.initConfirmation(confirmMessage, (e)=>
-      if e
-        for marker, markerKey in @gMarker[mCat]["marker_types"][mType]["markers"]
-          marker.setMap(null)
-          @gMarker[mCat]["marker_types"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
-            return m == marker
-          )
-          @saveToLocalStorage()
-    )
-  
   removeMarker:(id, mType, mCat)->
-    confirmMessage = "Are you sure you want to delete this marker?"
+    confirmMessage = Traduction["notice"]["deleteMarker"][window.LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if e
         for marker, markerKey in @gMarker[mCat]["marker_types"][mType]["markers"] when marker.__gm_id is id
