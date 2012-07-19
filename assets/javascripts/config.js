@@ -7426,115 +7426,170 @@ Markers.trainers = {
 	}
 };
 Areas = [
-	{ id : 1, name : "Divinity's Reach", rangeLvl : "",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 43.1959, neLng : -31.5198, swLat : 33.4498, swLng : -45.9558
-	},
-	{ id : 2, name : "Queensdale", rangeLvl : "1-17",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 33.3856, neLng : -23.8623, swLat : 18.4067, swLng : -48.2739
-	},
-	{ id : 3, name : "Kessex Hills", rangeLvl : "15-25",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 8.36495, neLng : -23.5547, swLat : 4.59833, swLng : -51.1743
-	},
-	{ id : 4, name : "Gendarran Fields", rangeLvl : "25-35",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 29.7658, neLng : 5.68555, swLat : 17.5766, swLng : -22.8843
-	},
-	{ id : 5, name : "Black Citadel", rangeLvl : "",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 20.7869, neLng : 57.9419, swLat : 11.0814, swLng : 47.9004
-	},
-	{ id : 6, name : "Plains of Ashford", rangeLvl : "1-15",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 21.7646, neLng : 85.6824, swLat : 7.98308, swLng : 58.7329
-	},
-	{ id : 7, name : "Diessa Plateau", rangeLvl : "15-25",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 35.5412, neLng : 71.4771, swLat : 21.4633, swLng : 47.373
-	},
-	{ id : 8, name : "Hoelbrak", rangeLvl : "",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 22.9078, neLng : 34.4971, swLat : 12.7475, swLng : 21.2805
-	},
-	{ id : 9, name : "Wayfarer Foothills", rangeLvl : "",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 34.7687, neLng : 46.5381, swLat : 8.26585, swLng : 35.7495
-	},
-	{ id : 10, name : "Snowden Drifts", rangeLvl : "15-25",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 35.8979, neLng : 34.4971, swLat : 23.9561, swLng : 6.61377
-	},
-	{ id : 11, name : "Lion's Arch", rangeLvl : "",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 17.0253, neLng : 5.52612, swLat : 6.2638, swLng : -10.099
-	}
-];
-
+{ 
+  data_translation: {
+    en : {name : "Divinity's Reach"},
+    fr : {name : "Le Promontoire divin"}
+  },
+  rangeLvl : "",
+     summary : {
+         "hearts" : 0,
+         "waypoints" : 13,
+         "skillpoints" : 0,
+         "poi" : 20,
+         "dungeons" : 0 
+     },
+     "neLat" : "43.19591001164034", "neLng" : "-31.519775390625", "swLat" : "33.44977658311853", "swLng" : "-45.955810546875"
+ },
+ { 
+   data_translation: {
+     en : {name : "Queensdale"},
+     fr : {name : "La Vallée de la reine"}
+   },  
+   rangeLvl : "1 - 17",
+     summary : {
+         "hearts" : 17,
+         "waypoints" : 16,
+         "skillpoints" : 7,
+         "poi" : 21,
+         "dungeons" : 1
+     },
+     "neLat" : "33.38558626887102", "neLng" : "-23.8623046875", "swLat" : "18.406654713919085", "swLng" : "-48.27392578125"
+ },
+ { 
+   data_translation: {
+     en : {name : "Kessex Hills"},
+     fr : {name : "Collines de Kesse"}
+   },       
+   rangeLvl : "15 - 25",
+     summary : {
+         "hearts" : 14,
+         "waypoints" : 18,
+         "skillpoints" : 5,
+         "poi" : 16,
+         "dungeons" : 0
+     },
+     "neLat" : "16.299051014581906", "neLng" : "-22.357177734375", "swLat" : "2.0210651187670785", "swLng" : "-51.888427734375"
+ },
+ { 
+   data_translation: {
+     en : {name : "Gendarran Fields"},
+     fr : {name : "Champs de Gendarran"}
+   },   
+   rangeLvl : "25 - 35",
+     summary : {
+         "hearts" : 11,
+         "waypoints" : 22,
+         "skillpoints" : 7,
+         "poi" : 15,
+         "dungeons" : 0
+     },
+     "neLat" : "27.994401411046223", "neLng" : "8.756103515625", "swLat" : "16.467694748289034", "swLng" : "-20.863037109375"
+ },
+ { 
+   data_translation: {
+     en : {name : "Black Citadel"},
+     fr : {name : "La Citadelle noire"}
+   },   
+   rangeLvl : "",
+     summary : {
+         "hearts" : 0,
+         "waypoints" : 12,
+         "skillpoints" : 0,
+         "poi" : 18,
+         "dungeons" : 0
+     },
+     "neLat" : "8.12449129086128", "neLng" : "52.723388671875", "swLat" : "19.87005983797404", "swLng" : "66.258544921875"
+ },
+ { 
+   data_translation: {
+     en : {name : "Plains of Ashford"},
+     fr : {name : "Plaines d'Ashford"}
+   },   
+   rangeLvl : "1 - 15",
+     summary : {
+         "hearts" : 16,
+         "waypoints" : 18,
+         "skillpoints" : 5,
+         "poi" : 26,
+         "dungeons" : 1
+     },
+     "neLat" : "19.808054128088664", "neLng" : "94.515380859375", "swLat" : "6.48998333267074", "swLng" : "65.423583984375"
+ },
+ { 
+   data_translation: {
+     en : {name : "Diessa Plateau"},
+     fr : {name : "Plateau de Diessa"}
+   },   
+   rangeLvl : "15 - 25",
+     summary : {
+         "hearts" : 15,
+         "waypoints" : 19,
+         "skillpoints" : 8,
+         "poi" : 21,
+         "dungeons" : 0
+     },
+     "neLat" : "20.385825381874362", "neLng" : "54.129638671875", "swLat" : "35.173808317999665", "swLng" : "78.826904296875"
+ },
+ { 
+   data_translation: {
+     en : {name : "Hoelbrak"},
+     fr : {name : "Hoelbrak"}
+   },   
+   rangeLvl : "",
+     summary : {
+         "hearts" : 0,
+         "waypoints" : 14,
+         "skillpoints" : 0,
+         "poi" : 24,
+         "dungeons" : 0
+     },
+     "neLat" : "21.514406720030383", "neLng" : "39.715576171875", "swLat" : "9.600749932246949", "swLng" : "23.631591796875 "
+ },
+ { 
+   data_translation: {
+     en : {name : "Wayfarer Foothills"},
+     fr : {name : "Contreforts du Voyageur"}
+   },  
+   rangeLvl : "1 - 15",
+     summary : {
+         "hearts" : 16,
+         "waypoints" : 17,
+         "skillpoints" : 8,
+         "poi" : 18,
+         "dungeons" : 0
+     },
+     "neLat" : "21.0229825464275", "neLng" : "39.957275390625", "swLat" : "33.92512970007205", "swLng" : "53.668212890625"
+ },
+ { 
+   data_translation: {
+     en : {name : "Snowden Drifts"},
+     fr : {name : "Congères d'Antreneige"}
+   },  
+   rangeLvl : "15 - 25",
+     summary : {
+         "hearts" : 13,
+         "waypoints" : 18,
+         "skillpoints" : 6,
+         "poi" : 20,
+         "dungeons" : 0
+     },
+     "neLat" : "34.7957615347304", "neLng" : "39.364013671875", "swLat" : "22.32975230437656", "swLng" : "10.272216796875"
+ },
+ { 
+   data_translation: {
+     en : {name : "Lion's Arch"},
+     fr : {name : "L'Arche du lion"}
+   },  
+   rangeLvl : "",
+     summary : {
+         "hearts" : 0,
+         "waypoints" : 13,
+         "skillpoints" : 0,
+         "poi" : 20,
+         "dungeons" : 0
+     },
+     "neLat" : "14.626108798876928", "neLng" : "9.107666015625", "swLat" : "3.096635871841627", "swLng" : "-7.767333984375"
+ }
+]
+//}}
