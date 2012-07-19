@@ -7,11 +7,16 @@
     <li><a href="javascript:" title="Delete marker" data-action="delete" class="delete button"></a></li>
 </ul>
 
-<% if (title !== "" && desc !== "") {%>
+<% 
+if (title !== "" && (desc !== "" || (desc == "" && hasDefaultValue))) {%>
 <div data-target="read" class="marker-desc active <%= type %>-marker">
     <h1><%= title %></h1>
     <p class="desc">
-        <%= desc %> 
+        <% if(desc == "") {%> 
+         -- 
+        <% } else {%>
+            <%= desc %>
+        <% }%>
     </p>
     <% if(wikiLink !== "") {%>
     <p><a target="_blank" href="<%= wikiLink %>">More infos on wiki.guildwars2.com</a></p>

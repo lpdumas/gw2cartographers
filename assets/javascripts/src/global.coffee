@@ -244,14 +244,13 @@ class CustomMap
     createInfoWindow = (marker) =>
       templateInfo = 
         id : marker.__gm_id
-        title: marker["data_translation"][window.LANG]["title"]
+        title: marker["data_translation"][window.LANG]["title"] || marker["data_translation"][window.LANG]["name"]
         desc: marker["data_translation"][window.LANG]["desc"]
         wikiLink  : marker["data_translation"][window.LANG]["link_wiki"]
         hasDefaultValue : marker["hasDefaultValue"]
         type  : marker.type
         lat   : marker.position.lat()
         lng   : marker.position.lng()
-    
       editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
       marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent,
         onClose : () =>
@@ -285,6 +284,10 @@ class CustomMap
     
     isMarkerDraggable = if markerInfo.draggable? then markerInfo.draggable else false
     
+    if defaultValue?
+      markerTitle = defaultValue[window.LANG]["title"] || defaultValue[window.LANG]["name"]
+    else
+      markerTitle = markerInfo["data_translation"][window.LANG]["title"]
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
@@ -292,7 +295,7 @@ class CustomMap
       visible: markerVisibility
       draggable: isMarkerDraggable
       cursor : if isMarkerDraggable then "move" else "pointer"
-      title: if defaultValue? then defaultValue[window.LANG]["title"] else markerInfo["data_translation"][window.LANG]["title"]
+      title: markerTitle
       animation: if isNew then google.maps.Animation.DROP else no
     )
 
@@ -459,7 +462,7 @@ class CustomMap
     getValue = (cat, type)=>
       defaultValue = null
       defaultDesc = @MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["desc"]
-      defaultTitle = @MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["title"]
+      defaultTitle = @MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["title"] or @MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["name"]
       if (defaultDesc? or defaultTitle is "") and defaultTitle?
         defaultValue = $.extend(true, {}, @MarkersConfig[cat]["marker_types"][type]["data_translation"])
       return defaultValue

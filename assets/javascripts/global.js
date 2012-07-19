@@ -320,13 +320,13 @@
     };
 
     CustomMap.prototype.addMarker = function(markerInfo, otherInfo, isNew, defaultValue) {
-      var createInfoWindow, iconPath, iconmid, iconsize, image, isMarkerDraggable, marker, markerVisibility, markersCat, markersType,
+      var createInfoWindow, iconPath, iconmid, iconsize, image, isMarkerDraggable, marker, markerTitle, markerVisibility, markersCat, markersType,
         _this = this;
       createInfoWindow = function(marker) {
         var editInfoWindowContent, templateInfo;
         templateInfo = {
           id: marker.__gm_id,
-          title: marker["data_translation"][window.LANG]["title"],
+          title: marker["data_translation"][window.LANG]["title"] || marker["data_translation"][window.LANG]["name"],
           desc: marker["data_translation"][window.LANG]["desc"],
           wikiLink: marker["data_translation"][window.LANG]["link_wiki"],
           hasDefaultValue: marker["hasDefaultValue"],
@@ -371,6 +371,11 @@
         this.markersImages[markersType] = image;
       }
       isMarkerDraggable = markerInfo.draggable != null ? markerInfo.draggable : false;
+      if (defaultValue != null) {
+        markerTitle = defaultValue[window.LANG]["title"] || defaultValue[window.LANG]["name"];
+      } else {
+        markerTitle = markerInfo["data_translation"][window.LANG]["title"];
+      }
       marker = new google.maps.Marker({
         position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng),
         map: this.map,
@@ -378,7 +383,7 @@
         visible: markerVisibility,
         draggable: isMarkerDraggable,
         cursor: isMarkerDraggable ? "move" : "pointer",
-        title: defaultValue != null ? defaultValue[window.LANG]["title"] : markerInfo["data_translation"][window.LANG]["title"],
+        title: markerTitle,
         animation: isNew ? google.maps.Animation.DROP : false
       });
       if (defaultValue != null) {
@@ -630,7 +635,7 @@
         var defaultDesc, defaultTitle, defaultValue;
         defaultValue = null;
         defaultDesc = _this.MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["desc"];
-        defaultTitle = _this.MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["title"];
+        defaultTitle = _this.MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["title"] || _this.MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["name"];
         if (((defaultDesc != null) || defaultTitle === "") && (defaultTitle != null)) {
           defaultValue = $.extend(true, {}, _this.MarkersConfig[cat]["marker_types"][type]["data_translation"]);
         }
