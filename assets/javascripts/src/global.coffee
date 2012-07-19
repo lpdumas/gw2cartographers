@@ -225,7 +225,8 @@ class CustomMap
       confirmMessage = Traduction["notice"]["localDetected"][window.LANG]
       @confirmBox.initConfirmation(confirmMessage, (e)=>
         if e
-          @MarkersConfig = @getConfigFromLocalStorage()
+          loadedConfig = @getConfigFromLocalStorage()
+          @MarkersConfig = loadedConfig.markers
         else
           @MarkersConfig = Markers
         callback()
@@ -339,7 +340,7 @@ class CustomMap
   setAllMarkers: () ->
 
     @currentMapVersion = Metadata.version;
-      
+    
     for markersCat, markersObjects of @MarkersConfig
       if not @gMarker[markersCat]?
         @gMarker[markersCat] = {}
@@ -389,25 +390,25 @@ class CustomMap
     this_ = $(e.currentTarget)
     ajaxUrl = this_.attr('data-ajaxUrl')
     modal = new Modalbox()
-    modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">')
     confirmMessage = Traduction["notice"]["dataApproval"][window.LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
-        
-        if(e == true)
-            request = $.ajax({
-              url: ajaxUrl,
-              type: "POST",
-              dataType: 'json',
-              crossDomain: true,
-              data: { "json" : _this.handleExport() },
-              beforeSend: (x) =>
-                  if x && x.overrideMimeType
-                      x.overrideMimeType("application/json;charset=UTF-8")
-               ,
-               success: (result) =>
-                   modal.setContent(result.message)
-                   modal.open()
-            })
+      if(e == true)
+        modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">')
+        modal.open()
+        request = $.ajax({
+          url: ajaxUrl,
+          type: "POST",
+          dataType: 'json',
+          crossDomain: true,
+          data: { "json" : _this.handleExport() },
+          beforeSend: (x) =>
+              if x && x.overrideMimeType
+                  x.overrideMimeType("application/json;charset=UTF-8")
+           ,
+           success: (result) =>
+               modal.setContent(result.message)
+               modal.open()
+          })
     )
     
   handleExport:(e)=>

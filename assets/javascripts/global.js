@@ -298,8 +298,10 @@
       if (App.localStorageAvailable && this.getConfigFromLocalStorage()) {
         confirmMessage = Traduction["notice"]["localDetected"][window.LANG];
         return this.confirmBox.initConfirmation(confirmMessage, function(e) {
+          var loadedConfig;
           if (e) {
-            _this.MarkersConfig = _this.getConfigFromLocalStorage();
+            loadedConfig = _this.getConfigFromLocalStorage();
+            _this.MarkersConfig = loadedConfig.markers;
           } else {
             _this.MarkersConfig = Markers;
           }
@@ -542,11 +544,12 @@
       this_ = $(e.currentTarget);
       ajaxUrl = this_.attr('data-ajaxUrl');
       modal = new Modalbox();
-      modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">');
       confirmMessage = Traduction["notice"]["dataApproval"][window.LANG];
       return this.confirmBox.initConfirmation(confirmMessage, function(e) {
         var request;
         if (e === true) {
+          modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">');
+          modal.open();
           return request = $.ajax({
             url: ajaxUrl,
             type: "POST",
