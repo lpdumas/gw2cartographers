@@ -572,8 +572,8 @@ class CustomMap
     return false
 
   getMarkerByID:(markerID)->
-    for markersCat, markersObjects of @MarkersConfig
-        for markerTypeObject, key in markersObjects.markerGroup
+    for markersCat, markersObject of @MarkersConfig
+        for markerType, markerTypeObject of markersObject.marker_types
             return marker for marker in markerTypeObject.markers when marker.id is markerID
     return null
       
