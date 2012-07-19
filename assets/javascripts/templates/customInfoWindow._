@@ -1,11 +1,13 @@
 <ul class="iw-options-list">
     <li><a href="javascript:" title="Share marker" data-action="share" class="share button"></a></li>
+    <% if (!hasDefaultValue) { %>
     <li><a href="javascript:" title="Edit infos" data-action="edit" class="edit button"></a></li>
+    <% }%>
     <li><a href="javascript:" title="Move marker" data-action="move" class="move button"></a></li>
     <li><a href="javascript:" title="Delete marker" data-action="delete" class="delete button"></a></li>
 </ul>
 
-<% if (title !== "" && desc !== "") { %>
+<% if (title !== "" && desc !== "") {%>
 <div data-target="read" class="marker-desc active <%= type %>-marker">
     <h1><%= title %></h1>
     <p class="desc">
@@ -17,29 +19,29 @@
 </div>
 <% } else { %>
 <div data-target="read" class="marker-desc active">
-    <h1>We need your help for this marker!</h1>
-    <p>Click on the edit button (top left of this box).</p>
+    <h1><%= Traduction["infoWindow"]["emptyTitle"][window.LANG] %></h1>
+    <p><%= Traduction["infoWindow"]["emptyDesc"][window.LANG] %></p>
 </div>
 <% } %>
 <form action="javacript:" class="edit-form toggling-tab" data-target="edit" id="edit-form-<%= id %>">
     <label>
-        <span class="label">Title</span>
+        <span class="label"><%= Traduction["infoWindow"]["formTitle"][window.LANG] %></span>
         <input type="text" name="marker-title" value="<%= title %>" >
     </label>
     <label>
-        <span class="label">Description</span>
+        <span class="label"><%= Traduction["infoWindow"]["formDesc"][window.LANG] %></span>
         <textarea name="marker-description" rows="8" cols="40"><%= desc %></textarea>
     </label>
     <label>
-        <span class="label">Wiki link</span>
+        <span class="label"><%= Traduction["infoWindow"]["formWikiLink"][window.LANG] %></span>
         <input type="text" name="marker-wiki" value="<%= wikiLink %>" >
     </label>
-    <button type='button'>save</button>
+    <button type='button'><%= Traduction["infoWindow"]["formSave"][window.LANG] %></button>
 </form>
 <div class="share-input toggling-tab" data-target="share">
-    <span class="label">Share link</span>
+    <span class="label"><%= Traduction["infoWindow"]["formShare"][window.LANG] %></span>
     <input type="text" readonly name="share-link" value="http://gw2cartographers.com?lat=<%= lat %>&amp;lng=<%= lng %>" >
 </div>
 <div class="moving toggling-tab" data-target="move">
-    <h1>You can now move the marker</h1>
+    <h1><%= Traduction["infoWindow"]["moveNotice"][window.LANG] %></h1>
 </div>

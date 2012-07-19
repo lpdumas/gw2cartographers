@@ -19,9 +19,15 @@
   <script type="text/javascript">var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-32685708-1']);_gaq.push(['_trackPageview']);(function() {var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();
   </script>
   <script type="text/javascript">
+<<<<<<< HEAD
     var Markers = {}, Metadata = {};
     {{ js_generated|raw }}
+=======
+    var Markers = {}, Resources = {}, Metadata = {};
+>>>>>>> dev
   </script>
+  <script src="assets/javascripts/config.js"></script>
+  <script src="assets/javascripts/traductions.js"></script>
 </head>
 <body>
     <div id="map-mask"></div>
@@ -48,10 +54,11 @@
                 </ul>
             </li>
         </ul>
+        <span id="options-toggle"><strong>Menu</strong></span>
         <div class="padding">
             <ul id="edition-tools">
                 <li><input id="submit-changes" type="submit" value="Merge selected changes" /></li>
-                <!--<li><a href="javascript:" data-ajaxUrl="#" id="send" class="button" title="Send map for approval"/></a></li>
+                <!--<li><a href="javascript:" data-ajaxUrl="http://gw2c.jsilvestre.fr/submit-modification" id="send" class="button" title="Send map for approval"/></a></li>
                 <li><a href="javascript:" id="destroy" class="button" title="Remove local storage data"/></a></li>-->
             </ul>
         </div>
@@ -62,13 +69,24 @@
         <div id="map"><img id="loading" src="assets/images/loading.gif"  alt="Loading ..." /></div>
     </div>
     
-    <span style="position: absolute; bottom: 5px; left: 100px; border: 0; z-index: 10; color: #fff;"><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#103;&#119;&#50;&#99;&#97;&#114;&#116;&#111;&#103;&#114;&#97;&#112;&#104;&#101;&#114;&#115;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">gw2cartographers@gmail.com</a> | v0.8 alpha | © 2011 ArenaNet, Inc. <a target="blank_" href="http://www.guildwars2.com/en/media/asset-kit/terms-of-use.html">Term of use</a></span>
+    <div id="notice">
+        <div class="padding">
+            <p>The map edition tool is working. Every data is saved locally to your browser. You will soon be able to send them for approval, we will then decide what to put online.</p>
+            <p>Questions? <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#103;&#119;&#50;&#99;&#97;&#114;&#116;&#111;&#103;&#114;&#97;&#112;&#104;&#101;&#114;&#115;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">gw2cartographers@gmail.com</a></p>
+            <p><span>0.8 alpha | © 2011 ArenaNet, Inc. <a target="blank_" href="http://www.guildwars2.com/en/media/asset-kit/terms-of-use.html">Term of use</a></span></p>
+        </div>
+    </div>
+    
+    
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="assets/javascripts/libs/jquery-latest.js"><\/script>')</script>
     <script src="assets/javascripts/libs/underscore.js"></script>
 
+<<<<<<< HEAD
     <!--<script src="assets/javascripts/config.js"></script>-->
+=======
+>>>>>>> dev
     <script src="assets/javascripts/global.js"></script>
 
 </body>

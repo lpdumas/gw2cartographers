@@ -129,6 +129,17 @@ html, body {
   -o-transition: all 150ms linear;
 }
 
+#notice {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  width: 280px;
+  height: auto;
+  background: #000;
+  color: #fff;
+  opacity: 0.7;
+}
+
 html.no-pointerEvents #map-mask {
   display: none;
 }
@@ -165,20 +176,6 @@ html.move #map-mask {
   top: 50px;
 }
      
-#notice {
-  position: absolute;
-  display: block;
-  z-index: 5;
-  padding: 4px 10px;
-  width: 270px;
-  top: 10px;
-  left: 50%;
-  margin-left: -145px;
-  background: #e8ffeb;
-  color: #278900;
-  text-align: center;
-  cursor: pointer;
-}
 #coord {
     z-index: 10;
     display: block;
@@ -244,16 +241,19 @@ html.move #map-mask {
 #markers-options {
   position: fixed;
   z-index: 5;
-  top: -50px;
   top: 0px;
   min-height: 25px;
   width: 100%;
   padding: 0;
   background: #fff;
   opacity: 1;
+  -webkit-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
+  -moz-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
+  -ms-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
+  -o-transition: all 250ms cubic-bezier(0.8, 0, 0.2, 1);
 }
 #markers-options.active {
-  top: 0px;
+  top: -50px;
 }
 #markers-options.off { 
   top: -100px;
@@ -265,18 +265,22 @@ html.move #map-mask {
   z-index: 6;
   width: 100%;
   left: 0;
-  bottom: -53px;
+  bottom: -37px;
   text-align: center;
 }
 #markers-options span#options-toggle strong {
   display: inline-block;
   background: #fff;
-  padding: 15px 41px;
+  width: 120px;
+  height: 18px;
+  padding: 4px 0px 5px 0;
   font-size: 13px;
   font-size: 1.3rem;
   cursor: pointer;
   opacity: 1;
   background: url('../images/layout/btn-bg.png') center center no-repeat;
+  background-size: cover;
+  
   -webkit-transition: color 150ms linear;
   -moz-transition: color 150ms linear;
   -ms-transition: color 150ms linear;
@@ -351,7 +355,9 @@ html.move #map-mask {
   display: inline-block;
   color: #333;
 }
-
+.menu-marker .menu-item.off .menu-title{
+  text-decoration: line-through;
+}
 
 .menu-marker .menu-title {
   position: relative;
@@ -413,6 +419,8 @@ html.move #map-mask {
   position: absolute;
   z-index: 11;
   min-width: 165px;
+  max-height: 350px;
+  overflow-y: scroll;
   top: 30px;
   left: 0;
   padding: 0;
@@ -429,35 +437,13 @@ html.move #map-mask {
   position: relative;
   z-index: 12;
 }
-.menu-marker .menu-item ul.type-menu li:after {
-  opacity: 0;
-  -webkit-backface-visibility: hidden;
-  -webkit-transition: opacity 150ms linear;
-  -moz-transition: opacity 150ms linear;
-  -ms-transition: opacity 150ms linear;
-  -o-transition: opacity 150ms linear;
-  content: "";
-  position: absolute;
-  display: block;
-  z-index: 6;
-  bottom: 0;
-  right: 0;
-  height: 13px;
-  width: 13px;
-  background: url('../images/layout/little-add-remove.png') center center no-repeat;
-}
-/*html.add .menu-marker .menu-item ul.type-menu li:after{
-  opacity: 1;
-  background-position: top left;
-}
-*/
 .menu-marker .menu-item ul.type-menu li a.marker-type-link,
 .menu-marker .menu-item ul.type-menu li a.group-toggling{
   position: relative;
   z-index: 14;
   display: block;
   text-decoration: none;
-  padding: 9px 8px 9px 40px;
+  padding: 9px 40px;
   color: #000;
   background: #fff;
   -webkit-backface-visibility: hidden;
@@ -491,22 +477,23 @@ html.move #map-mask {
 .menu-marker .menu-item ul.type-menu li a.button{
   position: absolute;
   display: block;
-  z-index: 11;
+  z-index: 14;
   top: 50%;
   right: 0px;
   margin-top: -16px;
   width: 32px;
   height: 32px;
+  opacity: 0;
   background: url('../images/layout/edit-options.png') -224px 0 no-repeat;
   -webkit-backface-visibility: hidden;
   -webkit-transform: scale(0.85);
   -moz-transform: scale(0.85);
   -ms-transform: scale(0.85);
   -o-transform: scale(0.85);
-  -webkit-transition-property:-webkit-transform, right;
-  -moz-transition-property:-moz-transform, right;
-  -ms-transition-property:-ms-transform, right;
-  -o-transition-property:-o-transform, right;
+  -webkit-transition-property:-webkit-transform, opacity;
+  -moz-transition-property:-moz-transform, opacity;
+  -ms-transition-property:-ms-transform, opacity;
+  -o-transition-property:-o-transform, opacity;
   -webkit-transition-duration: 150ms;
   -moz-transition-duration: 150ms;
   -ms-transition-duration: 150ms;
@@ -514,7 +501,7 @@ html.move #map-mask {
 }
 
 .menu-marker .menu-item ul.type-menu li:hover a.button{
-  right: -25px;
+  opacity: 1;
 }
 
 .menu-marker .menu-item ul.type-menu li a.button:hover,
