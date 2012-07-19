@@ -349,6 +349,7 @@
         marker["data_translation"] = markerInfo["data_translation"];
         marker["hasDefaultValue"] = false;
       }
+      marker["id_marker"] = markerInfo["id"];
       marker["type"] = markersType;
       marker["cat"] = markersCat;
       if (markerInfo.lat.toString() === this.startLat && markerInfo.lng.toString() === this.startLng) {
@@ -506,21 +507,32 @@
       modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">');
       confirmMessage = "Are you ready to send your map for approval?";
       return this.confirmBox.initConfirmation(confirmMessage, function(e) {
-        var t;
-        modal.open();
-        return t = setTimeout(function() {
-          return modal.close(function() {
-            var msg;
-            msg = "<h1>Thank you!</h1>\n<p>A team of dedicated grawls will sort that out.</p>";
-            modal.setContent(msg);
-            return modal.open();
+        var request;
+        if (e === true) {
+          return request = $.ajax({
+            url: ajaxUrl,
+            type: "POST",
+            dataType: 'json',
+            crossDomain: true,
+            data: {
+              "json": _this.handleExport()
+            },
+            beforeSend: function(x) {
+              if (x && x.overrideMimeType) {
+                return x.overrideMimeType("application/json;charset=UTF-8");
+              }
+            },
+            success: function(result) {
+              modal.setContent(result.message);
+              return modal.open();
+            }
           });
-        }, 500);
+        }
       });
     };
 
     CustomMap.prototype.handleExport = function(e) {
-      var exportMarkerObject, jsonString, marker, markerType, markerTypeObject, markersCat, markersObjects, nm, _j, _len1, _ref, _ref1, _ref2;
+      var exportMarkerObject, finalExport, jsonString, marker, markerType, markerTypeObject, markersCat, markersObjects, nm, _j, _len1, _ref, _ref1, _ref2;
       exportMarkerObject = {};
       _ref = this.gMarker;
       for (markersCat in _ref) {
@@ -551,10 +563,15 @@
               };
             }
             exportMarkerObject[markersCat]["marker_types"][markerType]["markers"].push(nm);
+            nm["id"] = marker["id_marker"];
           }
         }
       }
-      jsonString = JSON.stringify(exportMarkerObject);
+      finalExport = {};
+      finalExport["version"] = 1;
+      finalExport["creation_date"] = "null";
+      finalExport["markers"] = exportMarkerObject;
+      jsonString = JSON.stringify(finalExport);
       return jsonString;
     };
 
@@ -584,12 +601,14 @@
       };
       if (defaultValue) {
         newMarkerInfo = {
+          id: -1,
           lat: coord.lat(),
           lng: coord.lng(),
           draggable: true
         };
       } else {
         newMarkerInfo = {
+          id: -1,
           lat: coord.lat(),
           lng: coord.lng(),
           data_translation: {
