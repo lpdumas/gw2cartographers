@@ -270,6 +270,7 @@
             }
           });
           _this.gMarker = {};
+          _this.currentMapVersion = 1;
           _this.editInfoWindowTemplate = "";
           return $.get('assets/javascripts/templates/customInfoWindow._', function(e) {
             _this.editInfoWindowTemplate = _.template(e);
@@ -419,6 +420,7 @@
 
     CustomMap.prototype.setAllMarkers = function() {
       var defaultValue, marker, markerType, markerTypeObject, markersCat, markersObjects, newMarker, otherInfo, _ref, _results;
+      this.currentMapVersion = Metadata.version;
       _ref = this.MarkersConfig;
       _results = [];
       for (markersCat in _ref) {
@@ -537,7 +539,6 @@
       modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">');
       confirmMessage = Traduction["notice"]["dataApproval"][window.LANG];
       return this.confirmBox.initConfirmation(confirmMessage, function(e) {
-
         var request;
         if (e === true) {
           return request = $.ajax({
@@ -554,6 +555,7 @@
               }
             },
             success: function(result) {
+                console.debug('result');
               modal.setContent(result.message);
               return modal.open();
             }
@@ -599,7 +601,7 @@
         }
       }
       finalExport = {};
-      finalExport["version"] = 1;
+      finalExport["version"] = this.currentMapVersion;
       finalExport["creation_date"] = "null";
       finalExport["markers"] = exportMarkerObject;
       jsonString = JSON.stringify(finalExport);

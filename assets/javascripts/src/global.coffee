@@ -201,6 +201,7 @@ class CustomMap
     
         #marker
         @gMarker = {}
+        @currentMapVersion = 1;
 
         @editInfoWindowTemplate = ""
         $.get('assets/javascripts/templates/customInfoWindow._', (e)=>
@@ -336,6 +337,9 @@ class CustomMap
     marker
           
   setAllMarkers: () ->
+
+    @currentMapVersion = Metadata.version;
+      
     for markersCat, markersObjects of @MarkersConfig
       if not @gMarker[markersCat]?
         @gMarker[markersCat] = {}
@@ -433,7 +437,7 @@ class CustomMap
           nm["id"] = marker["id_marker"];
 
     finalExport = {};
-    finalExport["version"] = 1;
+    finalExport["version"] = @currentMapVersion;
     finalExport["creation_date"] = "null";
     finalExport["markers"] = exportMarkerObject;
 
