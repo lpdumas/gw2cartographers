@@ -7,6 +7,13 @@ App.localStorageAvailable = (()->
   else
     return false
 )()
+App.extractUrlParams = ()->
+  parameters = location.search.substring(1).split('&')
+  urlArray = {}
+  for element in parameters
+    x = element.split('=')      
+    urlArray[x[0]] = x[1]
+  urlArray
 
 html = document.documentElement
 attToCheck = ["pointerEvents", "opacity"]
@@ -102,12 +109,18 @@ class CustomMap
     @exportWindow     = $('#export-windows')
     @markersOptionsMenu = $('#markers-options')
     @mapOptions    = $('#edition-tools a')
-    # @defaultLat = 15.919073517982465
-    @startLat = if @getStartLat() then @getStartLat() else 26.765230565697536
-    # @defaultLng = 18.28125
-    @startLng = if @getStartLng() then @getStartLng() else -36.32080078125
-    extractUrlParams()
-    @defaultCat = "explore"
+    # @defaultLat = 15.919073517982465    # @defaultLng = 18.28125
+    @urlParams = App.extractUrlParams()
+    @startLat = if @urlParams['lat']? then @urlParams['lat'] else 26.765230565697536
+    @startLng = if @urlParams['lgn']? then @urlParams['lng'] else -36.32080078125
+    @defaultCat = (()=>
+      dcat = "explore"
+      if @urlParams['cat']?
+        for cat, catObject of Markers
+          if cat is @urlParams['cat']
+            dcat = @urlParams['cat']
+      dcat
+    )()
     window.LANG = "en"
     @areaSummaryBoxes = []
     @markersImages = {}
@@ -208,7 +221,7 @@ class CustomMap
         if e
           @MarkersConfig = @getConfigFromLocalStorage()
         else
-            @MarkersConfig = Markers
+          @MarkersConfig = Markers
         callback()
       )
     else
@@ -476,20 +489,6 @@ class CustomMap
 
     newMarker = @addMarker(newMarkerInfo, otherInfo, true, defaultValue)
     @gMarker[markerCat]["marker_types"][markerType]["markers"].push(newMarker)
-    
-  getStartLat:()->
-    params = extractUrlParams()
-    if params['lat']?
-        params['lat']
-    else
-        false
-    
-  getStartLng:()->
-      params = extractUrlParams()
-      if params['lng']?
-          params['lng']
-      else
-          false
     
   removeMarkerFromType:(mType, mCat)->
     confirmMessage = "Delete all «#{mType}» markers on the map?"
@@ -810,14 +809,6 @@ class CustomInfoWindow
 # }}}
 ###
 
-extractUrlParams = ()->
-    parameters = location.search.substring(1).split('&')
-    f = []
-    for element in parameters
-      x = element.split('=')      
-      f[x[0]] = x[1]
-      console.log f
-    f
     
 $ ()->
   myCustomMap = new CustomMap('#map')
