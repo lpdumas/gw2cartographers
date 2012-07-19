@@ -1,4 +1,4 @@
-App = {}
+window.App = {}
 App.opacity = false
 App.pointerEvents = false
 App.localStorageAvailable = (()->
@@ -7,6 +7,13 @@ App.localStorageAvailable = (()->
   else
     return false
 )()
+App.extractUrlParams = ()->
+  parameters = location.search.substring(1).split('&')
+  urlArray = {}
+  for element in parameters
+    x = element.split('=')      
+    urlArray[x[0]] = x[1]
+  urlArray
 
 html = document.documentElement
 attToCheck = ["pointerEvents", "opacity"]
@@ -102,13 +109,24 @@ class CustomMap
     @exportWindow     = $('#export-windows')
     @markersOptionsMenu = $('#markers-options')
     @mapOptions    = $('#edition-tools a')
-    # @defaultLat = 15.919073517982465
-    @startLat = if @getStartLat() then @getStartLat() else 26.765230565697536
-    # @defaultLng = 18.28125
-    @startLng = if @getStartLng() then @getStartLng() else -36.32080078125
-    extractUrlParams()
-    @defaultCat = "explore"
-    window.LANG = "en"
+    # @defaultLat = 15.919073517982465    # @defaultLng = 18.28125
+    @urlParams = App.extractUrlParams()
+    @startLat = if @urlParams['lat']? then @urlParams['lat'] else 26.765230565697536
+    @startLng = if @urlParams['lgn']? then @urlParams['lng'] else -36.32080078125
+    @defaultCat = (()=>
+      dcat = "explore"
+      if @urlParams['cat']?
+        for cat, catObject of Markers
+          if cat is @urlParams['cat']
+            dcat = @urlParams['cat']
+      dcat
+    )()
+    window.LANG = (()=>
+      if @urlParams['lang']? and (@urlParams['lang'] is 'fr' or @urlParams['lang'] is 'en')
+        return @urlParams['lang']
+      else
+        return "en"
+    )()
     @areaSummaryBoxes = []
     @markersImages = {}
     
@@ -203,12 +221,12 @@ class CustomMap
     
   handleLocalStorageLoad: (callback)->
     if App.localStorageAvailable and @getConfigFromLocalStorage()
-      confirmMessage = "I have detected data stored locally, Do you want to load it?"
+      confirmMessage = Traduction["notice"]["localDetected"][window.LANG]
       @confirmBox.initConfirmation(confirmMessage, (e)=>
         if e
           @MarkersConfig = @getConfigFromLocalStorage()
         else
-            @MarkersConfig = Markers
+          @MarkersConfig = Markers
         callback()
       )
     else
@@ -357,7 +375,7 @@ class CustomMap
       marker.setVisible(isVisible) for marker in markerTypeObject.markers
 
   destroyLocalStorage: (e) =>
-    confirmMessage = "This action will destroy you local change to the map. Are you sure you want to proceed?"
+    confirmMessage = Traduction["notice"]["dataDestruction"][window.LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if e and @getConfigFromLocalStorage()
         localStorage.removeItem(@localStorageKey);
@@ -368,7 +386,7 @@ class CustomMap
     ajaxUrl = this_.attr('data-ajaxUrl')
     modal = new Modalbox()
     modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">')
-    confirmMessage = "Are you ready to send your map for approval?"
+    confirmMessage = Traduction["notice"]["dataApproval"][window.LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
         
         if(e == true)
@@ -470,34 +488,8 @@ class CustomMap
     newMarker = @addMarker(newMarkerInfo, otherInfo, true, defaultValue)
     @gMarker[markerCat]["marker_types"][markerType]["markers"].push(newMarker)
     
-  getStartLat:()->
-    params = extractUrlParams()
-    if params['lat']?
-        params['lat']
-    else
-        false
-    
-  getStartLng:()->
-      params = extractUrlParams()
-      if params['lng']?
-          params['lng']
-      else
-          false
-    
-  removeMarkerFromType:(mType, mCat)->
-    confirmMessage = "Delete all «#{mType}» markers on the map?"
-    @confirmBox.initConfirmation(confirmMessage, (e)=>
-      if e
-        for marker, markerKey in @gMarker[mCat]["marker_types"][mType]["markers"]
-          marker.setMap(null)
-          @gMarker[mCat]["marker_types"][typeKey]['markers'] = _.reject(markerType.markers, (m)=>
-            return m == marker
-          )
-          @saveToLocalStorage()
-    )
-  
   removeMarker:(id, mType, mCat)->
-    confirmMessage = "Are you sure you want to delete this marker?"
+    confirmMessage = Traduction["notice"]["deleteMarker"][window.LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if e
         for marker, markerKey in @gMarker[mCat]["marker_types"][mType]["markers"] when marker.__gm_id is id
@@ -803,14 +795,6 @@ class CustomInfoWindow
 # }}}
 ###
 
-extractUrlParams = ()->
-    parameters = location.search.substring(1).split('&')
-    f = []
-    for element in parameters
-      x = element.split('=')      
-      f[x[0]] = x[1]
-      console.log f
-    f
     
 $ ()->
   myCustomMap = new CustomMap('#map')
