@@ -1,6 +1,6 @@
 Metadata = {
-	"version" : 7,
-	"date_generation" : "2012-07-20 02:06:55",
+	"version" : 10,
+	"date_generation" : "2012-07-20 13:06:08",
 	"icons_path" : "assets/images/icons/32x32/",
 };
 
@@ -601,7 +601,7 @@ Markers.explore = {
 						en : {
 							title : "Help Farmer Eda",
 							desc : "Eda could use some help in her orchard, especially with the spider infestation.",
-							link_wiki : ""
+							link_wiki : "http://wiki.guildwars2.com/wiki/Assist_Farmer_Eda"
 						},
 						fr : {
 							title : "",
