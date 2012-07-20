@@ -1,6 +1,6 @@
 <div class="area-summary-overlay<% if(rangeLvl != ""){ %><%= " city" %><% } %>">
     <p class="area-summary-title">
-        <span class='area-title'><%= name %></span>
+        <span class='area-title'><%= data_translation[window.LANG]["name"] %></span>
         <% if(rangeLvl != "") {%>
         <span class="lvl-range"><%= rangeLvl %></span>
         <% } %>
@@ -8,7 +8,7 @@
     <ul class="area-summary-list">
         <% _.each(summary, function(val, type, list) { %>
             <% if(val != 0) { %>
-            <li><img class="area-summary-icons" src="<%= Resources.Icons['explore'][type].url %>" alt="<%= Resources.Icons['explore'][type].label %>" width="15" height="15"><%= val %></li>
+            <li><img class="area-summary-icons" src="assets/images/icons/32x32/<%= type %>.png" width="15" height="15"><%= val %></li>
             <% } %>
         <% }); %>
     </ul>
