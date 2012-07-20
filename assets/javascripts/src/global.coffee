@@ -409,8 +409,9 @@ class CustomMap
                   x.overrideMimeType("application/json;charset=UTF-8")
            ,
            success: (result) =>
+               if result.success is true
+                   localStorage.removeItem(@localStorageKey);
                modal.setContent(result.message)
-               modal.open()
           })
     )
     
