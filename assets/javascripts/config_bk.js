@@ -1,13 +1,13 @@
 Metadata = {
-	"version" : 7,
-	"date_generation" : "2012-07-20 02:06:55",
+	"version" : 4,
+	"date_generation" : "2012-07-19 01:32:30",
 	"icons_path" : "assets/images/icons/32x32/",
 };
 
 Markers.crafting_material = {
 	data_translation : {
 		fr : {
-			name : "MatÃ©riaux d'Artisanat"
+			name : "Matériaux d'Artisanat"
 		},
 		en : {
 			name : "Crafting Materials"
@@ -18,7 +18,7 @@ Markers.crafting_material = {
 			icon : "crafting_material/bone_chip.jpg",
 			data_translation : {
 				fr : {
-					name : "",
+					name : "Bone Chip",
 					link_wiki : "",
 					link_gw2data : "",
 					desc : ""
@@ -94,7 +94,7 @@ Markers.crafting_material = {
 			icon : "crafting_material/small_scale.jpg",
 			data_translation : {
 				fr : {
-					name : "Petite Ã©caille",
+					name : "Petite écaille",
 					link_wiki : "",
 					link_gw2data : "http://fr.gw2data.com/items/372/petite-ecaille",
 					desc : ""
@@ -132,7 +132,7 @@ Markers.crafting_material = {
 			icon : "crafting_material/small_venom_sac.jpg",
 			data_translation : {
 				fr : {
-					name : "Petit sac Ã  venin",
+					name : "Petit sac à venin",
 					link_wiki : "",
 					link_gw2data : "http://fr.gw2data.com/items/374/petit-sac-a-venin",
 					desc : ""
@@ -151,7 +151,7 @@ Markers.crafting_material = {
 			icon : "crafting_material/thin_blood_vial.jpg",
 			data_translation : {
 				fr : {
-					name : "Flacon de Sang LÃ©ger",
+					name : "Flacon de Sang Léger",
 					link_wiki : "",
 					link_gw2data : "http://fr.gw2data.com/items/31/flacon-de-sang-leger",
 					desc : ""
@@ -227,7 +227,7 @@ Markers.crafting_material = {
 			icon : "crafting_material/tiny_venom_sac.jpg",
 			data_translation : {
 				fr : {
-					name : "",
+					name : "Tiny Venom Sac",
 					link_wiki : "",
 					link_gw2data : "",
 					desc : ""
@@ -246,7 +246,7 @@ Markers.crafting_material = {
 			icon : "crafting_material/weak_blood_vial.jpg",
 			data_translation : {
 				fr : {
-					name : "",
+					name : "Vial of Weak Blood",
 					link_wiki : "",
 					link_gw2data : "",
 					desc : ""
@@ -586,7 +586,7 @@ Markers.explore = {
 						en : {
 							title : "Help Farmer George",
 							desc : "Make the area around the pumping station safe for Farmer George.",
-							link_wiki : "http://wiki.guildwars2.com/wiki/Farmer_George"
+							link_wiki : ""
 						},
 						fr : {
 							title : "",
@@ -2009,7 +2009,7 @@ Markers.explore = {
 			icon : "/poi.png",
 			data_translation : {
 				fr : {
-					name : "Points d'IntÃ©rÃªt"
+					name : "Points d'Intérêt"
 				},
 				en : {
 					name : "Points of Interest"
@@ -3895,7 +3895,7 @@ Markers.explore = {
 			icon : "/skillpoints.png",
 			data_translation : {
 				fr : {
-					name : "Points de CompÃ©tence"
+					name : "Points de Compétence"
 				},
 				en : {
 					name : "Skill Points"
@@ -7249,193 +7249,744 @@ Markers.explore = {
 		}
 	}
 };
-Markers.pets = {
-	data_translation : {
-		fr : {
-			name : "Familiers de RÃ´deur"
-		},
-		en : {
-			name : "Ranger Pets"
-		}
-	},
-	marker_types : {
-		"arctodus" : {
-			icon : "pets/petArctodus.png",
-			data_translation : {
-				fr : {
-					title : "Arctodus",
-					name : "Arctodus",
-					link_wiki : "http://wiki-fr.guildwars2.com/wiki/Arctodus",
-					desc : "Les Arctodus sont des familiers amphibies, charmables pour la profession de RÃ´deur."
-				},
-				en : {
-					title : "Arctodus",
-					name : "Arctodus",
-					link_wiki : "http://wiki.guildwars2.com/wiki/Arctodus",
-					desc : "Juvenile Arctoduses are amphibious pets that can be charmed by rangers."
-				}
-			},
-			markers : [
-			]
-		},
-		"blackbear" : {
-			icon : "pets/petBlackBear.png",
-			data_translation : {
-				fr : {
-					title : "Ours noir",
-					name : "Ours noir",
-					link_wiki : "http://wiki-fr.guildwars2.com/wiki/Ours_noir",
-					desc : "Les Ours noirs sont des familiers amphibies, charmables pour la profession de RÃ´deur."
-				},
-				en : {
-					title : "Black bear",
-					name : "Black bear",
-					link_wiki : "http://wiki.guildwars2.com/wiki/Juvenile_Black_Bear",
-					desc : "Juvenile Black Bears are amphibious pets that can be charmed by rangers."
-				}
-			},
-			markers : [
-			]
-		},
-		"blackmoa" : {
-			icon : "pets/petBlackMoa.png",
-			data_translation : {
-				fr : {
-					title : "Moa noir",
-					name : "Moa noir",
-					link_wiki : "http://wiki-fr.guildwars2.com/wiki/Moa_noir",
-					desc : "Les Moas noirs sont des familiers terrestres, charmables pour la profession de RÃ´deur. Le personnage doit obtenir un minimum de 15 points au PanthÃ©on des Hauts Faits avant de pouvoir acquÃ©rir ce familier."
-				},
-				en : {
-					title : "Black moa",
-					name : "Black moa",
-					link_wiki : "http://wiki.guildwars2.com/wiki/Juvenile_Black_Moa",
-					desc : "The Juvenile Black Moa is a rare terrestrial pet available to rangers. To obtain the black moa, the player must have earned at least 15 points in the Hall of Monuments on their linked Guild Wars account. Except for appearance, the black moa is identical to the flamingo."
-				}
-			},
-			markers : [
-			]
-		},
-		"brownbear" : {
-			icon : "pets/petBrownBear.png",
-			data_translation : {
-				fr : {
-					title : "Ours brun",
-					name : "Ours brun",
-					link_wiki : "http://wiki.guildwars2.com/wiki/Juvenile_Brown_Bear",
-					desc : "Les Ours bruns sont des familiers amphibies, charmables pour la profession de RÃ´deur."
-				},
-				en : {
-					title : "Brown bear",
-					name : "Brown bear",
-					link_wiki : "http://wiki.guildwars2.com/wiki/Juvenile_Brown_Bear",
-					desc : "Juvenile Brown Bears are amphibious pets that can be charmed by rangers."
-				}
-			},
-			markers : [
-			]
-		},
-		"flamingo" : {
-			icon : "pets/petFlamingo.png",
-			data_translation : {
-				fr : {
-					title : "Moa rose",
-					name : "Moa rose",
-					link_wiki : "http://wiki-fr.guildwars2.com/wiki/Moa_rose",
-					desc : "Les Moas roses sont des familiers terrestres, charmables pour la profession de RÃ´deur."
-				},
-				en : {
-					title : "Flamingo",
-					name : "Flamingo",
-					link_wiki : "http://wiki.guildwars2.com/wiki/Juvenile_Flamingo",
-					desc : "Juvenile Flamingos are terrestrial pets that can be charmed by rangers."
-				}
-			},
-			markers : [
-			]
-		},
-		"murellow" : {
-			icon : "pets/petMurellow.png",
-			data_translation : {
-				fr : {
-					title : "Murello",
-					name : "Murello",
-					link_wiki : "http://wiki-fr.guildwars2.com/wiki/Murello",
-					desc : "Les Murellos sont des familiers amphibies, charmables pour la profession de RÃ´deur."
-				},
-				en : {
-					title : "Murellow",
-					name : "Murellow",
-					link_wiki : "http://wiki.guildwars2.com/wiki/Juvenile_Murellow",
-					desc : "Juvenile Murellowes are amphibious pets that can be charmed by rangers."
-				}
-			},
-			markers : [
-			]
-		},
-		"polarbear" : {
-			icon : "pets/petPolarBear.png",
-			data_translation : {
-				fr : {
-					title : "Ours polaire",
-					name : "Ours polaire",
-					link_wiki : "http://wiki-fr.guildwars2.com/wiki/Ours_polaire",
-					desc : "Les ours polaire sont des familiers amphibies, charmables pour la profession de RÃ´deur."
-				},
-				en : {
-					title : "Polar bear",
-					name : "Polar bear",
-					link_wiki : "http://wiki.guildwars2.com/wiki/Juvenile_Polar_Bear",
-					desc : "Juvenile Polar bear are amphibious pets that can be charmed by rangers."
-				}
-			},
-			markers : [
-			]
-		},
-		"redmoa" : {
-			icon : "pets/petRedMoa.png",
-			data_translation : {
-				fr : {
-					title : "Moa rouge",
-					name : "Moa rouge",
-					link_wiki : "",
-					desc : ""
-				},
-				en : {
-					title : "Red moa",
-					name : "Red moa",
-					link_wiki : "http://wiki.guildwars2.com/wiki/Juvenile_Red_Moa",
-					desc : "Juvenile Red Moas are terrestrial pets that can be charmed by rangers."
-				}
-			},
-			markers : [
-			]
-		},
-		"whitemoa" : {
-			icon : "pets/petWhiteMoa.png",
-			data_translation : {
-				fr : {
-					title : "Moa blanc",
-					name : "Moa blanc",
-					link_wiki : "http://wiki-fr.guildwars2.com/wiki/Moa_blanc",
-					desc : "Les Moas blancs sont des familiers terrestres, charmables pour la profession de RÃ´deur."
-				},
-				en : {
-					title : "White moa",
-					name : "White moa",
-					link_wiki : "http://wiki.guildwars2.com/wiki/Juvenile_White_moa",
-					desc : "Juvenile White moa are terrestrial pets that can be charmed by rangers."
-				}
-			},
-			markers : [
-			]
-		}
-	}
-};
+Markers.pet = {
+      "data_translation":{
+         "en":{
+            "name":"Pets"
+         },
+         "fr":{
+            "name":"Familiers"
+         }
+      },
+      "marker_types":{
+         "petArctodus":{
+            "icon":"pets/petArctodus.png",
+            "data_translation":{
+               "en":{
+                  "name":"Arctodus",
+                  "title":"Arctodus",
+                  "desc":"Juvenile Arctoduses are amphibious pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Arctodus"
+               },
+               "fr":{
+                  "name":"Arctodus",
+                  "title":"Entraînement pour les rôdeurs",
+                  "desc":"Les Arctodus sont des familiers amphibies, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Arctodus"
+               }
+            },
+            "markers":[]
+         },
+         "petBlackBear":{
+            "icon":"pets/petBlackBear.png",
+            "data_translation":{
+               "en":{
+                  "name":"Black bear",
+                  "title":"Black bear",
+                  "desc":"Juvenile Black Bears are amphibious pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Black_Bear"
+               },
+               "fr":{
+                  "name":"Ours noir",
+                  "title":"Ours noir",
+                  "desc":"Les Ours noirs sont des familiers amphibies, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Ours_noir"
+               }
+            },
+            "markers":[]
+         },
+         "petBrownBear":{
+            "icon":"pets/petBrownBear.png",
+            "data_translation":{
+               "en":{
+                  "name":"Brown bear",
+                  "title":"Brown bear",
+                  "desc":"Juvenile Brown Bears are amphibious pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Brown_Bear"
+               },
+               "fr":{
+                  "name":"Ours brun",
+                  "title":"Ours brun",
+                  "desc":"Les Ours bruns sont des familiers amphibies, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Ours_brun"
+               }
+            },
+            "markers":[]
+         },
+         "petMurellow":{
+            "icon":"pets/petMurellow.png",
+            "data_translation":{
+               "en":{
+                  "name":"Murellow",
+                  "title":"Murellow",
+                  "desc":"Juvenile Murellowes are amphibious pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Murellow"
+               },
+               "fr":{
+                  "name":"Ours brun",
+                  "title":"Ours brun",
+                  "desc":"Les Murellos sont des familiers amphibies, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Murello"
+               }
+            },
+            "markers":[]
+         },
+         "petPolarBear":{
+            "icon":"pets/petPolarBear.png",
+            "data_translation":{
+               "en":{
+                  "name":"Polar bear",
+                  "title":"Polar bear",
+                  "desc":"Juvenile Polar bear are amphibious pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Polar_Bear"
+               },
+               "fr":{
+                  "name":"Ours polaire",
+                  "title":"Ours polaire",
+                  "desc":"Les ours polaire sont des familiers amphibies, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Ours_polaire"
+               }
+            },
+            "markers":[]
+         },
+         "petBlackMoa":{
+            "icon":"pets/petBlackMoa.png",
+            "data_translation":{
+               "en":{
+                  "name":"Black moa",
+                  "title":"Black moa",
+                  "desc":"The Juvenile Black Moa is a rare terrestrial pet available to rangers. To obtain the black moa, the player must have earned at least 15 points in the Hall of Monuments on their linked Guild Wars account. Except for appearance, the black moa is identical to the flamingo.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Black_Moa"
+               },
+               "fr":{
+                  "name":"Moa noir",
+                  "title":"Moa noir",
+                  "desc":"Les Moas noirs sont des familiers terrestres, charmables pour la profession de Rôdeur. Le personnage doit obtenir un minimum de 15 points au Panthéon des Hauts Faits avant de pouvoir acquérir ce familier.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Moa_noir"
+               }
+            },
+            "markers":[]
+         },
+         "petRedMoa":{
+            "icon":"pets/petRedMoa.png",
+            "data_translation":{
+               "en":{
+                  "name":"Red moa",
+                  "title":"Red moa",
+                  "desc":"Juvenile Red Moas are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Red_Moa"
+               },
+               "fr":{
+                  "name":"Moa rouge",
+                  "title":"Moa rouge",
+                  "desc":" -- ",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petWhiteMoa":{
+            "icon":"pets/petWhiteMoa.png",
+            "data_translation":{
+               "en":{
+                  "name":"White moa",
+                  "title":"White moa",
+                  "desc":"Juvenile White moa are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_White_moa"
+               },
+               "fr":{
+                  "name":"Moa blanc",
+                  "title":"Moa blanc",
+                  "desc":"Les Moas blancs sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Moa_blanc"
+               }
+            },
+            "markers":[]
+         },
+         "petFlamingo":{
+            "icon":"pets/petFlamingo.png",
+            "data_translation":{
+               "en":{
+                  "name":"Flamingo",
+                  "title":"Flamingo",
+                  "desc":"Juvenile Flamingos are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Flamingo"
+               },
+               "fr":{
+                  "name":"Moa rose",
+                  "title":"Moa rose",
+                  "desc":"Les Moas roses sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Moa_rose"
+               }
+            },
+            "markers":[]
+         },
+         "petBoar":{
+            "icon":"pets/petBoar.png",
+            "data_translation":{
+               "en":{
+                  "name":"Boar",
+                  "title":"Boar",
+                  "desc":"Juvenile Boars are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Boar"
+               },
+               "fr":{
+                  "name":"Sanglier",
+                  "title":"Sanglier",
+                  "desc":"Les Sangliers sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Sanglier"
+               }
+            },
+            "markers":[]
+         },
+         "petPig":{
+            "icon":"pets/petPig.png",
+            "data_translation":{
+               "en":{
+                  "name":"Pig",
+                  "title":"Pig",
+                  "desc":"Juvenile Pig are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Pig"
+               },
+               "fr":{
+                  "name":"Cochon",
+                  "title":"Cochon",
+                  "desc":"Les Cochons sont des familiers terrestres, charmables pour la profession de Rôdeur. On peut en trouver dans le Quartier d'Autrerive à l'Arche du Lion, ou près du Village de Claypool dans la Vallée de la Reine.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Cochon"
+               }
+            },
+            "markers":[]
+         },
+         "petSiamoth":{
+            "icon":"pets/petSiamoth.png",
+            "data_translation":{
+               "en":{
+                  "name":"Siamoth",
+                  "title":"Siamoth",
+                  "desc":"Juvenile Siamoths are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Siamoth"
+               },
+               "fr":{
+                  "name":"Tapir",
+                  "title":"Tapir",
+                  "desc":"Les Tapirs sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Tapir"
+               }
+            },
+            "markers":[]
+         },
+         "petWarthog":{
+            "icon":"pets/petWarthog.png",
+            "data_translation":{
+               "en":{
+                  "name":"Warthog",
+                  "title":"Warthog",
+                  "desc":"Juvenile Warthogs are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Warthog"
+               },
+               "fr":{
+                  "name":"Phacochère",
+                  "title":"Phacochère",
+                  "desc":"Les phacochères sont une espèce d'animaux présents dans le monde. On peut les trouver en particulier dans la région d'Ascalon. Ce sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Phacoch%C3%A8re"
+               }
+            },
+            "markers":[]
+         },
+         "petCarrion":{
+            "icon":"pets/petCarrion.png",
+            "data_translation":{
+               "en":{
+                  "name":"Carrion devourer",
+                  "title":"Carrion devourer",
+                  "desc":"Juvenile Carrion Devourers are amphibious pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Carrion_Devourer"
+               },
+               "fr":{
+                  "name":"Charognard",
+                  "title":"Charognard",
+                  "desc":"Les Charognards sont des familiers amphibies, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Charognard"
+               }
+            },
+            "markers":[]
+         },
+         "petLashTail":{
+            "icon":"pets/petLashTail.png",
+            "data_translation":{
+               "en":{
+                  "name":"Lashtail devourer",
+                  "title":"Lashtail devourer",
+                  "desc":"Juvenile Lashtail Devourers are amphibious pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Lashtail_Devourer"
+               },
+               "fr":{
+                  "name":"Dévoreur queue-cinglante",
+                  "title":"Dévoreur queue-cinglante",
+                  "desc":"Les Dévoreur queue-cinglante sont des familiers amphibies, charmables pour la profession de Rôdeur.",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petWhiptail":{
+            "icon":"pets/petWhiptail.png",
+            "data_translation":{
+               "en":{
+                  "name":"Whiptail devourer",
+                  "title":"Whiptail devourer",
+                  "desc":"Juvenile Whiptail Devourers are amphibious pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Whiptail_Devourer"
+               },
+               "fr":{
+                  "name":"Dévoreur fouette-queue",
+                  "title":"Dévoreur fouette-queue",
+                  "desc":"Les Dévoreur fouette-queue sont des familiers amphibies, charmables pour la profession de Rôdeur.",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petBlackWidow":{
+            "icon":"pets/petBlackWidow.png",
+            "data_translation":{
+               "en":{
+                  "name":"Black widow",
+                  "title":"Black widow",
+                  "desc":"The Juvenile Black Widow Spider is a rare terrestrial pet available to rangers. To obtain the black widow spider, the player must have earned at least 30 points in the Hall of Monuments on their linked Guild Wars account. Except for appearance, the black widow spider is identical to the jungle spider.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Black_Widow_Spider"
+               },
+               "fr":{
+                  "name":"Veuve noire",
+                  "title":"Veuve noire",
+                  "desc":"Les Araignées veuves noires sont des familiers terrestres accessibles à la profession de Rôdeur, par le biais du Panthéon des Hauts Faits. Le personnage doit obtenir un minimum de 30 points au Panthéon avant de pouvoir acquérir ce familier.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Araign%C3%A9e_veuve_noire"
+               }
+            },
+            "markers":[]
+         },
+         "petCaveSpider":{
+            "icon":"pets/petCaveSpider.png",
+            "data_translation":{
+               "en":{
+                  "name":"Cave spider",
+                  "title":"Cave spider",
+                  "desc":"Juvenile Cave Spiders are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Cave_Spider"
+               },
+               "fr":{
+                  "name":"Araignée des canyons",
+                  "title":"Araignée des canyons",
+                  "desc":"Les Araignées des canyons sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Araign%C3%A9e_des_canyons"
+               }
+            },
+            "markers":[]
+         },
+         "petForestSpider":{
+            "icon":"pets/petForestSpider.png",
+            "data_translation":{
+               "en":{
+                  "name":"Forest spider",
+                  "title":"Forest spider",
+                  "desc":"Juvenile Forest spider are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Forest_Spider"
+               },
+               "fr":{
+                  "name":"Araignées des forêts",
+                  "title":"Araignées des forêts",
+                  "desc":"Les Araignées des forêts sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Araign%C3%A9e_des_for%C3%AAts"
+               }
+            },
+            "markers":[]
+         },
+         "petJungleSpider":{
+            "icon":"pets/petJungleSpider.png",
+            "data_translation":{
+               "en":{
+                  "name":"Jungle spider",
+                  "title":"Jungle spider",
+                  "desc":"Juvenile Jungle spider are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Jungle_Spider"
+               },
+               "fr":{
+                  "name":"Araignées des jungles",
+                  "title":"Araignées des jungles",
+                  "desc":"Les Araignées des jungles sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Araign%C3%A9e_des_jungles"
+               }
+            },
+            "markers":[]
+         },
+         "petAlpineWolf":{
+            "icon":"pets/petAlpineWolf.png",
+            "data_translation":{
+               "en":{
+                  "name":"Alpine wolf",
+                  "title":"Alpine wolf",
+                  "desc":"Juvenile Alpine wolf are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Alpine_Wolf"
+               },
+               "fr":{
+                  "name":"Loup alpin",
+                  "title":"Loup alpin",
+                  "desc":"Les Loups alpins sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Loup_alpin"
+               }
+            },
+            "markers":[]
+         },
+         "petDog":{
+            "icon":"pets/petDog.png",
+            "data_translation":{
+               "en":{
+                  "name":"Krytan drakehound",
+                  "title":"Krytan drakehound",
+                  "desc":"Juvenile Krytan drakehound are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Krytan_Drakehound"
+               },
+               "fr":{
+                  "name":"Lévridrakes krytiens",
+                  "title":"Lévridrakes krytiens",
+                  "desc":"Les Lévridrakes krytiens sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/L%C3%A9vridrake_krytien"
+               }
+            },
+            "markers":[]
+         },
+         "petFernHound":{
+            "icon":"pets/petFernHound.png",
+            "data_translation":{
+               "en":{
+                  "name":"Fern hound",
+                  "title":"Fern hound",
+                  "desc":"Juvenile Fern Hounds are plant-like terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Fern_Hound"
+               },
+               "fr":{
+                  "name":"Chien de garde fougère",
+                  "title":"Chien de garde fougère",
+                  "desc":"Les Chiens de garde fougère sont des familiers terrestres à l'allure de plantes, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/L%C3%A9vridrake_krytien"
+               }
+            },
+            "markers":[]
+         },
+         "petHyena":{
+            "icon":"pets/petHyena.png",
+            "data_translation":{
+               "en":{
+                  "name":"Hyena",
+                  "title":"Hyena",
+                  "desc":"Juvenile Hyena are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Hyena"
+               },
+               "fr":{
+                  "name":"Chien de garde fougère",
+                  "title":"Chien de garde fougère",
+                  "desc":"Les Hyènes sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Hy%C3%A8ne"
+               }
+            },
+            "markers":[]
+         },
+         "petWolf":{
+            "icon":"pets/petWolf.png",
+            "data_translation":{
+               "en":{
+                  "name":"Wolf",
+                  "title":"Wolf",
+                  "desc":"Juvenile Wolf are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Wolf"
+               },
+               "fr":{
+                  "name":"Loup",
+                  "title":"Loup",
+                  "desc":"Les Loup sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Loup"
+               }
+            },
+            "markers":[]
+         },
+         "petEagle":{
+            "icon":"pets/petEagle.png",
+            "data_translation":{
+               "en":{
+                  "name":"Eagle",
+                  "title":"Eagle",
+                  "desc":"Juvenile Eagle are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Eagle"
+               },
+               "fr":{
+                  "name":"Aigle",
+                  "title":"Aigle",
+                  "desc":"Les Aigles sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Aigle"
+               }
+            },
+            "markers":[]
+         },
+         "petOwl":{
+            "icon":"pets/petOwl.png",
+            "data_translation":{
+               "en":{
+                  "name":"Owl",
+                  "title":"Owl",
+                  "desc":"Juvenile Owl are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Owl"
+               },
+               "fr":{
+                  "name":"Chouettes",
+                  "title":"Chouettes",
+                  "desc":"Les Chouettes sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Chouette"
+               }
+            },
+            "markers":[]
+         },
+         "petRaven":{
+            "icon":"pets/petRaven.png",
+            "data_translation":{
+               "en":{
+                  "name":"Raven",
+                  "title":"Raven",
+                  "desc":"Juvenile Raven are terrestrial pets that can be charmed by rangers.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Raven"
+               },
+               "fr":{
+                  "name":"Corbeau",
+                  "title":"Corbeau",
+                  "desc":"Les Corbeaux sont des familiers terrestres, charmables pour la profession de Rôdeur.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Corbeau"
+               }
+            },
+            "markers":[]
+         },
+         "petWhiteRaven":{
+            "icon":"pets/petWhiteRaven.png",
+            "data_translation":{
+               "en":{
+                  "name":"White raven",
+                  "title":"White raven",
+                  "desc":"The Juvenile White Raven is a rare terrestrial pet available to rangers. To obtain the white raven, the player must have earned at least 25 points in the Hall of Monuments on their linked Guild Wars account. Except for appearance, the white raven is identical to the raven.",
+                  "wikiLink":"http://wiki.guildwars2.com/wiki/Juvenile_Raven"
+               },
+               "fr":{
+                  "name":"Corbeau blanc",
+                  "title":"Corbeau blanc",
+                  "desc":"Les Corbeaux blancs sont des familiers terrestres rares, accessibles pour la profession de Rôdeur, par le Panthéon des Hauts Faits. Le personnage doit obtenir un minimum de 25 points au Panthéon avant de pouvoir acquérir cette personnalisation pour corbeau.",
+                  "wikiLink":"http://wiki-fr.guildwars2.com/wiki/Corbeau_blanc"
+               }
+            },
+            "markers":[]
+         },
+
+         "petIceDrake":{
+            "icon":"pets/petIceDrake.png",
+            "data_translation":{
+               "en":{
+                  "name":"Ice drake",
+                  "title":"Ice drake",
+                  "desc":" -- ",
+                  "wikiLink":""
+               },
+               "fr":{
+                  "name":"Drake des glaces",
+                  "title":"Drake des glaces",
+                  "desc":" -- ",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petMarshDrake":{
+            "icon":"pets/petMarshDrake.png",
+            "data_translation":{
+               "en":{
+                  "name":"Marsh drake",
+                  "title":"Marsh drake",
+                  "desc":" -- ",
+                  "wikiLink":""
+               },
+               "fr":{
+                  "name":"Drake des marais",
+                  "title":"Drake des maraisc",
+                  "desc":" -- ",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petRiverDrake":{
+            "icon":"pets/petRiverDrake.png",
+            "data_translation":{
+               "en":{
+                  "name":"River drake",
+                  "title":"River drake",
+                  "desc":" -- ",
+                  "wikiLink":""
+               },
+               "fr":{
+                  "name":"Drake fluvial",
+                  "title":"Drake fluvial",
+                  "desc":" -- ",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petSalamanderDrake":{
+            "icon":"pets/petSalamanderDrake.png",
+            "data_translation":{
+               "en":{
+                  "name":"Salamander drake",
+                  "title":"Salamander drake",
+                  "desc":" -- ",
+                  "wikiLink":""
+               },
+               "fr":{
+                  "name":"Drake salamandre",
+                  "title":"Drake salamandre",
+                  "desc":" -- ",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petJaguar":{
+            "icon":"pets/petJaguar.png",
+            "data_translation":{
+               "en":{
+                  "name":"Jaguar",
+                  "title":"Jaguar",
+                  "desc":" -- ",
+                  "wikiLink":""
+               },
+               "fr":{
+                  "name":"Jaguar",
+                  "title":"Jaguar",
+                  "desc":" -- ",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petJungleStalker":{
+            "icon":"pets/petJungleStalker.png",
+            "data_translation":{
+               "en":{
+                  "name":"Jungle stalker",
+                  "title":"Jungle stalker",
+                  "desc":" -- ",
+                  "wikiLink":""
+               },
+               "fr":{
+                  "name":"Félin des jungles",
+                  "title":"Félin des jungles",
+                  "desc":" -- ",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petLynx":{
+            "icon":"pets/petLynx.png",
+            "data_translation":{
+               "en":{
+                  "name":"Lynx",
+                  "title":"Lynx",
+                  "desc":" -- ",
+                  "wikiLink":""
+               },
+               "fr":{
+                  "name":"Lynx",
+                  "title":"Lynx",
+                  "desc":" -- ",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petSnowLeopard":{
+            "icon":"pets/petSnowLeopard.png",
+            "data_translation":{
+               "en":{
+                  "name":"Snow leopard",
+                  "title":"Snow leopard",
+                  "desc":" -- ",
+                  "wikiLink":""
+               },
+               "fr":{
+                  "name":"Panthère des neiges",
+                  "title":"Panthère des neiges",
+                  "desc":" -- ",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petArmorFish":{
+            "icon":"pets/petArmorFish.png",
+            "data_translation":{
+               "en":{
+                  "name":"Armor fish",
+                  "title":"Armor fish",
+                  "desc":" -- ",
+                  "wikiLink":""
+               },
+               "fr":{
+                  "name":"Poisson cuirassé",
+                  "title":"Poisson cuirassé",
+                  "desc":" -- ",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petJellyFish2":{
+            "icon":"pets/petJellyFish2.png",
+            "data_translation":{
+               "en":{
+                  "name":"Jelly fish",
+                  "title":"Jelly fish",
+                  "desc":" -- ",
+                  "wikiLink":""
+               },
+               "fr":{
+                  "name":"Méduse",
+                  "title":"Méduse",
+                  "desc":" -- ",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         },
+         "petShark":{
+            "icon":"pets/petShark.png",
+            "data_translation":{
+               "en":{
+                  "name":"Shark",
+                  "title":"Shark",
+                  "desc":" -- ",
+                  "wikiLink":""
+               },
+               "fr":{
+                  "name":"Requin",
+                  "title":"Requin",
+                  "desc":" -- ",
+                  "wikiLink":""
+               }
+            },
+            "markers":[]
+         }
+
+      }
+   };
 Markers.trainers = {
 	data_translation : {
 		fr : {
-			name : "EntraÃ®neurs"
+			name : "Entraîneurs"
 		},
 		en : {
 			name : "Trainers"
@@ -7446,10 +7997,10 @@ Markers.trainers = {
 			icon : "/skillBookEle.png",
 			data_translation : {
 				fr : {
-					title : "EntraÃ®neur d'ElÃ©mentalistes",
-					name : "EntraÃ®neur d'ElÃ©mentalistes",
+					title : "Entraîneur d'Elémentalistes",
+					name : "Entraîneur d'Elémentalistes",
 					link_wiki : "",
-					desc : "Vendeur de livres de compÃ©tences pour ElÃ©mentaliste"
+					desc : "Vendeur de livres de compétences pour Elémentaliste"
 				},
 				en : {
 					title : "Elementalists Trainer",
@@ -7465,10 +8016,10 @@ Markers.trainers = {
 			icon : "/skillBookEngi.png",
 			data_translation : {
 				fr : {
-					title : "EntraÃ®neur d'IngÃ©nieurs",
-					name : "EntraÃ®neur d'IngÃ©nieurs",
+					title : "Entraîneur d'Ingénieurs",
+					name : "Entraîneur d'Ingénieurs",
 					link_wiki : "",
-					desc : "Vendeur de livres de compÃ©tences pour IngÃ©nieur"
+					desc : "Vendeur de livres de compétences pour Ingénieur"
 				},
 				en : {
 					title : "Engineers Trainer",
@@ -7484,10 +8035,10 @@ Markers.trainers = {
 			icon : "/skillBookGuardian.png",
 			data_translation : {
 				fr : {
-					title : "EntraÃ®neur de Gardiens",
-					name : "EntraÃ®neur de Gardiens",
+					title : "Entraîneur de Gardiens",
+					name : "Entraîneur de Gardiens",
 					link_wiki : "",
-					desc : "Vendeur de livres de compÃ©tences pour Gardiens"
+					desc : "Vendeur de livres de compétences pour Gardiens"
 				},
 				en : {
 					title : "Guardians Trainer",
@@ -7503,10 +8054,10 @@ Markers.trainers = {
 			icon : "/skillBookMesmer.png",
 			data_translation : {
 				fr : {
-					title : "EntraÃ®neur d'EnvoÃ»teurs",
-					name : "EntraÃ®neur d'EnvoÃ»teurs",
+					title : "Entraîneur d'Envoûteurs",
+					name : "Entraîneur d'Envoûteurs",
 					link_wiki : "",
-					desc : "Vendeur de livres de compÃ©tences pour EnvoÃ»teurs"
+					desc : "Vendeur de livres de compétences pour Envoûteurs"
 				},
 				en : {
 					title : "Mesmers Trainer",
@@ -7522,10 +8073,10 @@ Markers.trainers = {
 			icon : "/skillBookNecro.png",
 			data_translation : {
 				fr : {
-					title : "EntraÃ®neur de NÃ©cromants",
-					name : "EntraÃ®neur de NÃ©cromants",
+					title : "Entraîneur de Nécromants",
+					name : "Entraîneur de Nécromants",
 					link_wiki : "",
-					desc : "Vendeur de livres de compÃ©tences pour NÃ©cromants"
+					desc : "Vendeur de livres de compétences pour Nécromants"
 				},
 				en : {
 					title : "Necromancers Trainer",
@@ -7541,10 +8092,10 @@ Markers.trainers = {
 			icon : "/skillBookRanger.png",
 			data_translation : {
 				fr : {
-					title : "EntraÃ®neur de RÃ´deurs",
-					name : "EntraÃ®neur de RÃ´deurs",
+					title : "Entraîneur de Rôdeurs",
+					name : "Entraîneur de Rôdeurs",
 					link_wiki : "http://",
-					desc : "Vendeur de livres de compÃ©tences pour RÃ´deur"
+					desc : "Vendeur de livres de compétences pour Rôdeur"
 				},
 				en : {
 					title : "Rangers trainer",
@@ -7560,10 +8111,10 @@ Markers.trainers = {
 			icon : "/skillBookThief.png",
 			data_translation : {
 				fr : {
-					title : "EntraÃ®neur de Voleurs",
-					name : "EntraÃ®neur de Voleurs",
+					title : "Entraîneur de Voleurs",
+					name : "Entraîneur de Voleurs",
 					link_wiki : "",
-					desc : "Vendeur de livres de compÃ©tences pour Voleur"
+					desc : "Vendeur de livres de compétences pour Voleur"
 				},
 				en : {
 					title : "Thieves Trainer",
@@ -7579,10 +8130,10 @@ Markers.trainers = {
 			icon : "/skillBookWarrior.png",
 			data_translation : {
 				fr : {
-					title : "EntraÃ®neur de Guerriers",
-					name : "EntraÃ®neur de Guerriers",
+					title : "Entraîneur de Guerriers",
+					name : "Entraîneur de Guerriers",
 					link_wiki : "",
-					desc : "Vendeur de livres de compÃ©tences pour Guerrier"
+					desc : "Vendeur de livres de compétences pour Guerrier"
 				},
 				en : {
 					title : "Warriors Trainer",
@@ -7597,114 +8148,170 @@ Markers.trainers = {
 	}
 };
 Areas = [
-	{ id : 1, data_translation : { en : { name : "Divinity's Reach" }, fr : { name : "Divinity's Reach" } }, rangeLvl : "",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 43.1959, neLng : -31.5198, swLat : 33.4498, swLng : -45.9558
-	},
-	{ id : 2, data_translation : { en : { name : "Queensdale" }, fr : { name : "Queensdale" } }, rangeLvl : "1-17",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 33.3856, neLng : -23.8623, swLat : 18.4067, swLng : -48.2739
-	},
-	{ id : 3, data_translation : { en : { name : "Kessex Hills" }, fr : { name : "Kessex Hills" } }, rangeLvl : "15-25",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 8.36495, neLng : -23.5547, swLat : 4.59833, swLng : -51.1743
-	},
-	{ id : 4, data_translation : { en : { name : "Gendarran Fields" }, fr : { name : "Gendarran Fields" } }, rangeLvl : "25-35",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 29.7658, neLng : 5.68555, swLat : 17.5766, swLng : -22.8843
-	},
-	{ id : 5, data_translation : { en : { name : "Black Citadel" }, fr : { name : "Black Citadel" } }, rangeLvl : "",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 20.7869, neLng : 57.9419, swLat : 11.0814, swLng : 47.9004
-	},
-	{ id : 6, data_translation : { en : { name : "Plains of Ashford" }, fr : { name : "Plains of Ashford" } }, rangeLvl : "1-15",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 21.7646, neLng : 85.6824, swLat : 7.98308, swLng : 58.7329
-	},
-	{ id : 7, data_translation : { en : { name : "Diessa Plateau" }, fr : { name : "Diessa Plateau" } }, rangeLvl : "15-25",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 35.5412, neLng : 71.4771, swLat : 21.4633, swLng : 47.373
-	},
-	{ id : 8, data_translation : { en : { name : "Hoelbrak" }, fr : { name : "Hoelbrak" } }, rangeLvl : "",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 22.9078, neLng : 34.4971, swLat : 12.7475, swLng : 21.2805
-	},
-	{ id : 9, data_translation : { en : { name : "Wayfarer Foothills" }, fr : { name : "Wayfarer Foothills" } }, rangeLvl : "",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 34.7687, neLng : 46.5381, swLat : 8.26585, swLng : 35.7495
-	},
-	{ id : 10, data_translation : { en : { name : "Snowden Drifts" }, fr : { name : "Snowden Drifts" } }, rangeLvl : "15-25",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 35.8979, neLng : 34.4971, swLat : 23.9561, swLng : 6.61377
-	},
-	{ id : 11, data_translation : { en : { name : "Lion's Arch" }, fr : { name : "Lion's Arch" } }, rangeLvl : "",
-		summary : {
-			"hearts" : 0,
-			"poi" : 0,
-			"scouts" : 0,
-			"skillpoints" : 0,
-			"waypoints" : 0
-		},
-		neLat : 17.0253, neLng : 5.52612, swLat : 6.2638, swLng : -10.099
-	}
-];
+{ 
+  data_translation: {
+    en : {name : "Divinity's Reach"},
+    fr : {name : "Le Promontoire divin"}
+  },
+  rangeLvl : "",
+     summary : {
+         "hearts" : 0,
+         "waypoints" : 13,
+         "skillpoints" : 0,
+         "poi" : 20,
+         "dungeons" : 0 
+     },
+     "neLat" : "43.19591001164034", "neLng" : "-31.519775390625", "swLat" : "33.44977658311853", "swLng" : "-45.955810546875"
+ },
+ { 
+   data_translation: {
+     en : {name : "Queensdale"},
+     fr : {name : "La Vallée de la reine"}
+   },  
+   rangeLvl : "1 - 17",
+     summary : {
+         "hearts" : 17,
+         "waypoints" : 16,
+         "skillpoints" : 7,
+         "poi" : 21,
+         "dungeons" : 1
+     },
+     "neLat" : "33.38558626887102", "neLng" : "-23.8623046875", "swLat" : "18.406654713919085", "swLng" : "-48.27392578125"
+ },
+ { 
+   data_translation: {
+     en : {name : "Kessex Hills"},
+     fr : {name : "Collines de Kesse"}
+   },       
+   rangeLvl : "15 - 25",
+     summary : {
+         "hearts" : 14,
+         "waypoints" : 18,
+         "skillpoints" : 5,
+         "poi" : 16,
+         "dungeons" : 0
+     },
+     "neLat" : "16.299051014581906", "neLng" : "-22.357177734375", "swLat" : "2.0210651187670785", "swLng" : "-51.888427734375"
+ },
+ { 
+   data_translation: {
+     en : {name : "Gendarran Fields"},
+     fr : {name : "Champs de Gendarran"}
+   },   
+   rangeLvl : "25 - 35",
+     summary : {
+         "hearts" : 11,
+         "waypoints" : 22,
+         "skillpoints" : 7,
+         "poi" : 15,
+         "dungeons" : 0
+     },
+     "neLat" : "27.994401411046223", "neLng" : "8.756103515625", "swLat" : "16.467694748289034", "swLng" : "-20.863037109375"
+ },
+ { 
+   data_translation: {
+     en : {name : "Black Citadel"},
+     fr : {name : "La Citadelle noire"}
+   },   
+   rangeLvl : "",
+     summary : {
+         "hearts" : 0,
+         "waypoints" : 12,
+         "skillpoints" : 0,
+         "poi" : 18,
+         "dungeons" : 0
+     },
+     "neLat" : "8.12449129086128", "neLng" : "52.723388671875", "swLat" : "19.87005983797404", "swLng" : "66.258544921875"
+ },
+ { 
+   data_translation: {
+     en : {name : "Plains of Ashford"},
+     fr : {name : "Plaines d'Ashford"}
+   },   
+   rangeLvl : "1 - 15",
+     summary : {
+         "hearts" : 16,
+         "waypoints" : 18,
+         "skillpoints" : 5,
+         "poi" : 26,
+         "dungeons" : 1
+     },
+     "neLat" : "19.808054128088664", "neLng" : "94.515380859375", "swLat" : "6.48998333267074", "swLng" : "65.423583984375"
+ },
+ { 
+   data_translation: {
+     en : {name : "Diessa Plateau"},
+     fr : {name : "Plateau de Diessa"}
+   },   
+   rangeLvl : "15 - 25",
+     summary : {
+         "hearts" : 15,
+         "waypoints" : 19,
+         "skillpoints" : 8,
+         "poi" : 21,
+         "dungeons" : 0
+     },
+     "neLat" : "20.385825381874362", "neLng" : "54.129638671875", "swLat" : "35.173808317999665", "swLng" : "78.826904296875"
+ },
+ { 
+   data_translation: {
+     en : {name : "Hoelbrak"},
+     fr : {name : "Hoelbrak"}
+   },   
+   rangeLvl : "",
+     summary : {
+         "hearts" : 0,
+         "waypoints" : 14,
+         "skillpoints" : 0,
+         "poi" : 24,
+         "dungeons" : 0
+     },
+     "neLat" : "21.514406720030383", "neLng" : "39.715576171875", "swLat" : "9.600749932246949", "swLng" : "23.631591796875 "
+ },
+ { 
+   data_translation: {
+     en : {name : "Wayfarer Foothills"},
+     fr : {name : "Contreforts du Voyageur"}
+   },  
+   rangeLvl : "1 - 15",
+     summary : {
+         "hearts" : 16,
+         "waypoints" : 17,
+         "skillpoints" : 8,
+         "poi" : 18,
+         "dungeons" : 0
+     },
+     "neLat" : "21.0229825464275", "neLng" : "39.957275390625", "swLat" : "33.92512970007205", "swLng" : "53.668212890625"
+ },
+ { 
+   data_translation: {
+     en : {name : "Snowden Drifts"},
+     fr : {name : "Congères d'Antreneige"}
+   },  
+   rangeLvl : "15 - 25",
+     summary : {
+         "hearts" : 13,
+         "waypoints" : 18,
+         "skillpoints" : 6,
+         "poi" : 20,
+         "dungeons" : 0
+     },
+     "neLat" : "34.7957615347304", "neLng" : "39.364013671875", "swLat" : "22.32975230437656", "swLng" : "10.272216796875"
+ },
+ { 
+   data_translation: {
+     en : {name : "Lion's Arch"},
+     fr : {name : "L'Arche du lion"}
+   },  
+   rangeLvl : "",
+     summary : {
+         "hearts" : 0,
+         "waypoints" : 13,
+         "skillpoints" : 0,
+         "poi" : 20,
+         "dungeons" : 0
+     },
+     "neLat" : "14.626108798876928", "neLng" : "9.107666015625", "swLat" : "3.096635871841627", "swLng" : "-7.767333984375"
+ }
+]
+//}}
