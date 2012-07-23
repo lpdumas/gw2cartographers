@@ -396,7 +396,7 @@ class CustomMap
     confirmMessage = Traduction["notice"]["dataApproval"][window.LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if(e == true)
-        modal.setContent('<h1>Please wait while your request is being handled.</h1>')
+        modal.setContent('<h1>Please wait while your request is being handled.</h1><img class="loading" src="/assets/images/loading-black.gif">')
         modal.open()
         request = $.ajax({
           url: ajaxUrl,
