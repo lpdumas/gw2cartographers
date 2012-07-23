@@ -7,15 +7,50 @@
     <li><a href="javascript:" title="Delete marker" data-action="delete" class="delete button"></a></li>
 </ul>
 
-<% if (title !== "" && desc !== "") {%>
+<% console.debug(title); if ((title !== "" && desc !== "") || status != null) {%>
 <div data-target="read" class="marker-desc active <%= type %>-marker">
+
+    
+    <% if (status != null) { %>
+        <p class="desc">
+            Status: <%= status %>
+        </p>
+        
+        <% if(status == "status_modified_coordinates" || status == "status_modified_all") { %>
+            <p>
+                From: <%= lat %> ; <%= lng %><br />
+                To: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= reference["lat"] %> ; <%= reference["lng"] %>
+            </p>
+        <% } %>
+    <% } %>
+
     <h1><%= title %></h1>
+
+    <% if (reference != null && title != reference["data_translation"][window.LANG]["title"]) { %>
+        <p class="desc"><% if (title == "") { %><strong>Empty value...</strong><br /><% } %>
+            Overrides: <%= reference["data_translation"][window.LANG]["title"] %>
+        </p>
+    <% } %>
+
     <p class="desc">
-        <%= desc %> 
+        <%= desc %>
     </p>
+    <% if (reference != null && desc != reference["data_translation"][window.LANG]["desc"]) {%>
+        <p class="desc"><% if (desc == "") { %><strong>Empty value...</strong><br /><% } %>
+            Overrides: <%= reference["data_translation"][window.LANG]["desc"] %>
+        </p>
+    <% } %>
+
     <% if(wikiLink !== "") {%>
-    <p><a target="_blank" href="<%= wikiLink %>">More infos on wiki.guildwars2.com</a></p>
-    <% }%>
+        <p><a target="_blank" href="<%= wikiLink %>">More infos on wiki.guildwars2.com</a></p>
+
+    <% } %>
+
+    <% if(reference != null && wikiLink != reference["data_translation"][window.LANG]["link_wiki"]) { %>
+        <p><% if (desc == "") { %><strong>Empty value...</strong><br /><% } %>
+            Overrides: <a target="_blank" href="<%= reference["data_translation"][window.LANG]["link_wiki"] %>">
+                        <%= reference["data_translation"][window.LANG]["link_wiki"] %></a></p>
+    <% } %>
 </div>
 <% } else { %>
 <div data-target="read" class="marker-desc active">
