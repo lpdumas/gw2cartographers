@@ -7,8 +7,7 @@
     <li><a href="javascript:" title="Delete marker" data-action="delete" class="delete button"></a></li>
 </ul>
 
-<% 
-if (title !== "" && (desc !== "" || (desc == "" && hasDefaultValue))) {%>
+<% if (title !== "" && title !== undefined) {%>
 <div data-target="read" class="marker-desc active <%= type %>-marker">
     <h1><%= title %></h1>
     <p class="desc">
@@ -31,7 +30,11 @@ if (title !== "" && (desc !== "" || (desc == "" && hasDefaultValue))) {%>
 <form action="javacript:" class="edit-form toggling-tab" data-target="edit" id="edit-form-<%= id %>">
     <label>
         <span class="label"><%= Traduction["infoWindow"]["formTitle"][window.LANG] %></span>
+        <%if(title !== "" && title !== undefined) {%>
         <input type="text" name="marker-title" value="<%= title %>" >
+        <% } else {%>
+        <input type="text" name="marker-title" value="" >
+        <%}%>
     </label>
     <label>
         <span class="label"><%= Traduction["infoWindow"]["formDesc"][window.LANG] %></span>
@@ -39,7 +42,11 @@ if (title !== "" && (desc !== "" || (desc == "" && hasDefaultValue))) {%>
     </label>
     <label>
         <span class="label"><%= Traduction["infoWindow"]["formWikiLink"][window.LANG] %></span>
+        <%if(wikiLink !== "" && wikiLink !== undefined) {%>
         <input type="text" name="marker-wiki" value="<%= wikiLink %>" >
+        <% } else {%>
+        <input type="text" name="marker-wiki" value="" >
+        <%}%>
     </label>
     <button type='button'><%= Traduction["infoWindow"]["formSave"][window.LANG] %></button>
 </form>

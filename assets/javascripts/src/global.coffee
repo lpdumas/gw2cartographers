@@ -785,6 +785,7 @@ class CustomInfoWindow
     newDesc = @wrap.find('[name="marker-description"]').val()
     newWikiLink = @wrap.find('[name="marker-wiki"]').val()
     form.removeClass('active')
+    console.log newWikiLink
     newInfo = 
       id    : @marker.__gm_id
       title : newTitle
