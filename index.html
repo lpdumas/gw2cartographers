@@ -40,7 +40,10 @@
                             <span class="change-status {{ change.change.status }}"></span>
                             <img src="{{ imagePath ~ change.image }}" />
                             <span>{{ change.name }}</span>
-                            <input type="checkbox" name="{{ change.id }}" checked />
+                            <input type="checkbox" name="{{ change.id }}" 
+                                        {% if change.change.status != "status_potential_data_loss" %}
+                                            checked
+                                        {% endif %} />
                         </a>
                     </li>
                     {% endfor %}
