@@ -264,6 +264,8 @@ class CustomMap
         type  : marker.type
         lat   : marker.position.lat()
         lng   : marker.position.lng()
+        reference: marker["marker_reference"]
+        status: marker["change_status"]
     
       editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
       marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent,
@@ -305,6 +307,8 @@ class CustomMap
             colorShadow = 'blue'
         else if markerInfo.status is "status_removed"
             colorShadow = 'red'
+        else if markerInfo.status is "status_potential_data_loss"
+            colorShadow = 'orange'
         else
             colorShadow = 'yellow'
             
@@ -341,6 +345,8 @@ class CustomMap
     marker["id_marker"] = markerInfo["id"]
     marker["type"]  = markersType
     marker["cat"]  = markersCat
+    marker["marker_reference"] = markerInfo["reference"];
+    marker["change_status"] = markerInfo["status"];
 
     if markerInfo.lat.toString() is @startLat and markerInfo.lng.toString() is @startLng
       if not marker["infoWindow"]?

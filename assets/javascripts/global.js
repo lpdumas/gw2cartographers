@@ -336,7 +336,9 @@
           hasDefaultValue: marker["hasDefaultValue"],
           type: marker.type,
           lat: marker.position.lat(),
-          lng: marker.position.lng()
+          lng: marker.position.lng(),
+          reference: marker["marker_reference"],
+          status: marker["change_status"]
         };
         editInfoWindowContent = _this.editInfoWindowTemplate(templateInfo);
         return marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent, {
@@ -381,6 +383,8 @@
           colorShadow = 'blue';
         } else if (markerInfo.status === "status_removed") {
           colorShadow = 'red';
+        } else if (markerInfo.status === "status_potential_data_loss") {
+          colorShadow = 'orange';
         } else {
           colorShadow = 'yellow';
         }
@@ -420,6 +424,8 @@
       marker["id_marker"] = markerInfo["id"];
       marker["type"] = markersType;
       marker["cat"] = markersCat;
+      marker["marker_reference"] = markerInfo["reference"];
+      marker["change_status"] = markerInfo["status"];
       if (markerInfo.lat.toString() === this.startLat && markerInfo.lng.toString() === this.startLng) {
         if (!(marker["infoWindow"] != null)) {
           createInfoWindow(marker);
