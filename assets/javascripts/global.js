@@ -1078,6 +1078,7 @@
       newDesc = this.wrap.find('[name="marker-description"]').val();
       newWikiLink = this.wrap.find('[name="marker-wiki"]').val();
       form.removeClass('active');
+      console.log(newWikiLink);
       newInfo = {
         id: this.marker.__gm_id,
         title: newTitle,
