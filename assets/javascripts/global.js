@@ -547,7 +547,7 @@
       return this.confirmBox.initConfirmation(confirmMessage, function(e) {
         var request;
         if (e === true) {
-          modal.setContent('<img class="loading" src="/assets/images/loading-black.gif">');
+          modal.setContent('<h1>Please wait while your request is being handled.</h1>');
           modal.open();
           return request = $.ajax({
             url: ajaxUrl,
@@ -566,7 +566,8 @@
               if (result.success === true) {
                 localStorage.removeItem(_this.localStorageKey);
               }
-              return modal.setContent(result.message);
+              modal.setContent(result.message);
+              return modal.open();
             }
           });
         }
