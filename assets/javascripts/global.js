@@ -326,9 +326,17 @@
         var editInfoWindowContent, templateInfo;
         templateInfo = {
           id: marker.__gm_id,
-          title: marker["data_translation"][window.LANG]["title"] || marker["data_translation"][window.LANG]["name"],
+          title: (function() {
+            if (marker["data_translation"][window.LANG]["title"] || marker["data_translation"][window.LANG]["name"]) {
+              return marker["data_translation"][window.LANG]["title"] || marker["data_translation"][window.LANG]["name"];
+            } else if (marker.type === "vistas" || marker.type === "skillpoints") {
+              return Traduction["infoWindow"][marker.type][window.LANG];
+            } else {
+              return "";
+            }
+          })(),
           desc: marker["data_translation"][window.LANG]["desc"],
-          wikiLink: marker["data_translation"][window.LANG]["link_wiki"],
+          wikiLink: marker["data_translation"][window.LANG]["link_wiki"] || "",
           hasDefaultValue: marker["hasDefaultValue"],
           type: marker.type,
           lat: marker.position.lat(),
@@ -1086,6 +1094,7 @@
       form = this.wrap.find('.edit-form');
       newTitle = this.wrap.find('[name="marker-title"]').val();
       newDesc = this.wrap.find('[name="marker-description"]').val();
+      newDesc = newDesc.replace(/\n/g, '<br />');
       newWikiLink = this.wrap.find('[name="marker-wiki"]').val();
       form.removeClass('active');
       console.log(newWikiLink);
