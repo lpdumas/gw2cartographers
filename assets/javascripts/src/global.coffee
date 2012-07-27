@@ -15,14 +15,28 @@ App.extractUrlParams = ()->
     urlArray[x[0]] = x[1]
   urlArray
 
-html = document.documentElement
-attToCheck = ["pointerEvents", "opacity"]
-for att in attToCheck 
-  if html.style[att]?
-    $(html).addClass(att)
-    App[att] = true
-  else
-    $(html).addClass("no-#{att}") 
+class TemplatesLoader
+  constructor: ()->
+    @templates =
+      "confirmBox" : "assets/javascripts/templates/confirmBox._"
+      "customInfoWindow" : "assets/javascripts/templates/customInfoWindow._"
+      "markersOptions" : "assets/javascripts/templates/markersOptions._"
+      "areasSummary" : "assets/javascripts/templates/areasSummary._"
+    
+  getTemplate: (templateName, callback)->
+    if App.localStorageAvailable
+      localTemplate = localStorage.getItem(templateName)
+      if localTemplate
+        callback(localStorage.getItem(templateName))
+      else if @templates[templateName]?
+        $.get(@templates[templateName], (e)=>
+          localStorage.setItem(templateName, e);
+          callback(e)
+        )
+    else
+      $.get(@templates[templateName], (e)=>
+        callback(e)
+      )
 ###
 # class ModalBox {{{
 ###
@@ -165,8 +179,8 @@ class CustomMap
     @map = new google.maps.Map($(id)[0], @gMapOptions)
     @map.mapTypes.set('custom', @customMapType)
     @map.setMapTypeId('custom')
-
-    $.get('assets/javascripts/templates/confirmBox._', (e)=>
+    @templateLoader = new TemplatesLoader()
+    @templateLoader.getTemplate("confirmBox", (e)=>
       template = _.template(e);
       @confirmBox = new Confirmbox(template)
     
@@ -204,7 +218,7 @@ class CustomMap
         @currentMapVersion = 1;
 
         @editInfoWindowTemplate = ""
-        $.get('assets/javascripts/templates/customInfoWindow._', (e)=>
+        @templateLoader.getTemplate("customInfoWindow", (e)=>
           @editInfoWindowTemplate = _.template(e)
           
           @setAllMarkers()
@@ -557,7 +571,7 @@ class CustomMap
     menu.find('.trigger').addClass('off')
   
   addMenuIcons:(callback)->
-    markersOptions = $.get('assets/javascripts/templates/markersOptions._', (e)=>
+    @templateLoader.getTemplate("markersOptions", (e)=>
       template = _.template(e);
       html = $(template(@MarkersConfig))
       
@@ -630,7 +644,8 @@ class AreaSummary
         @height_ = 80
         @width_ = 150
         @template = ""
-        $.get('assets/javascripts/templates/areasSummary._', (e)=>
+        @templateLoader = new TemplatesLoader()
+        @templateLoader.getTemplate("areasSummary", (e)=>
           @template = _.template(e)
           @setMap(map)
         )
