@@ -31,14 +31,6 @@ window.Traduction = {
     "moveNotice" : {
       "en" : "You can now move de point",
       "fr" : "Vous pouvez maintenant bouger le point"
-    },
-    "vistas" : {
-      "en" : "Vista",
-      "fr" : "Vista"
-    },
-    "skillpoints" : {
-      "en" : "Skill point",
-      "fr" : "Point de compétence"
     }
   },
   "notice" : {

@@ -258,16 +258,9 @@ class CustomMap
     createInfoWindow = (marker) =>
       templateInfo = 
         id : marker.__gm_id
-        title: (()=>
-          if marker["data_translation"][window.LANG]["title"] || marker["data_translation"][window.LANG]["name"]
-            return marker["data_translation"][window.LANG]["title"] || marker["data_translation"][window.LANG]["name"]
-          else if marker.type is "vistas" || marker.type is "skillpoints"
-            return Traduction["infoWindow"][marker.type][window.LANG]
-          else
-            return ""
-        )()
+        title: marker["data_translation"][window.LANG]["title"] || marker["data_translation"][window.LANG]["name"]
         desc: marker["data_translation"][window.LANG]["desc"]
-        wikiLink  : marker["data_translation"][window.LANG]["link_wiki"] || ""
+        wikiLink  : marker["data_translation"][window.LANG]["link_wiki"]
         hasDefaultValue : marker["hasDefaultValue"]
         type  : marker.type
         lat   : marker.position.lat()
@@ -805,7 +798,6 @@ class CustomInfoWindow
     form = @wrap.find('.edit-form')
     newTitle = @wrap.find('[name="marker-title"]').val()
     newDesc = @wrap.find('[name="marker-description"]').val()
-    newDesc = newDesc.replace(/\n/g, '<br />');
     newWikiLink = @wrap.find('[name="marker-wiki"]').val()
     form.removeClass('active')
     console.log newWikiLink

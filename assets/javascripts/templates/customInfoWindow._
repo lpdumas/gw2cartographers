@@ -38,7 +38,7 @@
     </label>
     <label>
         <span class="label"><%= Traduction["infoWindow"]["formDesc"][window.LANG] %></span>
-        <textarea name="marker-description" rows="8" cols="40"><%= desc.replace(/<br \/>/g, '\n') %></textarea>
+        <textarea name="marker-description" rows="8" cols="40"><%= desc %></textarea>
     </label>
     <label>
         <span class="label"><%= Traduction["infoWindow"]["formWikiLink"][window.LANG] %></span>
