@@ -137,8 +137,8 @@ class CustomMap
     @mapOptions    = $('#edition-tools a')
     # @defaultLat = 15.919073517982465    # @defaultLng = 18.28125
     @urlParams = App.extractUrlParams()
-    @startLat = if @urlParams['lat']? then @urlParams['lat'] else 26.765230565697536
-    @startLng = if @urlParams['lgn']? then @urlParams['lng'] else -36.32080078125
+    @startLat = if @urlParams['lat']? then @urlParams['lat'] else 15.443090823463786
+    @startLng = if @urlParams['lgn']? then @urlParams['lng'] else 7.294921875
     @defaultCat = (()=>
       dcat = "explore"
       if @urlParams['cat']?
@@ -162,7 +162,7 @@ class CustomMap
     @currentOpenedInfoWindow = false
     @gMapOptions   = 
       center: new google.maps.LatLng(@startLat, @startLng)
-      zoom: 6
+      zoom: 5
       minZoom: 3
       maxZoom: @maxZoom
       streetViewControl: false
@@ -207,6 +207,7 @@ class CustomMap
         google.maps.event.addListener(@map, 'zoom_changed', (e)=>
             zoomLevel = @map.getZoom()
             if zoomLevel == 4
+              console.log "test"
               @canToggleMarkers = false
               @hideMarkersOptionsMenu()
               @setAllMarkersVisibility(false)
@@ -242,6 +243,7 @@ class CustomMap
           $('#destroy').bind('click', @destroyLocalStorage)
           $('#send').bind('click', @sendMapForApproval)
           
+          @map.setZoom(4)
         )
       )
     )
@@ -635,6 +637,7 @@ class CustomMap
         
   setAreasInformationVisibility:(isVisible)->
     for box in @areaSummaryBoxes
+      console.log(isVisible)
       box.setVisible(isVisible)
   toggleMarkersOptionsMenu: () ->
     @markersOptionsMenu.toggleClass('active')
@@ -669,7 +672,7 @@ class AreaSummary
         @div_ = $(content)[0]
         panes = @getPanes()
         panes.overlayImage.appendChild(@div_)
-        @setVisible(false)
+        @setVisible(true)
         
     draw:()->
       overlayProjection = @getProjection()
@@ -682,10 +685,10 @@ class AreaSummary
     
     setVisible:(isVisible)->
       if @div_
-          if isVisible is true
-              @div_.style.visibility = "visible"
-          else
-              @div_.style.visibility = "hidden"
+        if isVisible is true
+          @div_.style.visibility = "visible"
+        else
+          @div_.style.visibility = "hidden"
 ###
 # }}}
 ###                

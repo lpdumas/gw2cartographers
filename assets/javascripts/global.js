@@ -207,8 +207,8 @@
       this.markersOptionsMenu = $('#markers-options');
       this.mapOptions = $('#edition-tools a');
       this.urlParams = App.extractUrlParams();
-      this.startLat = this.urlParams['lat'] != null ? this.urlParams['lat'] : 26.765230565697536;
-      this.startLng = this.urlParams['lgn'] != null ? this.urlParams['lng'] : -36.32080078125;
+      this.startLat = this.urlParams['lat'] != null ? this.urlParams['lat'] : 15.443090823463786;
+      this.startLng = this.urlParams['lgn'] != null ? this.urlParams['lng'] : 7.294921875;
       this.defaultCat = (function() {
         var cat, catObject, dcat;
         dcat = "explore";
@@ -237,7 +237,7 @@
       this.currentOpenedInfoWindow = false;
       this.gMapOptions = {
         center: new google.maps.LatLng(this.startLat, this.startLng),
-        zoom: 6,
+        zoom: 5,
         minZoom: 3,
         maxZoom: this.maxZoom,
         streetViewControl: false,
@@ -285,6 +285,7 @@
             var zoomLevel;
             zoomLevel = _this.map.getZoom();
             if (zoomLevel === 4) {
+              console.log("test");
               _this.canToggleMarkers = false;
               _this.hideMarkersOptionsMenu();
               _this.setAllMarkersVisibility(false);
@@ -318,7 +319,8 @@
               return console.log("Lat : " + (e.latLng.lat()) + ", Lng : " + (e.latLng.lng()));
             });
             $('#destroy').bind('click', _this.destroyLocalStorage);
-            return $('#send').bind('click', _this.sendMapForApproval);
+            $('#send').bind('click', _this.sendMapForApproval);
+            return _this.map.setZoom(4);
           });
         });
       });
@@ -879,6 +881,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         box = _ref[_i];
+        console.log(isVisible);
         _results.push(box.setVisible(isVisible));
       }
       return _results;
@@ -933,7 +936,7 @@
       this.div_ = $(content)[0];
       panes = this.getPanes();
       panes.overlayImage.appendChild(this.div_);
-      return this.setVisible(false);
+      return this.setVisible(true);
     };
 
     AreaSummary.prototype.draw = function() {
