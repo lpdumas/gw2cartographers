@@ -18,19 +18,31 @@ App.extractUrlParams = ()->
 class TemplatesLoader
   constructor: ()->
     @templates =
-      "confirmBox" : "assets/javascripts/templates/confirmBox._"
-      "customInfoWindow" : "assets/javascripts/templates/customInfoWindow._"
-      "markersOptions" : "assets/javascripts/templates/markersOptions._"
-      "areasSummary" : "assets/javascripts/templates/areasSummary._"
+      "confirmBox" : 
+        path : "assets/javascripts/templates/confirmBox._"
+        version : 1
+      "customInfoWindow" : 
+        path : "assets/javascripts/templates/customInfoWindow._"
+        version : 1
+      "markersOptions" : 
+        path: "assets/javascripts/templates/markersOptions._"
+        version : 1
+      "areasSummary" : 
+        path: "assets/javascripts/templates/areasSummary._"
+        version: 1
     
   getTemplate: (templateName, callback)->
     if App.localStorageAvailable
       localTemplate = localStorage.getItem(templateName)
-      if localTemplate
-        callback(localStorage.getItem(templateName))
+      localTemplateVersion = localStorage.getItem("#{templateName}Version")
+      if localTemplate && (localTemplateVersion? and parseInt(localTemplateVersion) is @templates[templateName].version)
+        console.log "local"
+        callback(localTemplate)
       else if @templates[templateName]?
-        $.get(@templates[templateName], (e)=>
+        $.get(@templates[templateName].path, (e)=>
+          console.log "ajax"
           localStorage.setItem(templateName, e);
+          localStorage.setItem("#{templateName}Version", @templates[templateName].version);
           callback(e)
         )
     else
@@ -572,6 +584,7 @@ class CustomMap
   
   addMenuIcons:(callback)->
     @templateLoader.getTemplate("markersOptions", (e)=>
+
       template = _.template(e);
       html = $(template(@MarkersConfig))
       
@@ -614,8 +627,11 @@ class CustomMap
     )
       
   initializeAreaSummaryBoxes:()->
-    for area of Areas
-        @areaSummaryBoxes[area] = new AreaSummary(@map, Areas[area])
+    @templateLoader = new TemplatesLoader()
+    @templateLoader.getTemplate("areasSummary", (e)=>
+      for area of Areas
+        @areaSummaryBoxes[area] = new AreaSummary(@map, Areas[area], e)
+    )
         
   setAreasInformationVisibility:(isVisible)->
     for box in @areaSummaryBoxes
@@ -635,7 +651,7 @@ class CustomMap
 # class AreaSummary {{{
 ###
 class AreaSummary
-    constructor:(map, area)->
+    constructor:(map, area, template)->
         swBound = new google.maps.LatLng(area.swLat, area.swLng)
         neBound = new google.maps.LatLng(area.neLat, area.neLng)
         @bounds_ = new google.maps.LatLngBounds(swBound, neBound)
@@ -643,12 +659,8 @@ class AreaSummary
         @div_ = null
         @height_ = 80
         @width_ = 150
-        @template = ""
-        @templateLoader = new TemplatesLoader()
-        @templateLoader.getTemplate("areasSummary", (e)=>
-          @template = _.template(e)
-          @setMap(map)
-        )
+        @template = _.template(template)
+        @setMap(map)
     
     AreaSummary:: = new google.maps.OverlayView();
     

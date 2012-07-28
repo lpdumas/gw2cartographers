@@ -35,23 +35,39 @@
 
     function TemplatesLoader() {
       this.templates = {
-        "confirmBox": "assets/javascripts/templates/confirmBox._",
-        "customInfoWindow": "assets/javascripts/templates/customInfoWindow._",
-        "markersOptions": "assets/javascripts/templates/markersOptions._",
-        "areasSummary": "assets/javascripts/templates/areasSummary._"
+        "confirmBox": {
+          path: "assets/javascripts/templates/confirmBox._",
+          version: 1
+        },
+        "customInfoWindow": {
+          path: "assets/javascripts/templates/customInfoWindow._",
+          version: 1
+        },
+        "markersOptions": {
+          path: "assets/javascripts/templates/markersOptions._",
+          version: 1
+        },
+        "areasSummary": {
+          path: "assets/javascripts/templates/areasSummary._",
+          version: 1
+        }
       };
     }
 
     TemplatesLoader.prototype.getTemplate = function(templateName, callback) {
-      var localTemplate,
+      var localTemplate, localTemplateVersion,
         _this = this;
       if (App.localStorageAvailable) {
         localTemplate = localStorage.getItem(templateName);
-        if (localTemplate) {
-          return callback(localStorage.getItem(templateName));
+        localTemplateVersion = localStorage.getItem("" + templateName + "Version");
+        if (localTemplate && ((localTemplateVersion != null) && parseInt(localTemplateVersion) === this.templates[templateName].version)) {
+          console.log("local");
+          return callback(localTemplate);
         } else if (this.templates[templateName] != null) {
-          return $.get(this.templates[templateName], function(e) {
+          return $.get(this.templates[templateName].path, function(e) {
+            console.log("ajax");
             localStorage.setItem(templateName, e);
+            localStorage.setItem("" + templateName + "Version", _this.templates[templateName].version);
             return callback(e);
           });
         }
@@ -845,12 +861,16 @@
     };
 
     CustomMap.prototype.initializeAreaSummaryBoxes = function() {
-      var area, _results;
-      _results = [];
-      for (area in Areas) {
-        _results.push(this.areaSummaryBoxes[area] = new AreaSummary(this.map, Areas[area]));
-      }
-      return _results;
+      var _this = this;
+      this.templateLoader = new TemplatesLoader();
+      return this.templateLoader.getTemplate("areasSummary", function(e) {
+        var area, _results;
+        _results = [];
+        for (area in Areas) {
+          _results.push(_this.areaSummaryBoxes[area] = new AreaSummary(_this.map, Areas[area], e));
+        }
+        return _results;
+      });
     };
 
     CustomMap.prototype.setAreasInformationVisibility = function(isVisible) {
@@ -892,9 +912,8 @@
 
   AreaSummary = (function() {
 
-    function AreaSummary(map, area) {
-      var neBound, swBound,
-        _this = this;
+    function AreaSummary(map, area, template) {
+      var neBound, swBound;
       swBound = new google.maps.LatLng(area.swLat, area.swLng);
       neBound = new google.maps.LatLng(area.neLat, area.neLng);
       this.bounds_ = new google.maps.LatLngBounds(swBound, neBound);
@@ -902,12 +921,8 @@
       this.div_ = null;
       this.height_ = 80;
       this.width_ = 150;
-      this.template = "";
-      this.templateLoader = new TemplatesLoader();
-      this.templateLoader.getTemplate("areasSummary", function(e) {
-        _this.template = _.template(e);
-        return _this.setMap(map);
-      });
+      this.template = _.template(template);
+      this.setMap(map);
     }
 
     AreaSummary.prototype = new google.maps.OverlayView();
