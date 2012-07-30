@@ -23,7 +23,7 @@ class TemplatesLoader
         version : 1
       "customInfoWindow" : 
         path : "assets/javascripts/templates/customInfoWindow._"
-        version : 1
+        version : 2
       "markersOptions" : 
         path: "assets/javascripts/templates/markersOptions._"
         version : 1
