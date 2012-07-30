@@ -18,7 +18,7 @@
         <% }%>
     </p>
     <% if(wikiLink !== "") {%>
-    <p><a target="_blank" href="<%= wikiLink %>">More infos on wiki.guildwars2.com</a></p>
+    <p><a target="_blank" href="<%= wikiLink %>"><%= Traduction["infoWindow"]["moreOnWiki"][window.LANG] %></a></p>
     <% }%>
 </div>
 <% } else { %>

@@ -28,6 +28,10 @@ window.Traduction = {
       "en" : "Share link",
       "fr" : "Lien de partage"
     },
+    "moreOnWiki" : {
+      "en" : "More infos on wiki.guildwars2.com",
+      "fr" : "Plus sur wiki-fr.guildwars2.com"
+    },
     "moveNotice" : {
       "en" : "You can now move de point",
       "fr" : "Vous pouvez maintenant bouger le point"
