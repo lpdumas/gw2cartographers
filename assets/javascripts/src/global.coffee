@@ -36,11 +36,9 @@ class TemplatesLoader
       localTemplate = localStorage.getItem(templateName)
       localTemplateVersion = localStorage.getItem("#{templateName}Version")
       if localTemplate && (localTemplateVersion? and parseInt(localTemplateVersion) is @templates[templateName].version)
-        console.log "local"
         callback(localTemplate)
       else if @templates[templateName]?
         $.get(@templates[templateName].path, (e)=>
-          console.log "ajax"
           localStorage.setItem(templateName, e);
           localStorage.setItem("#{templateName}Version", @templates[templateName].version);
           callback(e)
@@ -207,7 +205,6 @@ class CustomMap
         google.maps.event.addListener(@map, 'zoom_changed', (e)=>
             zoomLevel = @map.getZoom()
             if zoomLevel == 4
-              console.log "test"
               @canToggleMarkers = false
               @hideMarkersOptionsMenu()
               @setAllMarkersVisibility(false)
@@ -637,7 +634,6 @@ class CustomMap
         
   setAreasInformationVisibility:(isVisible)->
     for box in @areaSummaryBoxes
-      console.log(isVisible)
       box.setVisible(isVisible)
   toggleMarkersOptionsMenu: () ->
     @markersOptionsMenu.toggleClass('active')
@@ -721,7 +717,6 @@ class CustomInfoWindow
 
   CustomInfoWindow:: = new google.maps.OverlayView()
   
-  
   onAdd:()->
       @wrap.find('.padding').append(@content)
       @wrap.css(
@@ -793,14 +788,15 @@ class CustomInfoWindow
     
   toggleSection: (e) =>
     this_ = $(e.currentTarget)
+    mywrap = this_.closest('.customInfoWindow')
     action = this_.attr('data-action')
-    defaultTab = @wrap.find('.marker-desc')
-    activeTab = @wrap.find('.toggling-tab.active') 
-    targetTab = $("[data-target='#{action}']")
-
+    defaultTab = mywrap.find('.marker-desc')
+    activeTab = mywrap.find('.toggling-tab.active') 
+    targetTab = mywrap.find("[data-target='#{action}']")
+    
     switch action
       when "move", "share", "edit"
-        @wrap.find('.iw-options-list .button').removeClass('active')
+        mywrap.find('.iw-options-list .button').removeClass('active')
         if targetTab.attr("data-target") is activeTab.attr("data-target")
           targetTab.removeClass('active')
           defaultTab.addClass('active')
@@ -823,7 +819,7 @@ class CustomInfoWindow
     newDesc = newDesc.replace(/\n/g, '<br />');
     newWikiLink = @wrap.find('[name="marker-wiki"]').val()
     form.removeClass('active')
-    console.log newWikiLink
+
     newInfo = 
       id    : @marker.__gm_id
       title : newTitle
