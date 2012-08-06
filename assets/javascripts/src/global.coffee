@@ -1,21 +1,51 @@
-window.App = {}
-App.opacity = false
-App.pointerEvents = false
-App.localStorageAvailable = (()->
+window.Cartographer = {}
+
+##############################
+######## App controller ######
+#
+# Everything start from here
+#
+##############################{{{
+Cartographer.init = ()->
+  # initializing Cartographer
+  console.log "initializing"
+  myCustomMap = new CustomMap('#map')
+  markersOptionsMenuToggle = $('#options-toggle strong')
+  markersOptionsMenuToggle.click( () ->
+    myCustomMap.toggleMarkersOptionsMenu()
+  )
+###
+# }}}
+###
+
+####
+# App helpers {{{
+####
+Cartographer._localStorageAvailable = (()->
   if window['localStorage']?
-    return true
+    return yes
   else
-    return false
+    return no
 )()
-App.extractUrlParams = ()->
+Cartographer._extractUrlParams = ()->
   parameters = location.search.substring(1).split('&')
   urlArray = {}
   for element in parameters
     x = element.split('=')      
     urlArray[x[0]] = x[1]
   urlArray
+###
+# }}}
+###
 
-class TemplatesLoader
+##########################
+###### App Classes #######
+##########################
+
+###
+# class Cartographer.TemplatesLoader {{{
+###
+class Cartographer.TemplatesLoader
   constructor: ()->
     @templates =
       "confirmBox" : 
@@ -32,7 +62,7 @@ class TemplatesLoader
         version: 1
     
   getTemplate: (templateName, callback)->
-    if App.localStorageAvailable
+    if Cartographer._localStorageAvailable
       localTemplate = localStorage.getItem(templateName)
       localTemplateVersion = localStorage.getItem("#{templateName}Version")
       if localTemplate && (localTemplateVersion? and parseInt(localTemplateVersion) is @templates[templateName].version)
@@ -47,6 +77,8 @@ class TemplatesLoader
       $.get(@templates[templateName], (e)=>
         callback(e)
       )
+#}}}#
+
 ###
 # class ModalBox {{{
 ###
@@ -112,7 +144,7 @@ class Confirmbox extends Modalbox
 ###
 
 ###
-# classCustomMap {{{
+# class CustomMap {{{
 ###
 class CustomMap
   constructor: (id)->
@@ -134,7 +166,7 @@ class CustomMap
     @markersOptionsMenu = $('#markers-options')
     @mapOptions    = $('#edition-tools a')
     # @defaultLat = 15.919073517982465    # @defaultLng = 18.28125
-    @urlParams = App.extractUrlParams()
+    @urlParams = Cartographer._extractUrlParams()
     @startLat = if @urlParams['lat']? then @urlParams['lat'] else 15.443090823463786
     @startLng = if @urlParams['lgn']? then @urlParams['lng'] else 7.294921875
     @defaultCat = (()=>
@@ -189,7 +221,7 @@ class CustomMap
     @map = new google.maps.Map($(id)[0], @gMapOptions)
     @map.mapTypes.set('custom', @customMapType)
     @map.setMapTypeId('custom')
-    @templateLoader = new TemplatesLoader()
+    @templateLoader = new Cartographer.TemplatesLoader()
     @templateLoader.getTemplate("confirmBox", (e)=>
       template = _.template(e);
       @confirmBox = new Confirmbox(template)
@@ -246,7 +278,7 @@ class CustomMap
     )
     
   handleLocalStorageLoad: (callback)->
-    if App.localStorageAvailable and @getConfigFromLocalStorage()
+    if Cartographer._localStorageAvailable and @getConfigFromLocalStorage()
       confirmMessage = Traduction["notice"]["localDetected"][window.LANG]
       @confirmBox.initConfirmation(confirmMessage, (e)=>
         if e
@@ -565,7 +597,7 @@ class CustomMap
   
   saveToLocalStorage: ()->
     # Save new exported JSON to local storage if it is supported
-    if App.localStorageAvailable
+    if Cartographer._localStorageAvailable
       json = @handleExport()
       localStorage.setItem(@localStorageKey, json);
 
@@ -626,7 +658,7 @@ class CustomMap
     )
       
   initializeAreaSummaryBoxes:()->
-    @templateLoader = new TemplatesLoader()
+    @templateLoader = new Cartographer.TemplatesLoader()
     @templateLoader.getTemplate("areasSummary", (e)=>
       for area of Areas
         @areaSummaryBoxes[area] = new AreaSummary(@map, Areas[area], e)
@@ -844,8 +876,4 @@ class CustomInfoWindow
 
     
 $ ()->
-  myCustomMap = new CustomMap('#map')
-  markersOptionsMenuToggle = $('#options-toggle strong')
-  markersOptionsMenuToggle.click( () ->
-    myCustomMap.toggleMarkersOptionsMenu()
-  )
+  Cartographer.init();
