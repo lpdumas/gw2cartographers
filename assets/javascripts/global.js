@@ -218,7 +218,7 @@
 
     Map.name = 'Map';
 
-    function Map(id) {
+    function Map(HTMLMapWrapperID) {
       this.handleAddTool = __bind(this.handleAddTool, this);
 
       this.handleExport = __bind(this.handleExport, this);
@@ -231,7 +231,6 @@
       this.localStorageKey = "gw2c_markers_config_01";
       this.blankTilePath = 'tiles/00empty.jpg';
       this.iconsPath = 'assets/images/icons/32x32';
-      this.maxZoom = 7;
       this.appState = "read";
       this.markersOptionsMenu = $('#markers-options');
       this.startLat = Cartographer._URLParams['lat'] != null ? Cartographer._URLParams['lat'] : 15.443090823463786;
@@ -251,44 +250,12 @@
       })();
       this.areaSummaryBoxes = [];
       this.markersImages = {};
+      this.mapMarkersObject = {};
       this.draggableMarker = false;
       this.visibleMarkers = true;
       this.canToggleMarkers = true;
       this.currentOpenedInfoWindow = false;
-      this.gMapOptions = {
-        center: new google.maps.LatLng(this.startLat, this.startLng),
-        zoom: 5,
-        minZoom: 3,
-        maxZoom: this.maxZoom,
-        streetViewControl: false,
-        mapTypeControl: false,
-        mapTypeControlOptions: {
-          mapTypeIds: ["custom", google.maps.MapTypeId.ROADMAP]
-        },
-        panControl: false,
-        zoomControl: true,
-        zoomControlOptions: {
-          position: google.maps.ControlPosition.LEFT_CENTER,
-          zoomControlStyle: google.maps.ZoomControlStyle.SMALL
-        }
-      };
-      this.customMapType = new google.maps.ImageMapType({
-        getTileUrl: function(coord, zoom) {
-          var normalizedCoord, path;
-          normalizedCoord = coord;
-          if (normalizedCoord && (normalizedCoord.x < Math.pow(2, zoom)) && (normalizedCoord.x > -1) && (normalizedCoord.y < Math.pow(2, zoom)) && (normalizedCoord.y > -1)) {
-            return path = 'tiles/' + zoom + '_' + normalizedCoord.x + '_' + normalizedCoord.y + '.jpg';
-          } else {
-            return _this.blankTilePath;
-          }
-        },
-        tileSize: new google.maps.Size(256, 256),
-        maxZoom: this.maxZoom,
-        name: 'GW2 Map'
-      });
-      this.map = new google.maps.Map($(id)[0], this.gMapOptions);
-      this.map.mapTypes.set('custom', this.customMapType);
-      this.map.setMapTypeId('custom');
+      this.initCustomGoogleMap(HTMLMapWrapperID);
       this.templateLoader = new Cartographer.TemplatesLoader();
       this.templateLoader.getTemplate("confirmBox", function(e) {
         var template;
@@ -327,7 +294,6 @@
               }
             }
           });
-          _this.gMarker = {};
           _this.currentMapVersion = 1;
           return _this.templateLoader.getTemplate("customInfoWindow", function(e) {
             _this.editInfoWindowTemplate = _.template(e);
@@ -343,6 +309,46 @@
         });
       });
     }
+
+    Map.prototype.initCustomGoogleMap = function(HTMLMapWrapperID) {
+      var maxZoom,
+        _this = this;
+      maxZoom = 7;
+      this.gMapOptions = {
+        center: new google.maps.LatLng(this.startLat, this.startLng),
+        zoom: 5,
+        minZoom: 3,
+        maxZoom: maxZoom,
+        streetViewControl: false,
+        mapTypeControl: false,
+        mapTypeControlOptions: {
+          mapTypeIds: ["custom", google.maps.MapTypeId.ROADMAP]
+        },
+        panControl: false,
+        zoomControl: true,
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.LEFT_CENTER,
+          zoomControlStyle: google.maps.ZoomControlStyle.SMALL
+        }
+      };
+      this.customMapType = new google.maps.ImageMapType({
+        getTileUrl: function(coord, zoom) {
+          var normalizedCoord, path;
+          normalizedCoord = coord;
+          if (normalizedCoord && (normalizedCoord.x < Math.pow(2, zoom)) && (normalizedCoord.x > -1) && (normalizedCoord.y < Math.pow(2, zoom)) && (normalizedCoord.y > -1)) {
+            return path = 'tiles/' + zoom + '_' + normalizedCoord.x + '_' + normalizedCoord.y + '.jpg';
+          } else {
+            return _this.blankTilePath;
+          }
+        },
+        tileSize: new google.maps.Size(256, 256),
+        maxZoom: maxZoom,
+        name: 'GW2 Map'
+      });
+      this.map = new google.maps.Map($(HTMLMapWrapperID)[0], this.gMapOptions);
+      this.map.mapTypes.set('custom', this.customMapType);
+      return this.map.setMapTypeId('custom');
+    };
 
     Map.prototype.handleLocalStorageLoad = function(callback) {
       var confirmMessage,
@@ -498,10 +504,10 @@
       _results = [];
       for (markersCat in _ref) {
         markersObjects = _ref[markersCat];
-        if (!(this.gMarker[markersCat] != null)) {
-          this.gMarker[markersCat] = {};
-          this.gMarker[markersCat]["data_translation"] = markersObjects.data_translation;
-          this.gMarker[markersCat]["marker_types"] = {};
+        if (!(this.mapMarkersObject[markersCat] != null)) {
+          this.mapMarkersObject[markersCat] = {};
+          this.mapMarkersObject[markersCat]["data_translation"] = markersObjects.data_translation;
+          this.mapMarkersObject[markersCat]["marker_types"] = {};
         }
         _results.push((function() {
           var _ref1, _results1;
@@ -509,8 +515,8 @@
           _results1 = [];
           for (markerType in _ref1) {
             markerTypeObject = _ref1[markerType];
-            this.gMarker[markersCat]["marker_types"][markerType] = $.extend(true, {}, markerTypeObject);
-            this.gMarker[markersCat]["marker_types"][markerType]["markers"] = [];
+            this.mapMarkersObject[markersCat]["marker_types"][markerType] = $.extend(true, {}, markerTypeObject);
+            this.mapMarkersObject[markersCat]["marker_types"][markerType]["markers"] = [];
             otherInfo = {
               markersCat: markersCat,
               markersType: markerType,
@@ -527,7 +533,7 @@
               for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
                 marker = _ref2[_i];
                 newMarker = this.addMarker(marker, otherInfo, false, defaultValue);
-                _results2.push(this.gMarker[markersCat]["marker_types"][markerType]["markers"].push(newMarker));
+                _results2.push(this.mapMarkersObject[markersCat]["marker_types"][markerType]["markers"].push(newMarker));
               }
               return _results2;
             }).call(this));
@@ -540,7 +546,7 @@
 
     Map.prototype.setAllMarkersVisibility = function(isVisible) {
       var cat, markerType, markerTypeObject, markersObjects, _ref, _results;
-      _ref = this.gMarker;
+      _ref = this.mapMarkersObject;
       _results = [];
       for (cat in _ref) {
         markersObjects = _ref[cat];
@@ -562,7 +568,7 @@
 
     Map.prototype.setMarkersVisibilityByType = function(isVisible, type, cat) {
       var marker, _i, _len, _ref, _results;
-      _ref = this.gMarker[cat]["marker_types"][type]["markers"];
+      _ref = this.mapMarkersObject[cat]["marker_types"][type]["markers"];
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         marker = _ref[_i];
@@ -573,7 +579,7 @@
 
     Map.prototype.setMarkersVisibilityByCat = function(isVisible, cat) {
       var marker, markerType, markerTypeObject, _ref, _results;
-      _ref = this.gMarker[cat]["marker_types"];
+      _ref = this.mapMarkersObject[cat]["marker_types"];
       _results = [];
       for (markerType in _ref) {
         markerTypeObject = _ref[markerType];
@@ -643,7 +649,7 @@
     Map.prototype.handleExport = function(e) {
       var exportMarkerObject, finalExport, jsonString, marker, markerType, markerTypeObject, markersCat, markersObjects, nm, _i, _len, _ref, _ref1, _ref2;
       exportMarkerObject = {};
-      _ref = this.gMarker;
+      _ref = this.mapMarkersObject;
       for (markersCat in _ref) {
         markersObjects = _ref[markersCat];
         if (!(exportMarkerObject[markersCat] != null)) {
@@ -738,7 +744,7 @@
         };
       }
       newMarker = this.addMarker(newMarkerInfo, otherInfo, true, defaultValue);
-      return this.gMarker[markerCat]["marker_types"][markerType]["markers"].push(newMarker);
+      return this.mapMarkersObject[markerCat]["marker_types"][markerType]["markers"].push(newMarker);
     };
 
     Map.prototype.removeMarker = function(id, mType, mCat) {
@@ -748,7 +754,7 @@
       return this.confirmBox.initConfirmation(confirmMessage, function(e) {
         var marker, markerKey, _i, _len, _ref;
         if (e) {
-          _ref = _this.gMarker[mCat]["marker_types"][mType]["markers"];
+          _ref = _this.mapMarkersObject[mCat]["marker_types"][mType]["markers"];
           for (markerKey = _i = 0, _len = _ref.length; _i < _len; markerKey = ++_i) {
             marker = _ref[markerKey];
             if (!(marker.__gm_id === id)) {
@@ -758,7 +764,7 @@
               marker.infoWindow.setMap(null);
             }
             marker.setMap(null);
-            _this.gMarker[mCat]["marker_types"][mType]['markers'] = _.reject(_this.gMarker[mCat]["marker_types"][mType]["markers"], function(m) {
+            _this.mapMarkersObject[mCat]["marker_types"][mType]['markers'] = _.reject(_this.mapMarkersObject[mCat]["marker_types"][mType]["markers"], function(m) {
               return m === marker;
             });
             _this.saveToLocalStorage();
@@ -770,7 +776,7 @@
 
     Map.prototype.updateMarkerInfos = function(newInfo) {
       var marker, markerKey, _i, _len, _ref;
-      _ref = this.gMarker[newInfo.cat]["marker_types"][newInfo.type]["markers"];
+      _ref = this.mapMarkersObject[newInfo.cat]["marker_types"][newInfo.type]["markers"];
       for (markerKey = _i = 0, _len = _ref.length; _i < _len; markerKey = ++_i) {
         marker = _ref[markerKey];
         if (!(marker.__gm_id === newInfo.id)) {

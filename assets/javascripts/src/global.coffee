@@ -154,17 +154,19 @@ class Confirmbox extends Modalbox
 # class Cartographer.Map {{{
 ###
 class Cartographer.Map
-  constructor: (id)->
+  constructor: (HTMLMapWrapperID)->
     @localStorageKey  = "gw2c_markers_config_01"
     @blankTilePath = 'tiles/00empty.jpg'
     @iconsPath     = 'assets/images/icons/32x32'
-    @maxZoom       = 7
     @appState      = "read"
     
     @markersOptionsMenu = $('#markers-options')
     
     @startLat = if Cartographer._URLParams['lat']? then Cartographer._URLParams['lat'] else 15.443090823463786
     @startLng = if Cartographer._URLParams['lgn']? then Cartographer._URLParams['lng'] else 7.294921875
+    
+    # need to move this out of this class. Our app controller will need
+    # to call a method to toggle markers cat
     @defaultCat = (()=>
       dcat = "explore"
       if Cartographer._URLParams['cat']?
@@ -173,44 +175,18 @@ class Cartographer.Map
             dcat = Cartographer._URLParams['cat']
       dcat
     )()
+    
     @areaSummaryBoxes = []
     @markersImages = {}
-    
+    @mapMarkersObject = {}
+
     @draggableMarker  = false
     @visibleMarkers   = true
     @canToggleMarkers = true
     @currentOpenedInfoWindow = false
-    @gMapOptions   = 
-      center: new google.maps.LatLng(@startLat, @startLng)
-      zoom: 5
-      minZoom: 3
-      maxZoom: @maxZoom
-      streetViewControl: false
-      mapTypeControl: false
-      mapTypeControlOptions:
-        mapTypeIds: ["custom", google.maps.MapTypeId.ROADMAP]
 
-      panControl: false
-      zoomControl: true
-      zoomControlOptions:
-        position: google.maps.ControlPosition.LEFT_CENTER
-        zoomControlStyle: google.maps.ZoomControlStyle.SMALL
-        
-    @customMapType = new google.maps.ImageMapType(
-      getTileUrl : (coord, zoom)=>
-        normalizedCoord = coord
-        if normalizedCoord && (normalizedCoord.x < Math.pow(2, zoom)) && (normalizedCoord.x > -1) && (normalizedCoord.y < Math.pow(2, zoom)) && (normalizedCoord.y > -1)
-          path = 'tiles/' + zoom + '_' + normalizedCoord.x + '_' + normalizedCoord.y + '.jpg'
-        else 
-          return @blankTilePath
-      tileSize: new google.maps.Size(256, 256)
-      maxZoom: @maxZoom
-      name: 'GW2 Map'
-    )
+    @initCustomGoogleMap(HTMLMapWrapperID)
     
-    @map = new google.maps.Map($(id)[0], @gMapOptions)
-    @map.mapTypes.set('custom', @customMapType)
-    @map.setMapTypeId('custom')
     @templateLoader = new Cartographer.TemplatesLoader()
     @templateLoader.getTemplate("confirmBox", (e)=>
       template = _.template(e);
@@ -246,7 +222,6 @@ class Cartographer.Map
         )
     
         #marker
-        @gMarker = {}
         @currentMapVersion = 1;
 
         @templateLoader.getTemplate("customInfoWindow", (e)=>
@@ -265,7 +240,41 @@ class Cartographer.Map
         )
       )
     )
+  
+  initCustomGoogleMap: (HTMLMapWrapperID)->
+    maxZoom       = 7
+    @gMapOptions   = 
+      center: new google.maps.LatLng(@startLat, @startLng)
+      zoom: 5
+      minZoom: 3
+      maxZoom: maxZoom
+      streetViewControl: false
+      mapTypeControl: false
+      mapTypeControlOptions:
+        mapTypeIds: ["custom", google.maps.MapTypeId.ROADMAP]
+
+      panControl: false
+      zoomControl: true
+      zoomControlOptions:
+        position: google.maps.ControlPosition.LEFT_CENTER
+        zoomControlStyle: google.maps.ZoomControlStyle.SMALL
+        
+    @customMapType = new google.maps.ImageMapType(
+      getTileUrl : (coord, zoom)=>
+        normalizedCoord = coord
+        if normalizedCoord && (normalizedCoord.x < Math.pow(2, zoom)) && (normalizedCoord.x > -1) && (normalizedCoord.y < Math.pow(2, zoom)) && (normalizedCoord.y > -1)
+          path = 'tiles/' + zoom + '_' + normalizedCoord.x + '_' + normalizedCoord.y + '.jpg'
+        else 
+          return @blankTilePath
+      tileSize: new google.maps.Size(256, 256)
+      maxZoom: maxZoom
+      name: 'GW2 Map'
+    )
     
+    @map = new google.maps.Map($(HTMLMapWrapperID)[0], @gMapOptions)
+    @map.mapTypes.set('custom', @customMapType)
+    @map.setMapTypeId('custom')
+  
   handleLocalStorageLoad: (callback)->
     if Cartographer._localStorageAvailable and @getConfigFromLocalStorage()
       confirmMessage = Traduction["notice"]["localDetected"][LANG]
@@ -390,7 +399,7 @@ class Cartographer.Map
         marker["infoWindow"].open()
     )
     
-    # markerType["markers"].push(marker) for markerType in @gMarker[markersCat]["marker_types"] when markerType.slug is markersType
+    # markerType["markers"].push(marker) for markerType in @mapMarkersObject[markersCat]["marker_types"] when markerType.slug is markersType
     marker
           
   setAllMarkers: () ->
@@ -398,15 +407,15 @@ class Cartographer.Map
     @currentMapVersion = Metadata.version;
     
     for markersCat, markersObjects of @MarkersConfig
-      if not @gMarker[markersCat]?
-        @gMarker[markersCat] = {}
-        @gMarker[markersCat]["data_translation"] = markersObjects.data_translation
-        @gMarker[markersCat]["marker_types"] = {}
+      if not @mapMarkersObject[markersCat]?
+        @mapMarkersObject[markersCat] = {}
+        @mapMarkersObject[markersCat]["data_translation"] = markersObjects.data_translation
+        @mapMarkersObject[markersCat]["marker_types"] = {}
         
       for markerType, markerTypeObject of markersObjects.marker_types
         # Cloning markerTypeObject
-        @gMarker[markersCat]["marker_types"][markerType] = $.extend(true, {}, markerTypeObject)
-        @gMarker[markersCat]["marker_types"][markerType]["markers"] = []
+        @mapMarkersObject[markersCat]["marker_types"][markerType] = $.extend(true, {}, markerTypeObject)
+        @mapMarkersObject[markersCat]["marker_types"][markerType]["markers"] = []
 
         otherInfo = 
           markersCat : markersCat
@@ -421,18 +430,18 @@ class Cartographer.Map
         # Pushing the returned marker of the method addMarker into the right spot of our gMarker object
         for marker in markerTypeObject.markers
           newMarker = @addMarker(marker, otherInfo, false, defaultValue)
-          @gMarker[markersCat]["marker_types"][markerType]["markers"].push(newMarker)
+          @mapMarkersObject[markersCat]["marker_types"][markerType]["markers"].push(newMarker)
         
   setAllMarkersVisibility:(isVisible)->
-    for cat, markersObjects of @gMarker
+    for cat, markersObjects of @mapMarkersObject
       @setMarkersVisibilityByType(isVisible, markerType, cat) for markerType, markerTypeObject of markersObjects.marker_types when not $("[data-type='#{markerType}']").hasClass('off')
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
-    marker.setVisible(isVisible) for marker in @gMarker[cat]["marker_types"][type]["markers"]
+    marker.setVisible(isVisible) for marker in @mapMarkersObject[cat]["marker_types"][type]["markers"]
 
   
   setMarkersVisibilityByCat:(isVisible, cat)->
-    for markerType, markerTypeObject of @gMarker[cat]["marker_types"]
+    for markerType, markerTypeObject of @mapMarkersObject[cat]["marker_types"]
       marker.setVisible(isVisible) for marker in markerTypeObject.markers
 
   destroyLocalStorage: (e) =>
@@ -471,7 +480,7 @@ class Cartographer.Map
     
   handleExport:(e)=>
     exportMarkerObject = {}
-    for markersCat, markersObjects of @gMarker
+    for markersCat, markersObjects of @mapMarkersObject
       if not exportMarkerObject[markersCat]?
         exportMarkerObject[markersCat] = {}
         exportMarkerObject[markersCat]["data_translation"] = markersObjects["data_translation"]
@@ -549,17 +558,17 @@ class Cartographer.Map
         draggable : true
 
     newMarker = @addMarker(newMarkerInfo, otherInfo, true, defaultValue)
-    @gMarker[markerCat]["marker_types"][markerType]["markers"].push(newMarker)
+    @mapMarkersObject[markerCat]["marker_types"][markerType]["markers"].push(newMarker)
     
   removeMarker:(id, mType, mCat)->
     confirmMessage = Traduction["notice"]["deleteMarker"][LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if e
-        for marker, markerKey in @gMarker[mCat]["marker_types"][mType]["markers"] when marker.__gm_id is id
+        for marker, markerKey in @mapMarkersObject[mCat]["marker_types"][mType]["markers"] when marker.__gm_id is id
           if marker.infoWindow?
             marker.infoWindow.setMap(null)
           marker.setMap(null)
-          @gMarker[mCat]["marker_types"][mType]['markers'] = _.reject(@gMarker[mCat]["marker_types"][mType]["markers"], (m) =>
+          @mapMarkersObject[mCat]["marker_types"][mType]['markers'] = _.reject(@mapMarkersObject[mCat]["marker_types"][mType]["markers"], (m) =>
             return m == marker
             # return m.__gm_id == id
           )
@@ -568,7 +577,7 @@ class Cartographer.Map
     )
   
   updateMarkerInfos: (newInfo)->
-    for marker, markerKey in @gMarker[newInfo.cat]["marker_types"][newInfo.type]["markers"] when marker.__gm_id is newInfo.id
+    for marker, markerKey in @mapMarkersObject[newInfo.cat]["marker_types"][newInfo.type]["markers"] when marker.__gm_id is newInfo.id
       if marker["data_translation"]?
         marker["data_translation"][LANG]["desc"] = newInfo.desc
         marker["data_translation"][LANG]["title"] = newInfo.title
