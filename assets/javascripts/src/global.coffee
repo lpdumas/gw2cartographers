@@ -9,7 +9,7 @@ window.Cartographer = {}
 Cartographer.init = ()->
   # initializing Cartographer
   console.log "initializing"
-  myCustomMap = new CustomMap('#map')
+  myCartographerMap = new Cartographer.Map('#map')
   markersOptionsMenuToggle = $('#options-toggle strong')
   markersOptionsMenuToggle.click( () ->
     myCustomMap.toggleMarkersOptionsMenu()
@@ -27,13 +27,20 @@ Cartographer._localStorageAvailable = (()->
   else
     return no
 )()
-Cartographer._extractUrlParams = ()->
+Cartographer._URLParams = (()->
   parameters = location.search.substring(1).split('&')
   urlArray = {}
   for element in parameters
     x = element.split('=')      
     urlArray[x[0]] = x[1]
   urlArray
+)()
+window.LANG = (()=>
+  if Cartographer._URLParams['lang']? and (Cartographer._URLParams['lang'] is 'fr' or Cartographer._URLParams['lang'] is 'en')
+    return Cartographer._URLParams['lang']
+  else
+    return "en"
+)()
 ###
 # }}}
 ###
@@ -144,44 +151,27 @@ class Confirmbox extends Modalbox
 ###
 
 ###
-# class CustomMap {{{
+# class Cartographer.Map {{{
 ###
-class CustomMap
+class Cartographer.Map
   constructor: (id)->
     @localStorageKey  = "gw2c_markers_config_01"
-    
     @blankTilePath = 'tiles/00empty.jpg'
     @iconsPath     = 'assets/images/icons/32x32'
     @maxZoom       = 7
     @appState      = "read"
-    # HTML element
-    @html             = $('html')
-    @lngContainer     = $('#long')
-    @latContainer     = $('#lat')
-    @devModInput      = $('#dev-mod')
-    @addMarkerLink    = $('#add-marker')
-
-    @exportBtn        = $('#export')
-    @exportWindow     = $('#export-windows')
+    
     @markersOptionsMenu = $('#markers-options')
-    @mapOptions    = $('#edition-tools a')
-    # @defaultLat = 15.919073517982465    # @defaultLng = 18.28125
-    @urlParams = Cartographer._extractUrlParams()
-    @startLat = if @urlParams['lat']? then @urlParams['lat'] else 15.443090823463786
-    @startLng = if @urlParams['lgn']? then @urlParams['lng'] else 7.294921875
+    
+    @startLat = if Cartographer._URLParams['lat']? then Cartographer._URLParams['lat'] else 15.443090823463786
+    @startLng = if Cartographer._URLParams['lgn']? then Cartographer._URLParams['lng'] else 7.294921875
     @defaultCat = (()=>
       dcat = "explore"
-      if @urlParams['cat']?
+      if Cartographer._URLParams['cat']?
         for cat, catObject of Markers
-          if cat is @urlParams['cat']
-            dcat = @urlParams['cat']
+          if cat is Cartographer._URLParams['cat']
+            dcat = Cartographer._URLParams['cat']
       dcat
-    )()
-    window.LANG = (()=>
-      if @urlParams['lang']? and (@urlParams['lang'] is 'fr' or @urlParams['lang'] is 'en')
-        return @urlParams['lang']
-      else
-        return "en"
     )()
     @areaSummaryBoxes = []
     @markersImages = {}
@@ -259,7 +249,6 @@ class CustomMap
         @gMarker = {}
         @currentMapVersion = 1;
 
-        @editInfoWindowTemplate = ""
         @templateLoader.getTemplate("customInfoWindow", (e)=>
           @editInfoWindowTemplate = _.template(e)
           
@@ -279,7 +268,7 @@ class CustomMap
     
   handleLocalStorageLoad: (callback)->
     if Cartographer._localStorageAvailable and @getConfigFromLocalStorage()
-      confirmMessage = Traduction["notice"]["localDetected"][window.LANG]
+      confirmMessage = Traduction["notice"]["localDetected"][LANG]
       @confirmBox.initConfirmation(confirmMessage, (e)=>
         if e
           loadedConfig = @getConfigFromLocalStorage()
@@ -302,15 +291,15 @@ class CustomMap
       templateInfo = 
         id : marker.__gm_id
         title: (()=>
-          if marker["data_translation"][window.LANG]["title"] || marker["data_translation"][window.LANG]["name"]
-            return marker["data_translation"][window.LANG]["title"] || marker["data_translation"][window.LANG]["name"]
+          if marker["data_translation"][LANG]["title"] || marker["data_translation"][LANG]["name"]
+            return marker["data_translation"][LANG]["title"] || marker["data_translation"][LANG]["name"]
           else if marker.type is "vistas" || marker.type is "skillpoints"
-            return Traduction["infoWindow"][marker.type][window.LANG]
+            return Traduction["infoWindow"][marker.type][LANG]
           else
             return ""
         )()
-        desc: marker["data_translation"][window.LANG]["desc"]
-        wikiLink  : marker["data_translation"][window.LANG]["link_wiki"] || ""
+        desc: marker["data_translation"][LANG]["desc"]
+        wikiLink  : marker["data_translation"][LANG]["link_wiki"] || ""
         hasDefaultValue : marker["hasDefaultValue"]
         type  : marker.type
         lat   : marker.position.lat()
@@ -349,9 +338,9 @@ class CustomMap
     isMarkerDraggable = if markerInfo.draggable? then markerInfo.draggable else false
     
     if defaultValue?
-      markerTitle = defaultValue[window.LANG]["title"] || defaultValue[window.LANG]["name"]
+      markerTitle = defaultValue[LANG]["title"] || defaultValue[LANG]["name"]
     else
-      markerTitle = markerInfo["data_translation"][window.LANG]["title"]
+      markerTitle = markerInfo["data_translation"][LANG]["title"]
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       map: @map
@@ -426,7 +415,7 @@ class CustomMap
         
         defaultValue = null
         
-        if markerTypeObject["data_translation"][window.LANG]["title"]? and markerTypeObject["data_translation"][window.LANG]["desc"]?
+        if markerTypeObject["data_translation"][LANG]["title"]? and markerTypeObject["data_translation"][LANG]["desc"]?
           defaultValue = markerTypeObject["data_translation"]
           
         # Pushing the returned marker of the method addMarker into the right spot of our gMarker object
@@ -447,7 +436,7 @@ class CustomMap
       marker.setVisible(isVisible) for marker in markerTypeObject.markers
 
   destroyLocalStorage: (e) =>
-    confirmMessage = Traduction["notice"]["dataDestruction"][window.LANG]
+    confirmMessage = Traduction["notice"]["dataDestruction"][LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if e and @getConfigFromLocalStorage()
         localStorage.removeItem(@localStorageKey);
@@ -457,7 +446,7 @@ class CustomMap
     this_ = $(e.currentTarget)
     ajaxUrl = this_.attr('data-ajaxUrl')
     modal = new Modalbox()
-    confirmMessage = Traduction["notice"]["dataApproval"][window.LANG]
+    confirmMessage = Traduction["notice"]["dataApproval"][LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if(e == true)
         modal.setContent('<h1>Please wait while your request is being handled.</h1><img class="loading" src="/assets/images/loading-black.gif">')
@@ -514,8 +503,6 @@ class CustomMap
     jsonString = JSON.stringify(finalExport);
     # console.log jsonString
     return jsonString
-    # @exportWindow.find('.content').html(jsonString)
-    # @exportWindow.show();
     
   handleAddTool: (e)=>
     this_      = $(e.currentTarget)
@@ -527,8 +514,8 @@ class CustomMap
     coord      = @map.getCenter()
     getValue = (cat, type)=>
       defaultValue = null
-      defaultDesc = @MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["desc"]
-      defaultTitle = @MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["title"] or @MarkersConfig[cat]["marker_types"][type]["data_translation"][window.LANG]["name"]
+      defaultDesc = @MarkersConfig[cat]["marker_types"][type]["data_translation"][LANG]["desc"]
+      defaultTitle = @MarkersConfig[cat]["marker_types"][type]["data_translation"][LANG]["title"] or @MarkersConfig[cat]["marker_types"][type]["data_translation"][LANG]["name"]
       if (defaultDesc? or defaultTitle is "") and defaultTitle?
         defaultValue = $.extend(true, {}, @MarkersConfig[cat]["marker_types"][type]["data_translation"])
       return defaultValue
@@ -565,7 +552,7 @@ class CustomMap
     @gMarker[markerCat]["marker_types"][markerType]["markers"].push(newMarker)
     
   removeMarker:(id, mType, mCat)->
-    confirmMessage = Traduction["notice"]["deleteMarker"][window.LANG]
+    confirmMessage = Traduction["notice"]["deleteMarker"][LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if e
         for marker, markerKey in @gMarker[mCat]["marker_types"][mType]["markers"] when marker.__gm_id is id
@@ -583,9 +570,9 @@ class CustomMap
   updateMarkerInfos: (newInfo)->
     for marker, markerKey in @gMarker[newInfo.cat]["marker_types"][newInfo.type]["markers"] when marker.__gm_id is newInfo.id
       if marker["data_translation"]?
-        marker["data_translation"][window.LANG]["desc"] = newInfo.desc
-        marker["data_translation"][window.LANG]["title"] = newInfo.title
-        marker["data_translation"][window.LANG]["link_wiki"] = newInfo.wikiLink 
+        marker["data_translation"][LANG]["desc"] = newInfo.desc
+        marker["data_translation"][LANG]["title"] = newInfo.title
+        marker["data_translation"][LANG]["link_wiki"] = newInfo.wikiLink 
       else
         marker.desc = newInfo.desc
         marker.title = newInfo.title

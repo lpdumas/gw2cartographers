@@ -1,5 +1,8 @@
 <div class="area-summary-overlay<% if(rangeLvl != ""){ %><%= " city" %><% } %>">
     <p class="area-summary-title">
+        <%
+        console.log("test")
+        %>
         <span class='area-title'><%= data_translation[window.LANG]["name"] %></span>
         <% if(rangeLvl != "") {%>
         <span class="lvl-range"><%= rangeLvl %></span>
@@ -7,7 +10,8 @@
     </p>
     <ul class="area-summary-list">
         <% _.each(summary, function(val, type, list) { %>
-            <% if(val != 0) { %>
+            <% 
+            if(val != 0) { %>
             <li><img class="area-summary-icons" src="assets/images/icons/32x32/<%= type %>.png" width="15" height="15"><%= val %></li>
             <% } %>
         <% }); %>
