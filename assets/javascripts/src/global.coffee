@@ -155,18 +155,19 @@ class Confirmbox extends Modalbox
 ###
 class Cartographer.Map
   constructor: (HTMLMapWrapperID)->
-    @localStorageKey  = "gw2c_markers_config_01"
-    @blankTilePath = 'tiles/00empty.jpg'
-    @iconsPath     = 'assets/images/icons/32x32'
-    @appState      = "read"
-    
+    # --TODO--
+    # Get rid of non-template HTML
     @markersOptionsMenu = $('#markers-options')
     
+    # --TODO--
+    # This need to go. To replace start Lat/Lng, we could implement a panToPoint method that
+    # the app controller would call everytime new coord are passed through URL hashes
     @startLat = if Cartographer._URLParams['lat']? then Cartographer._URLParams['lat'] else 15.443090823463786
     @startLng = if Cartographer._URLParams['lgn']? then Cartographer._URLParams['lng'] else 7.294921875
     
+    # --TODO--
     # need to move this out of this class. Our app controller will need
-    # to call a method to toggle markers cat
+    # to call a method to toggle markers cat when the URL hash changed
     @defaultCat = (()=>
       dcat = "explore"
       if Cartographer._URLParams['cat']?
@@ -175,6 +176,11 @@ class Cartographer.Map
             dcat = Cartographer._URLParams['cat']
       dcat
     )()
+    
+    #---Globals----
+    @localStorageKey  = "gw2c_markers_config_01"
+    @blankTilePath = 'tiles/00empty.jpg'
+    @iconsPath     = 'assets/images/icons/32x32'
     
     @areaSummaryBoxes = []
     @markersImages = {}
@@ -185,9 +191,14 @@ class Cartographer.Map
     @canToggleMarkers = true
     @currentOpenedInfoWindow = false
 
+    @currentMapVersion = 1;
+
+    # Custom Google Map instanciation
+    
     @initCustomGoogleMap(HTMLMapWrapperID)
     
     @templateLoader = new Cartographer.TemplatesLoader()
+    
     @templateLoader.getTemplate("confirmBox", (e)=>
       template = _.template(e);
       @confirmBox = new Confirmbox(template)
@@ -220,10 +231,6 @@ class Cartographer.Map
               @setAreasInformationVisibility(false)
               if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
         )
-    
-        #marker
-        @currentMapVersion = 1;
-
         @templateLoader.getTemplate("customInfoWindow", (e)=>
           @editInfoWindowTemplate = _.template(e)
           

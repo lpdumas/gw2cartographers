@@ -228,10 +228,6 @@
       this.destroyLocalStorage = __bind(this.destroyLocalStorage, this);
 
       var _this = this;
-      this.localStorageKey = "gw2c_markers_config_01";
-      this.blankTilePath = 'tiles/00empty.jpg';
-      this.iconsPath = 'assets/images/icons/32x32';
-      this.appState = "read";
       this.markersOptionsMenu = $('#markers-options');
       this.startLat = Cartographer._URLParams['lat'] != null ? Cartographer._URLParams['lat'] : 15.443090823463786;
       this.startLng = Cartographer._URLParams['lgn'] != null ? Cartographer._URLParams['lng'] : 7.294921875;
@@ -248,6 +244,9 @@
         }
         return dcat;
       })();
+      this.localStorageKey = "gw2c_markers_config_01";
+      this.blankTilePath = 'tiles/00empty.jpg';
+      this.iconsPath = 'assets/images/icons/32x32';
       this.areaSummaryBoxes = [];
       this.markersImages = {};
       this.mapMarkersObject = {};
@@ -255,6 +254,7 @@
       this.visibleMarkers = true;
       this.canToggleMarkers = true;
       this.currentOpenedInfoWindow = false;
+      this.currentMapVersion = 1;
       this.initCustomGoogleMap(HTMLMapWrapperID);
       this.templateLoader = new Cartographer.TemplatesLoader();
       this.templateLoader.getTemplate("confirmBox", function(e) {
@@ -294,7 +294,6 @@
               }
             }
           });
-          _this.currentMapVersion = 1;
           return _this.templateLoader.getTemplate("customInfoWindow", function(e) {
             _this.editInfoWindowTemplate = _.template(e);
             _this.setAllMarkers();
