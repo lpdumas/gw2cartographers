@@ -4,12 +4,14 @@
   window.Cartographer = {};
 
   Cartographer.router = Backbone.Router.extend({
-    routes: {
-      ":lang": "handleLang",
-      ":lang/lat/:lat/lgn/:lgn": "handleCoord"
-    },
+    routes: {},
     initialize: function() {
-      console.log("test");
+      var routes,
+        _this = this;
+      routes = [[/^(en|fr)*\/*$/, 'handleLang', this.handleLang], [/^(en|fr)*\/lat\/([0-9.]+)\/lgn\/([0-9.]+)\/*$/, 'handleCoord', this.handleLangWithParams]];
+      _.each(routes, function(route) {
+        return _this.route.apply(_this, route);
+      });
       return Backbone.history.start();
     },
     handleLang: function(lang) {
@@ -22,8 +24,11 @@
       }
     },
     handleCoord: function(lang, lat, lgn) {
-      console.log("handling " + lang);
-      return console.log("move to " + lat + ", " + lgn);
+      this.handleLang(lang);
+      return Cartographer.highlighMarker({
+        lat: lat,
+        lgn: lgn
+      });
     }
   });
 
@@ -33,6 +38,10 @@
 
   Cartographer.switchLang = function(lang) {
     return console.log("switching lang to " + lang);
+  };
+
+  Cartographer.highlighMarker = function(coord) {
+    return console.log("highlighting marker at " + coord.lat + ", " + coord.lgn);
   };
 
   $(function() {

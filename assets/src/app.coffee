@@ -1,20 +1,19 @@
 window.Cartographer = {}
 
 Cartographer.router = Backbone.Router.extend(
-  routes:
-    ":lang" : "handleLang"
-    ":lang/lat/:lat/lgn/:lgn" : "handleCoord"
+  routes: {}
+    # ":lang" : "handleLang"
+    # ":lang/lat/:lat/lgn/:lgn" : "handleCoord"
 
   initialize: ()->
-    console.log "test"
-    # router = this
-    # routes = [
-      # [ /^(en|fr)*\/*$/, 'handleLang', this.handleLang ]
-      # [ /^(en|fr)*\/lat\/[0-9.]+\/lgn\/[0-9.]+\/*$/, 'handleLangWithParams', this.handleLangWithParams ]
-    # ]
-    # _.each(routes, (route)->
-      # router.route.apply(router,route)
-    # )
+    routes = [
+      [ /^(en|fr)*\/*$/, 'handleLang', this.handleLang ]
+      [ /^(en|fr)*\/lat\/([0-9.]+)\/lgn\/([0-9.]+)\/*$/, 'handleCoord', this.handleLangWithParams ]
+    ]
+    _.each(routes, (route)=>
+      this.route.apply(this,route)
+    )
+    
     Backbone.history.start()
     
   handleLang: (lang)->
@@ -24,8 +23,11 @@ Cartographer.router = Backbone.Router.extend(
       this.navigate("fr", {trigger : true})
       
   handleCoord: (lang, lat, lgn)->
-    console.log "handling #{lang}"
-    console.log "move to #{lat}, #{lgn}"
+    @handleLang(lang)
+    Cartographer.highlighMarker(
+      lat : lat
+      lgn : lgn
+    )
 ) 
 
 Cartographer.initiate = ()->
@@ -34,5 +36,9 @@ Cartographer.initiate = ()->
 Cartographer.switchLang = (lang)->
   console.log "switching lang to #{lang}"
 
+Cartographer.highlighMarker = (coord)->
+  console.log "highlighting marker at #{coord.lat}, #{coord.lgn}"
+
 $ ()->
+  
   Cartographer.initiate()
