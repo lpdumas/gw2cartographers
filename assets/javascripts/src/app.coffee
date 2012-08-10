@@ -224,7 +224,6 @@ class Cartographer.CustomMap
     @bindMapEvents()
     
     google.maps.event.addListenerOnce(@map, 'idle', ()=>
-      opts.onLoad()
       @editInfoWindowTemplate = _.template(Cartographer.templates.get("customInfoWindow"))
       confirmBoxTemplate = _.template(Cartographer.templates.get("confirmBox"));
       @confirmBox = new Cartographer.Confirmbox(confirmBoxTemplate)
@@ -245,6 +244,8 @@ class Cartographer.CustomMap
         $('#send').bind('click', @sendMapForApproval)
       
         @map.setZoom(4)
+        opts.onLoad()
+        
       
       )
     )
@@ -277,10 +278,10 @@ class Cartographer.CustomMap
     
   panToMarker: (coord)->
     for markersCat, markersObjects of @mapMarkersObject
+      console.log "test"
       for markerType, markerTypeObject of markersObjects.marker_types
         for marker in markerTypeObject.markers
           if coord.lat is marker.position.lat().toString() and coord.lng is marker.position.lng().toString()
-            t = 
             @map.setZoom(6)
             @map.panTo(marker.position)
             if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()

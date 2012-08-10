@@ -287,7 +287,6 @@
       this.bindMapEvents();
       google.maps.event.addListenerOnce(this.map, 'idle', function() {
         var confirmBoxTemplate;
-        opts.onLoad();
         _this.editInfoWindowTemplate = _.template(Cartographer.templates.get("customInfoWindow"));
         confirmBoxTemplate = _.template(Cartographer.templates.get("confirmBox"));
         _this.confirmBox = new Cartographer.Confirmbox(confirmBoxTemplate);
@@ -301,7 +300,8 @@
           _this.initializeAreaSummaryBoxes();
           $('#destroy').bind('click', _this.destroyLocalStorage);
           $('#send').bind('click', _this.sendMapForApproval);
-          return _this.map.setZoom(4);
+          _this.map.setZoom(4);
+          return opts.onLoad();
         });
       });
     }
@@ -341,11 +341,12 @@
     };
 
     CustomMap.prototype.panToMarker = function(coord) {
-      var marker, markerType, markerTypeObject, markersCat, markersObjects, t, _ref, _results;
+      var marker, markerType, markerTypeObject, markersCat, markersObjects, _ref, _results;
       _ref = this.mapMarkersObject;
       _results = [];
       for (markersCat in _ref) {
         markersObjects = _ref[markersCat];
+        console.log("test");
         _results.push((function() {
           var _ref1, _results1;
           _ref1 = markersObjects.marker_types;
@@ -359,7 +360,7 @@
               for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
                 marker = _ref2[_i];
                 if (coord.lat === marker.position.lat().toString() && coord.lng === marker.position.lng().toString()) {
-                  t = this.map.setZoom(6);
+                  this.map.setZoom(6);
                   this.map.panTo(marker.position);
                   if (this.currentOpenedInfoWindow) {
                     this.currentOpenedInfoWindow.close();
