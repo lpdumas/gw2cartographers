@@ -58,25 +58,33 @@ class Cartographer.TemplatesLoader
       "confirmBox" : 
         path : "assets/javascripts/templates/confirmBox._"
         version : 1
+        src : ""
       "customInfoWindow" : 
         path : "assets/javascripts/templates/customInfoWindow._"
         version : 2
+        src : ""
       "markersOptions" : 
         path: "assets/javascripts/templates/markersOptions._"
         version : 1
+        src : ""
       "areasSummary" : 
         path: "assets/javascripts/templates/areasSummary._"
         version: 1
+        src : ""
     
   getTemplate: (templateName, callback)->
     if Cartographer._localStorageAvailable
       localTemplate = localStorage.getItem(templateName)
       localTemplateVersion = localStorage.getItem("#{templateName}Version")
-      if localTemplate && (localTemplateVersion? and parseInt(localTemplateVersion) is @templates[templateName].version)
+      if @templates[templateName]? and @templates[templateName].src isnt ""
+          callback(@templates[templateName].src)
+      else if localTemplate && (localTemplateVersion? and parseInt(localTemplateVersion) is @templates[templateName].version)
+        @templates[templateName].src = localTemplate
         callback(localTemplate)
       else if @templates[templateName]?
         $.get(@templates[templateName].path, (e)=>
           localStorage.setItem(templateName, e);
+          @templates[templateName].src = e
           localStorage.setItem("#{templateName}Version", @templates[templateName].version);
           callback(e)
         )

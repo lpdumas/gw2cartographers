@@ -69,19 +69,23 @@
       this.templates = {
         "confirmBox": {
           path: "assets/javascripts/templates/confirmBox._",
-          version: 1
+          version: 1,
+          src: ""
         },
         "customInfoWindow": {
           path: "assets/javascripts/templates/customInfoWindow._",
-          version: 2
+          version: 2,
+          src: ""
         },
         "markersOptions": {
           path: "assets/javascripts/templates/markersOptions._",
-          version: 1
+          version: 1,
+          src: ""
         },
         "areasSummary": {
           path: "assets/javascripts/templates/areasSummary._",
-          version: 1
+          version: 1,
+          src: ""
         }
       };
     }
@@ -92,11 +96,15 @@
       if (Cartographer._localStorageAvailable) {
         localTemplate = localStorage.getItem(templateName);
         localTemplateVersion = localStorage.getItem("" + templateName + "Version");
-        if (localTemplate && ((localTemplateVersion != null) && parseInt(localTemplateVersion) === this.templates[templateName].version)) {
+        if ((this.templates[templateName] != null) && this.templates[templateName].src !== "") {
+          return callback(this.templates[templateName].src);
+        } else if (localTemplate && ((localTemplateVersion != null) && parseInt(localTemplateVersion) === this.templates[templateName].version)) {
+          this.templates[templateName].src = localTemplate;
           return callback(localTemplate);
         } else if (this.templates[templateName] != null) {
           return $.get(this.templates[templateName].path, function(e) {
             localStorage.setItem(templateName, e);
+            _this.templates[templateName].src = e;
             localStorage.setItem("" + templateName + "Version", _this.templates[templateName].version);
             return callback(e);
           });
