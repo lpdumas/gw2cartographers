@@ -1,5 +1,24 @@
-window.Cartographer = {}
+# CONSTANT
+window.LANG = "en"
 
+##################
+#--CARTOGRAPHER--
+###############{{{
+Cartographer.initiate = ()->
+  @router = new Cartographer.router()
+  console.log "loading map"
+Cartographer.switchLang = (lang)->
+  if window.LANG isnt lang
+    console.log "switching lang to #{lang}"
+    window.LANG = lang
+
+Cartographer.highlighMarker = (coord)->
+  console.log "highlighting marker at #{coord.lat}, #{coord.lgn}"
+# }}}
+
+#################
+#----ROUTER------
+##############{{{
 Cartographer.router = Backbone.Router.extend(
   routes: {}
     # ":lang" : "handleLang"
@@ -17,10 +36,7 @@ Cartographer.router = Backbone.Router.extend(
     Backbone.history.start()
     
   handleLang: (lang)->
-    if lang? and (lang is "fr" or lang is "en")
-      Cartographer.switchLang(lang)
-    else
-      this.navigate("fr", {trigger : true})
+    Cartographer.switchLang(lang)
       
   handleCoord: (lang, lat, lgn)->
     @handleLang(lang)
@@ -29,16 +45,7 @@ Cartographer.router = Backbone.Router.extend(
       lgn : lgn
     )
 ) 
-
-Cartographer.initiate = ()->
-  @cartographerRouter = new Cartographer.router()
-
-Cartographer.switchLang = (lang)->
-  console.log "switching lang to #{lang}"
-
-Cartographer.highlighMarker = (coord)->
-  console.log "highlighting marker at #{coord.lat}, #{coord.lgn}"
+# }}}
 
 $ ()->
-  
   Cartographer.initiate()
