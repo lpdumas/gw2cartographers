@@ -11,8 +11,14 @@ window.LOCAL_STORAGE = (()->
 #--CARTOGRAPHER--
 ###############{{{
 Cartographer.initiate = ()->
+  # Instanciating the template loader
   @templates = new Cartographer.TemplatesLoader()
+  
+  # Telling the templateLoader to load defaults template
   @templates.loadDefaults(()=>
+
+    # Intanciating the map when all defaults templates
+    # are loaded
     @currentMap = new Cartographer.CustomMap('#map',
       "onLoad" : @mapHasLoaded
     )
@@ -88,7 +94,6 @@ class Cartographer.TemplatesLoader
           callback(e)
         )
     else
-      console.log @templates[templateName].path
       $.get(@templates[templateName].path, (e)=>
         callback(e)
       )
@@ -180,12 +185,6 @@ class Cartographer.CustomMap
     # Get rid of non-template HTML
     @markersOptionsMenu = $('#markers-options')
     
-    # --TODO--
-    # This need to go. To replace start Lat/Lng, we could implement a panToPoint method that
-    # the app controller would call everytime new coord are passed through URL hashes
-    # @startLat = if Cartographer._URLParams['lat']? then Cartographer._URLParams['lat'] else 15.443090823463786
-    # @startLng = if Cartographer._URLParams['lng']? then Cartographer._URLParams['lng'] else 7.294921875
-    
     @startLat = 15.443090823463786
     @startLng = 7.294921875
     
@@ -205,7 +204,6 @@ class Cartographer.CustomMap
     #---Globals----
     @localStorageKey  = "gw2c_markers_config_01"
     @blankTilePath = 'tiles/00empty.jpg'
-    @iconsPath     = 'assets/images/icons/32x32'
     
     @areaSummaryBoxes = []
     @markersImages = {}
@@ -217,36 +215,32 @@ class Cartographer.CustomMap
     @currentOpenedInfoWindow = false
 
     @currentMapVersion = 1;
-
-    # Custom Google Map instanciation
     
     @initCustomGoogleMap(HTMLMapWrapperID)
     @bindMapEvents()
     
+    @editInfoWindowTemplate = _.template(Cartographer.templates.get("customInfoWindow"))
+    confirmBoxTemplate = _.template(Cartographer.templates.get("confirmBox"));
+    @confirmBox = new Cartographer.Confirmbox(confirmBoxTemplate)
+    
+    # UI
+    $('#destroy').bind('click', @destroyLocalStorage)
+    $('#send').bind('click', @sendMapForApproval)
+    
     google.maps.event.addListenerOnce(@map, 'idle', ()=>
-      @editInfoWindowTemplate = _.template(Cartographer.templates.get("customInfoWindow"))
-      confirmBoxTemplate = _.template(Cartographer.templates.get("confirmBox"));
-      @confirmBox = new Cartographer.Confirmbox(confirmBoxTemplate)
-  
       @handleLocalStorageLoad(()=>
-      
+        
         @addMenuIcons()
         @addTools = $('.menu-marker a.add')
         @addTools.each((index, target)=>
           $(target).bind('click', @handleAddTool)
         )
-
-        @setAllMarkers()
+        
         @initializeAreaSummaryBoxes()
+        @setAllMarkers()
 
-        # UI
-        $('#destroy').bind('click', @destroyLocalStorage)
-        $('#send').bind('click', @sendMapForApproval)
-      
         @map.setZoom(4)
         opts.onLoad()
-        
-      
       )
     )
     
@@ -263,7 +257,6 @@ class Cartographer.CustomMap
           @canToggleMarkers = true
           @showMarkersOptionsMenu()
           @setAllMarkersVisibility(true)
-          console.log "zoommed > 4"
           @setAreasInformationVisibility(false)
         else if zoomLevel < 4
           @canToggleMarkers = false
@@ -278,7 +271,6 @@ class Cartographer.CustomMap
     
   panToMarker: (coord)->
     for markersCat, markersObjects of @mapMarkersObject
-      console.log "test"
       for markerType, markerTypeObject of markersObjects.marker_types
         for marker in markerTypeObject.markers
           if coord.lat is marker.position.lat().toString() and coord.lng is marker.position.lng().toString()
@@ -287,8 +279,10 @@ class Cartographer.CustomMap
             if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
             if !marker.infoWindow?
               @createInfoWindow(marker)
+              @currentOpenedInfoWindow = marker.infoWindow
             else
               marker.infoWindow.open()
+              @currentOpenedInfoWindow = marker.infoWindow
   
   initCustomGoogleMap: (HTMLMapWrapperID)->
     maxZoom       = 7
@@ -560,7 +554,6 @@ class Cartographer.CustomMap
     finalExport["markers"] = exportMarkerObject;
 
     jsonString = JSON.stringify(finalExport);
-    # console.log jsonString
     return jsonString
     
   handleAddTool: (e)=>
@@ -837,13 +830,13 @@ class CustomInfoWindow
        display : "none"
      )
  open:()=>
-   if @wrap
-     @panMap()
-     @onOpen(this)
-     @isVisible = true
-     @wrap.css(
-       display : "block"
-     )
+  if @wrap
+    @panMap()
+    @onOpen(this)
+    @isVisible = true
+    @wrap.css(
+      display : "block"
+    )
 
  updatePos: ()->
    overlayProjection = @getProjection()
