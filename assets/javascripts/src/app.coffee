@@ -1,5 +1,18 @@
 # CONSTANT
-window.LANG = "en"
+window.LANG = (()->
+  # This is needed because we want to reload the page each time
+  # the lang is change. So our lang switch method is gonna compare the 
+  # hash lang to this constant. If it detect a change, 
+  # it will reload the page
+  hash = window.location.hash
+  regex = /^#(en|fr)\/*/
+  match = regex.exec(hash);
+  if match
+    match[1]
+  else
+    "en"
+)()
+
 window.LOCAL_STORAGE = (()->
   if window['localStorage']?
     return yes
@@ -30,8 +43,9 @@ Cartographer.mapHasLoaded = ()->
 
 Cartographer.switchLang = (lang)->
   if window.LANG isnt lang
-    console.log "switching lang to #{lang}"
-    window.LANG = lang
+    url = "http://#{window.location.hostname}/#{window.location.hash}"
+    window.location = url
+    window.location.reload(true)
 
 Cartographer.highlighMarker = (coord)->
   @currentMap.panToMarker(coord)
@@ -56,7 +70,7 @@ class Cartographer.TemplatesLoader
       "customInfoWindow" : 
         name :"customInfoWindow"
         path : "assets/javascripts/templates/customInfoWindow._"
-        version : 2
+        version : 3
         src : ""
         loadOnStart: yes
       "markersOptions" : 
@@ -68,7 +82,7 @@ class Cartographer.TemplatesLoader
       "areasSummary" : 
         name :"areasSummary"
         path: "assets/javascripts/templates/areasSummary._"
-        version: 1
+        version: 2
         src : ""
         loadOnStart: yes
     
@@ -410,6 +424,7 @@ class Cartographer.CustomMap
     marker
   
   createInfoWindow: (marker)=>
+    lang = if window.LANG is "en" then "#" else "#fr/"
     templateInfo = 
       id : marker.__gm_id
       title: (()=>
@@ -426,6 +441,7 @@ class Cartographer.CustomMap
       type  : marker.type
       lat   : marker.position.lat()
       lng   : marker.position.lng()
+      shareLink: "http://#{window.location.hostname}/#{lang}lat/#{marker.position.lat()}/lng/#{marker.position.lng()}/"
     editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
     marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent,
       onClose : () =>
@@ -885,7 +901,8 @@ class CustomInfoWindow
    newDesc = newDesc.replace(/\n/g, '<br />');
    newWikiLink = @wrap.find('[name="marker-wiki"]').val()
    form.removeClass('active')
-
+   
+   lang = if window.LANG is "en" then '#' else "#fr/"
    newInfo = 
      id    : @marker.__gm_id
      title : newTitle
@@ -895,7 +912,9 @@ class CustomInfoWindow
      cat  : @marker.cat
      lat  : @marker.position.lat()
      lng  : @marker.position.lng()
+     shareLink: "http://#{window.location.hostname}/#{lang}lat/#{@marker.position.lat()}/lng/#{@marker.position.lng()}/"
      hasDefaultValue : @marker["hasDefaultValue"]
+     
    @wrap.find('.padding').html(@template(newInfo))
    @bindButton()
    @wrap.find('.edit').removeClass('active')

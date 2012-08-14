@@ -1,3 +1,4 @@
+
 <ul class="iw-options-list">
     <li><a href="javascript:" title="Share marker" data-action="share" class="share button"></a></li>
     <% if (!hasDefaultValue) { %>
@@ -52,7 +53,7 @@
 </form>
 <div class="share-input toggling-tab" data-target="share">
     <span class="label"><%= Traduction["infoWindow"]["formShare"][window.LANG] %></span>
-    <input type="text" readonly name="share-link" value="http://gw2cartographers.com?lat=<%= lat %>&amp;lng=<%= lng %>" >
+    <input type="text" readonly name="share-link" value="<%= shareLink %>" >
 </div>
 <div class="moving toggling-tab" data-target="move">
     <h1><%= Traduction["infoWindow"]["moveNotice"][window.LANG] %></h1>

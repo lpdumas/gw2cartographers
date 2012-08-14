@@ -5,7 +5,17 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  window.LANG = "en";
+  window.LANG = (function() {
+    var hash, match, regex;
+    hash = window.location.hash;
+    regex = /^#(en|fr)\/*/;
+    match = regex.exec(hash);
+    if (match) {
+      return match[1];
+    } else {
+      return "en";
+    }
+  })();
 
   window.LOCAL_STORAGE = (function() {
     if (window['localStorage'] != null) {
@@ -30,9 +40,11 @@
   };
 
   Cartographer.switchLang = function(lang) {
+    var url;
     if (window.LANG !== lang) {
-      console.log("switching lang to " + lang);
-      return window.LANG = lang;
+      url = "http://" + window.location.hostname + "/" + window.location.hash;
+      window.location = url;
+      return window.location.reload(true);
     }
   };
 
@@ -59,7 +71,7 @@
         "customInfoWindow": {
           name: "customInfoWindow",
           path: "assets/javascripts/templates/customInfoWindow._",
-          version: 2,
+          version: 3,
           src: "",
           loadOnStart: true
         },
@@ -73,7 +85,7 @@
         "areasSummary": {
           name: "areasSummary",
           path: "assets/javascripts/templates/areasSummary._",
-          version: 1,
+          version: 2,
           src: "",
           loadOnStart: true
         }
@@ -515,8 +527,9 @@
     };
 
     CustomMap.prototype.createInfoWindow = function(marker) {
-      var editInfoWindowContent, templateInfo,
+      var editInfoWindowContent, lang, templateInfo,
         _this = this;
+      lang = window.LANG === "en" ? "#" : "#fr/";
       templateInfo = {
         id: marker.__gm_id,
         title: (function() {
@@ -533,7 +546,8 @@
         hasDefaultValue: marker["hasDefaultValue"],
         type: marker.type,
         lat: marker.position.lat(),
-        lng: marker.position.lng()
+        lng: marker.position.lng(),
+        shareLink: "http://" + window.location.hostname + "/" + lang + "lat/" + (marker.position.lat()) + "/lng/" + (marker.position.lng()) + "/"
       };
       editInfoWindowContent = this.editInfoWindowTemplate(templateInfo);
       return marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent, {
@@ -1204,7 +1218,7 @@
     };
 
     CustomInfoWindow.prototype.handleSave = function(e) {
-      var form, newDesc, newInfo, newTitle, newWikiLink, this_;
+      var form, lang, newDesc, newInfo, newTitle, newWikiLink, this_;
       this_ = $(e.currentTarget);
       form = this.wrap.find('.edit-form');
       newTitle = this.wrap.find('[name="marker-title"]').val();
@@ -1212,6 +1226,7 @@
       newDesc = newDesc.replace(/\n/g, '<br />');
       newWikiLink = this.wrap.find('[name="marker-wiki"]').val();
       form.removeClass('active');
+      lang = window.LANG === "en" ? '#' : "#fr/";
       newInfo = {
         id: this.marker.__gm_id,
         title: newTitle,
@@ -1221,6 +1236,7 @@
         cat: this.marker.cat,
         lat: this.marker.position.lat(),
         lng: this.marker.position.lng(),
+        shareLink: "http://" + window.location.hostname + "/" + lang + "lat/" + (this.marker.position.lat()) + "/lng/" + (this.marker.position.lng()) + "/",
         hasDefaultValue: this.marker["hasDefaultValue"]
       };
       this.wrap.find('.padding').html(this.template(newInfo));

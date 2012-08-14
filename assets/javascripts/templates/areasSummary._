@@ -1,8 +1,5 @@
 <div class="area-summary-overlay<% if(rangeLvl != ""){ %><%= " city" %><% } %>">
     <p class="area-summary-title">
-        <%
-        console.log("test")
-        %>
         <span class='area-title'><%= data_translation[window.LANG]["name"] %></span>
         <% if(rangeLvl != "") {%>
         <span class="lvl-range"><%= rangeLvl %></span>

@@ -6,7 +6,7 @@ window.Traduction = {
     },
     "emptyDesc" : {
       "en" : "Click on the edit button (top left of this box) to add infos of this point. When you've finish, you may send your map for approval by clicking on the button <strong>next to</strong> the bomb looking one (top right of you're browser window).",
-      "fr" : "Cliquez sur le bouton d'édition (coin supérieur gauche de cette boîte) pour ajouter de l'information sur ce point. Dès que vous aurez de modifier des points, vous pourrez envoyer votre carte pour approbation en cliquant sur le bouton <strong>À CÔTÉ</strong> de celui qui ressemble à une bombe (coin supérieur droit de votre navigateur)."
+      "fr" : "Cliquez sur le bouton d'édition (coin supérieur gauche de cette boîte) pour ajouter de l'information sur ce point. Dès que vous aurez terminé de modifier des points, vous pourrez envoyer votre carte pour approbation en cliquant sur le bouton <strong>À CÔTÉ</strong> de celui qui ressemble à une bombe (coin supérieur droit de votre navigateur)."
     },
     "formTitle" : {
       "en" : "Title :",
