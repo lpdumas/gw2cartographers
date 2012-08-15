@@ -231,7 +231,7 @@ class Cartographer.CustomMap
     @currentMapVersion = 1;
     
     @initCustomGoogleMap(HTMLMapWrapperID)
-    @bindMapEvents()
+    
     
     @editInfoWindowTemplate = _.template(Cartographer.templates.get("customInfoWindow"))
     confirmBoxTemplate = _.template(Cartographer.templates.get("confirmBox"));
@@ -241,6 +241,7 @@ class Cartographer.CustomMap
     $('#destroy').bind('click', @destroyLocalStorage)
     $('#send').bind('click', @sendMapForApproval)
     
+    @initializeAreaSummaryBoxes()
     google.maps.event.addListenerOnce(@map, 'idle', ()=>
       @handleLocalStorageLoad(()=>
         
@@ -250,10 +251,10 @@ class Cartographer.CustomMap
           $(target).bind('click', @handleAddTool)
         )
         
-        @initializeAreaSummaryBoxes()
         @setAllMarkers()
-
+        @bindMapEvents()
         @map.setZoom(4)
+        
         opts.onLoad()
       )
     )
@@ -750,7 +751,7 @@ class AreaSummary
        @div_ = $(content)[0]
        panes = @getPanes()
        panes.overlayImage.appendChild(@div_)
-       @setVisible(true)
+       @setVisible(false)
 
    draw:()->
      overlayProjection = @getProjection()
