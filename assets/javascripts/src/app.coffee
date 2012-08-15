@@ -5,7 +5,7 @@ window.LANG = (()->
   # hash lang to this constant. If it detect a change, 
   # it will reload the page
   hash = window.location.hash
-  regex = /^#(en|fr)\/*/
+  regex = /^#\/*(en|fr)\/*/
   match = regex.exec(hash);
   if match
     match[1]
@@ -425,7 +425,7 @@ class Cartographer.CustomMap
     marker
   
   createInfoWindow: (marker)=>
-    lang = if window.LANG is "en" then "#" else "#fr/"
+    lang = if window.LANG is "en" then "#/" else "#/fr/"
     templateInfo = 
       id : marker.__gm_id
       title: (()=>
@@ -903,7 +903,7 @@ class CustomInfoWindow
    newWikiLink = @wrap.find('[name="marker-wiki"]').val()
    form.removeClass('active')
    
-   lang = if window.LANG is "en" then '#' else "#fr/"
+   lang = if window.LANG is "en" then '#/' else "#/fr/"
    newInfo = 
      id    : @marker.__gm_id
      title : newTitle
@@ -937,9 +937,9 @@ Cartographer.router = Backbone.Router.extend(
   routes: {}
   initialize: ()->
     routes = [
-      [ /^(en|fr)\/*$/, 'lang', this.handleLang ]
-      [ /^(en|fr)*\/lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleLangCoord ]
-      [ /^\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord ]
+      [ /^\/*(en|fr)\/*$/, 'lang', this.handleLang ]
+      [ /^\/*(en|fr)*\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord ]
+      [ /^\/*(en|fr)*\/*categories\/([a-zA-Z&]+)\/*$/, 'categories', this.handleCat ]
     ]
     _.each(routes, (route)=>
       this.route.apply(this,route)
@@ -949,14 +949,14 @@ Cartographer.router = Backbone.Router.extend(
     
   handleLang: (lang)->
     Cartographer.switchLang(lang)
-      
-  handleLangCoord: (lang, lat, lng)->
-    @handleLang(lang)
-    Cartographer.highlighMarker(
-      lat : lat
-      lng : lng
-    )
-  handleCoord: (lat, lng)->
+    
+  handleCat: (lang, a)->
+    if lang?
+      @handleLang(lang)
+    console.log a
+  handleCoord: (lang, lat, lng)->
+    if lang?
+      @handleLang(lang)
     Cartographer.highlighMarker(
       lat : lat
       lng : lng

@@ -8,7 +8,7 @@
   window.LANG = (function() {
     var hash, match, regex;
     hash = window.location.hash;
-    regex = /^#(en|fr)\/*/;
+    regex = /^#\/*(en|fr)\/*/;
     match = regex.exec(hash);
     if (match) {
       return match[1];
@@ -537,7 +537,7 @@
     CustomMap.prototype.createInfoWindow = function(marker) {
       var editInfoWindowContent, lang, templateInfo,
         _this = this;
-      lang = window.LANG === "en" ? "#" : "#fr/";
+      lang = window.LANG === "en" ? "#/" : "#/fr/";
       templateInfo = {
         id: marker.__gm_id,
         title: (function() {
@@ -1238,7 +1238,7 @@
       newDesc = newDesc.replace(/\n/g, '<br />');
       newWikiLink = this.wrap.find('[name="marker-wiki"]').val();
       form.removeClass('active');
-      lang = window.LANG === "en" ? '#' : "#fr/";
+      lang = window.LANG === "en" ? '#/' : "#/fr/";
       newInfo = {
         id: this.marker.__gm_id,
         title: newTitle,
@@ -1275,7 +1275,7 @@
     initialize: function() {
       var routes,
         _this = this;
-      routes = [[/^(en|fr)\/*$/, 'lang', this.handleLang], [/^(en|fr)*\/lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleLangCoord], [/^\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord]];
+      routes = [[/^\/*(en|fr)\/*$/, 'lang', this.handleLang], [/^\/*(en|fr)*\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord], [/^\/*(en|fr)*\/*categories\/([a-zA-Z&]+)\/*$/, 'categories', this.handleCat]];
       _.each(routes, function(route) {
         return _this.route.apply(_this, route);
       });
@@ -1284,14 +1284,16 @@
     handleLang: function(lang) {
       return Cartographer.switchLang(lang);
     },
-    handleLangCoord: function(lang, lat, lng) {
-      this.handleLang(lang);
-      return Cartographer.highlighMarker({
-        lat: lat,
-        lng: lng
-      });
+    handleCat: function(lang, a) {
+      if (lang != null) {
+        this.handleLang(lang);
+      }
+      return console.log(a);
     },
-    handleCoord: function(lat, lng) {
+    handleCoord: function(lang, lat, lng) {
+      if (lang != null) {
+        this.handleLang(lang);
+      }
       return Cartographer.highlighMarker({
         lat: lat,
         lng: lng
