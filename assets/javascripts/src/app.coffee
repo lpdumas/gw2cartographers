@@ -196,7 +196,7 @@ class Cartographer.Confirmbox extends Cartographer.Modalbox
 ###
 
 ###
-# class Cartographer.CustomMap {{ {
+# class Cartographer.CustomMap {{{
 ###
 class Cartographer.CustomMap
   constructor: (HTMLMapWrapperID, opts)->
@@ -390,7 +390,7 @@ class Cartographer.CustomMap
       markerTitle = markerInfo["data_translation"][LANG]["title"]
     marker = new google.maps.Marker(
       position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
-      map: @map
+      map: if markerVisibility then @map else null
       icon: @markersImages[markersType]
       visible: markerVisibility
       draggable: isMarkerDraggable
@@ -513,18 +513,29 @@ class Cartographer.CustomMap
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
     for marker in @mapMarkersObject[cat]["marker_types"][type]["markers"]
-      marker.setVisible(isVisible)
       if marker.infoWindow?
         marker.infoWindow.setMap(null)
         marker.infoWindow = null
+
+      marker.setVisible(isVisible)
+      if isVisible
+          marker.setMap(@map) if !marker.map?
+      else
+          marker.setMap(null) if marker.map?
   
   setMarkersVisibilityByCat:(isVisible, cat)->
     for markerType, markerTypeObject of @mapMarkersObject[cat]["marker_types"]
       for marker in markerTypeObject.markers
-        marker.setVisible(isVisible) 
         if marker.infoWindow?
           marker.infoWindow.setMap(null)
           marker.infoWindow = null
+        
+        marker.setVisible(isVisible)
+        if isVisible
+            console.log marker
+            marker.setMap(@map) if !marker.map?
+        else
+            marker.setMap(null) if marker.map?
 
   highlightsCat:(cats)->
     for markerCat, markerCatObject of @mapMarkersObject
