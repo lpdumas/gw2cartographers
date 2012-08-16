@@ -39,7 +39,6 @@ Cartographer.initiate = ()->
 
 Cartographer.mapHasLoaded = ()->
   @router = new Cartographer.router()
-  
 
 Cartographer.switchLang = (lang)->
   if window.LANG isnt lang
@@ -47,8 +46,14 @@ Cartographer.switchLang = (lang)->
     window.location = url
     window.location.reload(true)
 
-Cartographer.highlighMarker = (coord)->
-  @currentMap.panToMarker(coord)
+Cartographer.highlighMarker = (target)->
+  if _.isObject(target) 
+    @currentMap.panToCoord(target)
+  else
+    @currentMap.panToMarker(target)
+Cartographer.toggleCat = (cats)->
+  @currentMap.highlightsCat(cats)
+  # console.log cats
 # }}}
 
 ##################
@@ -191,7 +196,7 @@ class Cartographer.Confirmbox extends Cartographer.Modalbox
 ###
 
 ###
-# class Cartographer.CustomMap {{{
+# class Cartographer.CustomMap {{ {
 ###
 class Cartographer.CustomMap
   constructor: (HTMLMapWrapperID, opts)->
@@ -284,20 +289,31 @@ class Cartographer.CustomMap
       console.log "Lat : #{e.latLng.lat()}, Lng : #{e.latLng.lng()}"
     )
     
-  panToMarker: (coord)->
+  highlightMarker: (marker)->
+    @map.setZoom(6)
+    @map.panTo(marker.position)
+    if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+    marker.setVisible(true)
+    if !marker.infoWindow?
+      @createInfoWindow(marker)
+      @currentOpenedInfoWindow = marker.infoWindow
+    else
+      marker.infoWindow.open()
+      @currentOpenedInfoWindow = marker.infoWindow
+  
+  panToCoord: (coord)->
     for markersCat, markersObjects of @mapMarkersObject
       for markerType, markerTypeObject of markersObjects.marker_types
         for marker in markerTypeObject.markers
           if coord.lat is marker.position.lat().toString() and coord.lng is marker.position.lng().toString()
-            @map.setZoom(6)
-            @map.panTo(marker.position)
-            if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-            if !marker.infoWindow?
-              @createInfoWindow(marker)
-              @currentOpenedInfoWindow = marker.infoWindow
-            else
-              marker.infoWindow.open()
-              @currentOpenedInfoWindow = marker.infoWindow
+            @highlightMarker(marker)
+            
+  panToMarker: (id)->
+    for markersCat, markersObjects of @mapMarkersObject
+      for markerType, markerTypeObject of markersObjects.marker_types
+        for marker in markerTypeObject.markers
+          if parseInt(id) is marker.id_marker
+            @highlightMarker(marker)
   
   initCustomGoogleMap: (HTMLMapWrapperID)->
     maxZoom       = 7
@@ -442,7 +458,7 @@ class Cartographer.CustomMap
       type  : marker.type
       lat   : marker.position.lat()
       lng   : marker.position.lng()
-      shareLink: "http://#{window.location.hostname}/#{lang}lat/#{marker.position.lat()}/lng/#{marker.position.lng()}/"
+      shareLink: "http://#{window.location.hostname}/#{lang}show/#{marker.id_marker}/"
     editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
     marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent,
       onClose : () =>
@@ -464,9 +480,7 @@ class Cartographer.CustomMap
     )
        
   setAllMarkers: () ->
-
-    @currentMapVersion = Metadata.version;
-    
+    @currentMapVersion = Metadata.version;    
     for markersCat, markersObjects of @MarkersConfig
       if not @mapMarkersObject[markersCat]?
         @mapMarkersObject[markersCat] = {}
@@ -498,13 +512,29 @@ class Cartographer.CustomMap
       @setMarkersVisibilityByType(isVisible, markerType, cat) for markerType, markerTypeObject of markersObjects.marker_types when not $("[data-type='#{markerType}']").hasClass('off')
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
-    marker.setVisible(isVisible) for marker in @mapMarkersObject[cat]["marker_types"][type]["markers"]
-
+    for marker in @mapMarkersObject[cat]["marker_types"][type]["markers"]
+      marker.setVisible(isVisible)
+      if marker.infoWindow?
+        marker.infoWindow.setMap(null)
+        marker.infoWindow = null
   
   setMarkersVisibilityByCat:(isVisible, cat)->
     for markerType, markerTypeObject of @mapMarkersObject[cat]["marker_types"]
-      marker.setVisible(isVisible) for marker in markerTypeObject.markers
+      for marker in markerTypeObject.markers
+        marker.setVisible(isVisible) 
+        if marker.infoWindow?
+          marker.infoWindow.setMap(null)
+          marker.infoWindow = null
 
+  highlightsCat:(cats)->
+    for markerCat, markerCatObject of @mapMarkersObject
+      @setMarkersVisibilityByCat(off, markerCat)
+      @turnOffMenuIconsFromCat(markerCat)
+      for cat in cats when markerCat is cat
+          @turnOnMenuIconsFromCat(cat)
+          if @canToggleMarkers is on
+            @setMarkersVisibilityByCat(on, cat)
+        
   destroyLocalStorage: (e) =>
     confirmMessage = Traduction["notice"]["dataDestruction"][LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
@@ -663,12 +693,18 @@ class Cartographer.CustomMap
         return marker for marker in markerTypeObject.markers when marker.lat is lat and marker.lng is lng
     return false  
       
-  turnOfMenuIconsFromCat:(markerCat)->
+  turnOffMenuIconsFromCat:(markerCat)->
     menu = $(".menu-item[data-markerCat='#{markerCat}']")
     menu.addClass('off')
     menu.find('.group-toggling').addClass('off')
     menu.find('.trigger').addClass('off')
   
+  turnOnMenuIconsFromCat: (markerCat)->
+    menu = $(".menu-item[data-markerCat='#{markerCat}']")
+    menu.removeClass('off')
+    menu.find('.group-toggling').removeClass('off')
+    menu.find('.trigger').removeClass('off')
+    
   addMenuIcons:()->
     template = _.template(Cartographer.templates.get("markersOptions"));
     html = $(template(@MarkersConfig))
@@ -707,7 +743,7 @@ class Cartographer.CustomMap
         menuItem.find('.trigger').addClass('off')
           
     @markersOptionsMenu.find('.padding').prepend(html)
-    @turnOfMenuIconsFromCat(markerCat) for markerCat of @MarkersConfig when markerCat isnt @defaultCat
+    @turnOffMenuIconsFromCat(markerCat) for markerCat of @MarkersConfig when markerCat isnt @defaultCat
       
   initializeAreaSummaryBoxes:()->
     Cartographer.templates.get("areasSummary", (e)=>
@@ -913,7 +949,7 @@ class CustomInfoWindow
      cat  : @marker.cat
      lat  : @marker.position.lat()
      lng  : @marker.position.lng()
-     shareLink: "http://#{window.location.hostname}/#{lang}lat/#{@marker.position.lat()}/lng/#{@marker.position.lng()}/"
+     shareLink: "http://#{window.location.hostname}/#{lang}show/#{@marker.id_marker}/"
      hasDefaultValue : @marker["hasDefaultValue"]
      
    @wrap.find('.padding').html(@template(newInfo))
@@ -938,8 +974,9 @@ Cartographer.router = Backbone.Router.extend(
   initialize: ()->
     routes = [
       [ /^\/*(en|fr)\/*$/, 'lang', this.handleLang ]
+      [ /^\/*(en|fr)*\/*show\/([0-9]+)\/*$/, 'show', this.handleShow ]
       [ /^\/*(en|fr)*\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord ]
-      [ /^\/*(en|fr)*\/*categories\/([a-zA-Z&]+)\/*$/, 'categories', this.handleCat ]
+      [ /^\/*(en|fr)*\/*cat\/([a-zA-Z&]+)\/*$/, 'categories', this.handleCat ]
     ]
     _.each(routes, (route)=>
       this.route.apply(this,route)
@@ -953,7 +990,11 @@ Cartographer.router = Backbone.Router.extend(
   handleCat: (lang, a)->
     if lang?
       @handleLang(lang)
-    console.log a
+    Cartographer.toggleCat(a.split('&'))
+  handleShow: (lang, id)->
+    if lang?
+      @handleLang(lang)
+    Cartographer.highlighMarker(id)
   handleCoord: (lang, lat, lng)->
     if lang?
       @handleLang(lang)
