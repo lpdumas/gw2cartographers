@@ -51,6 +51,7 @@ Cartographer.highlighMarker = (target)->
     @currentMap.panToCoord(target)
   else
     @currentMap.panToMarker(target)
+    
 Cartographer.toggleCat = (cats)->
   @currentMap.highlightsCat(cats)
   # console.log cats
@@ -207,17 +208,6 @@ class Cartographer.CustomMap
     @startLat = 15.443090823463786
     @startLng = 7.294921875
     
-    # --TODO--
-    # need to move this out of this class. Our app controller will need
-    # to call a method to toggle markers cat when the URL hash changed
-    # @defaultCat = (()=>
-    #   dcat = "explore"
-    #   if Cartographer._URLParams['cat']?
-    #     for cat, catObject of Markers
-    #       if cat is Cartographer._URLParams['cat']
-    #         dcat = Cartographer._URLParams['cat']
-    #   dcat
-    # )()
     @defaultCat = "explore"
     
     #---Globals----
@@ -237,7 +227,6 @@ class Cartographer.CustomMap
     
     @initCustomGoogleMap(HTMLMapWrapperID)
     
-    
     @editInfoWindowTemplate = _.template(Cartographer.templates.get("customInfoWindow"))
     confirmBoxTemplate = _.template(Cartographer.templates.get("confirmBox"));
     @confirmBox = new Cartographer.Confirmbox(confirmBoxTemplate)
@@ -247,6 +236,7 @@ class Cartographer.CustomMap
     $('#send').bind('click', @sendMapForApproval)
     
     @initializeAreaSummaryBoxes()
+    
     google.maps.event.addListenerOnce(@map, 'idle', ()=>
       @handleLocalStorageLoad(()=>
         
@@ -291,12 +281,12 @@ class Cartographer.CustomMap
     
   highlightMarker: (marker)->
     @map.setZoom(6)
-    @map.panTo(marker.position)
     if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
     marker.setVisible(true)
     if !marker.infoWindow?
       @createInfoWindow(marker)
       @currentOpenedInfoWindow = marker.infoWindow
+      marker.infoWindow.open()
     else
       marker.infoWindow.open()
       @currentOpenedInfoWindow = marker.infoWindow
@@ -308,11 +298,11 @@ class Cartographer.CustomMap
           if coord.lat is marker.position.lat().toString() and coord.lng is marker.position.lng().toString()
             @highlightMarker(marker)
             
-  panToMarker: (id)->
+  panToMarker: (markerId)->
     for markersCat, markersObjects of @mapMarkersObject
       for markerType, markerTypeObject of markersObjects.marker_types
         for marker in markerTypeObject.markers
-          if parseInt(id) is marker.id_marker
+          if parseInt(markerId) is marker.id_marker
             @highlightMarker(marker)
   
   initCustomGoogleMap: (HTMLMapWrapperID)->
@@ -406,6 +396,8 @@ class Cartographer.CustomMap
       marker["data_translation"] = markerInfo["data_translation"]
       marker["hasDefaultValue"] = false
 
+    console.log markerInfo["id"]
+
     marker["id_marker"] = markerInfo["id"]
     marker["type"]  = markersType
     marker["cat"]  = markersCat
@@ -424,14 +416,12 @@ class Cartographer.CustomMap
     )
 
     google.maps.event.addListener(marker, 'click', (e)=>
-      if marker["infoWindow"]?
-        if @currentOpenedInfoWindow is marker["infoWindow"]
-          @currentOpenedInfoWindow.close()
-          
-        else
-          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-          marker["infoWindow"].open()
-      else  
+      # is it's not a new marker, simply change the hash so that our router
+      # handle the rest.
+      if marker.id_marker != "-1"
+        lang = if window.LANG is "en" then "" else "fr/"
+        window.location.hash = "/#{lang}show/#{marker.id_marker}/"
+      else
         @createInfoWindow(marker)
         if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
         marker["infoWindow"].open()

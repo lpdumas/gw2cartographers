@@ -359,14 +359,14 @@
 
     CustomMap.prototype.highlightMarker = function(marker) {
       this.map.setZoom(6);
-      this.map.panTo(marker.position);
       if (this.currentOpenedInfoWindow) {
         this.currentOpenedInfoWindow.close();
       }
       marker.setVisible(true);
       if (!(marker.infoWindow != null)) {
         this.createInfoWindow(marker);
-        return this.currentOpenedInfoWindow = marker.infoWindow;
+        this.currentOpenedInfoWindow = marker.infoWindow;
+        return marker.infoWindow.open();
       } else {
         marker.infoWindow.open();
         return this.currentOpenedInfoWindow = marker.infoWindow;
@@ -406,7 +406,7 @@
       return _results;
     };
 
-    CustomMap.prototype.panToMarker = function(id) {
+    CustomMap.prototype.panToMarker = function(markerId) {
       var marker, markerType, markerTypeObject, markersCat, markersObjects, _ref, _results;
       _ref = this.mapMarkersObject;
       _results = [];
@@ -424,7 +424,7 @@
               _results2 = [];
               for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
                 marker = _ref2[_i];
-                if (parseInt(id) === marker.id_marker) {
+                if (parseInt(markerId) === marker.id_marker) {
                   _results2.push(this.highlightMarker(marker));
                 } else {
                   _results2.push(void 0);
@@ -542,6 +542,7 @@
         marker["data_translation"] = markerInfo["data_translation"];
         marker["hasDefaultValue"] = false;
       }
+      console.log(markerInfo["id"]);
       marker["id_marker"] = markerInfo["id"];
       marker["type"] = markersType;
       marker["cat"] = markersCat;
@@ -560,15 +561,10 @@
         }
       });
       google.maps.event.addListener(marker, 'click', function(e) {
-        if (marker["infoWindow"] != null) {
-          if (_this.currentOpenedInfoWindow === marker["infoWindow"]) {
-            return _this.currentOpenedInfoWindow.close();
-          } else {
-            if (_this.currentOpenedInfoWindow) {
-              _this.currentOpenedInfoWindow.close();
-            }
-            return marker["infoWindow"].open();
-          }
+        var lang;
+        if (marker.id_marker !== "-1") {
+          lang = window.LANG === "en" ? "" : "fr/";
+          return window.location.hash = "/" + lang + "show/" + marker.id_marker + "/";
         } else {
           _this.createInfoWindow(marker);
           if (_this.currentOpenedInfoWindow) {
