@@ -82,7 +82,7 @@ class Cartographer.TemplatesLoader
       "markersOptions" : 
         name :"markersOptions"
         path: "assets/javascripts/templates/markersOptions._"
-        version : null
+        version : 3
         src : ""
         loadOnStart: yes
       "areasSummary" : 
