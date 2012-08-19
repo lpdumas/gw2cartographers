@@ -318,7 +318,21 @@ html, body {
 #markers-options #edition-tools li #send.active {
   background-position: 0px -32px;
 }
-
+#markers-options #edition-tools li#lang-switch {
+  margin-left: 30px;
+}
+#markers-options #edition-tools li#lang-switch a {
+  position: relative;
+  top: -11px;
+  background: none;
+  color: #000;
+  text-decoration: none;
+  font-size: 18px;
+  font-size: 1.8rem;
+}
+#markers-options #edition-tools li#lang-switch a:hover {
+  color: #af0306;
+}
 .menu-marker {
     z-index: 10;
     position: relative;
