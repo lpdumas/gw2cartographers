@@ -82,7 +82,7 @@ class Cartographer.TemplatesLoader
       "markersOptions" : 
         name :"markersOptions"
         path: "assets/javascripts/templates/markersOptions._"
-        version : 1
+        version : 2
         src : ""
         loadOnStart: yes
       "areasSummary" : 
@@ -230,11 +230,7 @@ class Cartographer.CustomMap
     @editInfoWindowTemplate = _.template(Cartographer.templates.get("customInfoWindow"))
     confirmBoxTemplate = _.template(Cartographer.templates.get("confirmBox"));
     @confirmBox = new Cartographer.Confirmbox(confirmBoxTemplate)
-    
-    # UI
-    $('#destroy').bind('click', @destroyLocalStorage)
-    $('#send').bind('click', @sendMapForApproval)
-    
+
     @initializeAreaSummaryBoxes()
     
     google.maps.event.addListenerOnce(@map, 'idle', ()=>
@@ -245,6 +241,10 @@ class Cartographer.CustomMap
         @addTools.each((index, target)=>
           $(target).bind('click', @handleAddTool)
         )
+        
+        # UI
+        $('#destroy').bind('click', @destroyLocalStorage)
+        $('#send').bind('click', @sendMapForApproval)
         
         @setAllMarkers()
         @bindMapEvents()
@@ -396,8 +396,6 @@ class Cartographer.CustomMap
       marker["data_translation"] = markerInfo["data_translation"]
       marker["hasDefaultValue"] = false
 
-    console.log markerInfo["id"]
-
     marker["id_marker"] = markerInfo["id"]
     marker["type"]  = markersType
     marker["cat"]  = markersCat
@@ -522,7 +520,6 @@ class Cartographer.CustomMap
         
         marker.setVisible(isVisible)
         if isVisible
-            console.log marker
             marker.setMap(@map) if !marker.map?
         else
             marker.setMap(null) if marker.map?
@@ -546,7 +543,7 @@ class Cartographer.CustomMap
   sendMapForApproval: (e) =>
     this_ = $(e.currentTarget)
     ajaxUrl = this_.attr('data-ajaxUrl')
-    modal = new Modalbox()
+    modal = new Cartographer.Modalbox()
     confirmMessage = Traduction["notice"]["dataApproval"][LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if(e == true)
