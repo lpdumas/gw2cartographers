@@ -341,7 +341,7 @@ class Cartographer.CustomMap
   
   
   handleLocalStorageLoad: (callback)->
-    if Cartographer._localStorageAvailable and @getConfigFromLocalStorage()
+    if window.LOCAL_STORAGE and @getConfigFromLocalStorage()
       confirmMessage = Traduction["notice"]["localDetected"][LANG]
       @confirmBox.initConfirmation(confirmMessage, (e)=>
         if e
@@ -456,7 +456,7 @@ class Cartographer.CustomMap
       onSave  : (newInfo)=>
         @updateMarkerInfos(newInfo)
       deleteCalled : (marker)=>
-        @removeMarker(marker.__gm_id, markersType, markersCat)
+        @removeMarker(marker.__gm_id, marker.type, marker.cat)
       moveCalled : (marker) =>
         if marker.getDraggable()
           marker.setDraggable(false)
@@ -656,10 +656,11 @@ class Cartographer.CustomMap
           if marker.infoWindow?
             marker.infoWindow.setMap(null)
           marker.setMap(null)
+
           @mapMarkersObject[mCat]["marker_types"][mType]['markers'] = _.reject(@mapMarkersObject[mCat]["marker_types"][mType]["markers"], (m) =>
             return m == marker
-            # return m.__gm_id == id
           )
+
           @saveToLocalStorage()
           return true
     )
@@ -681,8 +682,9 @@ class Cartographer.CustomMap
   
   saveToLocalStorage: ()->
     # Save new exported JSON to local storage if it is supported
-    if Cartographer._localStorageAvailable
+    if window.LOCAL_STORAGE
       json = @handleExport()
+      console.log @localStorageKey
       localStorage.setItem(@localStorageKey, json);
 
   getMarkerByCoordinates:(lat, lng)->
