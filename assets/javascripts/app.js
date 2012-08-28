@@ -561,7 +561,7 @@
       });
       google.maps.event.addListener(marker, 'click', function(e) {
         var lang;
-        if (marker.id_marker !== "-1") {
+        if (marker.id_marker.toString() !== "-1") {
           lang = window.LANG === "en" ? "" : "fr/";
           return window.location.hash = "/" + lang + "show/" + marker.id_marker + "/";
         } else {

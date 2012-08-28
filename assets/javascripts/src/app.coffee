@@ -416,7 +416,7 @@ class Cartographer.CustomMap
     google.maps.event.addListener(marker, 'click', (e)=>
       # is it's not a new marker, simply change the hash so that our router
       # handle the rest.
-      if marker.id_marker != "-1"
+      if marker.id_marker.toString() isnt "-1"
         lang = if window.LANG is "en" then "" else "fr/"
         window.location.hash = "/#{lang}show/#{marker.id_marker}/"
       else
