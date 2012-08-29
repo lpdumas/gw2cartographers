@@ -82,7 +82,7 @@ class Cartographer.TemplatesLoader
       "markersOptions" : 
         name :"markersOptions"
         path: "assets/javascripts/templates/markersOptions._"
-        version : 3
+        version : 1
         src : ""
         loadOnStart: yes
       "areasSummary" : 
@@ -360,7 +360,6 @@ class Cartographer.CustomMap
     return JSON.parse(json)
   
   addMarker:(markerInfo, otherInfo, isNew, defaultValue) ->
-
     iconsize = 32;
     iconmid = iconsize / 2;
     iconPath = Metadata.icons_path + otherInfo.icon
@@ -547,7 +546,7 @@ class Cartographer.CustomMap
     confirmMessage = Traduction["notice"]["dataApproval"][LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if(e == true)
-        modal.setContent('<h1>Please wait while your request is being handled.</h1><img class="loading" src="/assets/images/loading-black.gif">')
+        modal.setContent('<h1 text-align: center;>Please wait while your request is being handled.</h1><img class="loading" src="/assets/images/loading-black.gif"><p style="text-align: center;">This could take a few seconds</p>')
         modal.open()
         request = $.ajax({
           url: ajaxUrl,

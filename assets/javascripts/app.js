@@ -88,7 +88,7 @@
         "markersOptions": {
           name: "markersOptions",
           path: "assets/javascripts/templates/markersOptions._",
-          version: 3,
+          version: 1,
           src: "",
           loadOnStart: true
         },
@@ -810,7 +810,7 @@
       return this.confirmBox.initConfirmation(confirmMessage, function(e) {
         var request;
         if (e === true) {
-          modal.setContent('<h1>Please wait while your request is being handled.</h1><img class="loading" src="/assets/images/loading-black.gif">');
+          modal.setContent('<h1 text-align: center;>Please wait while your request is being handled.</h1><img class="loading" src="/assets/images/loading-black.gif"><p style="text-align: center;">This could take a few seconds</p>');
           modal.open();
           return request = $.ajax({
             url: ajaxUrl,
