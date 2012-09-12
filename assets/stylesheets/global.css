@@ -621,7 +621,7 @@ p.marker-permalink { text-align: right; }
 }
 
 .modal.fadding {
-  opacity: 0;
+  opacity: 0 !important;
 }
 .overlay {
   position: fixed;
@@ -689,6 +689,24 @@ p.marker-permalink { text-align: right; }
 }
 .confirm-box h1 { 
   margin-top: 0
+}
+
+
+.modal#info {
+  width: 800px;
+  height: 600px;
+  margin-left: -400px;
+}
+.modal#info.visible {
+  top: 50%;
+  margin-top: -300px;
+}
+.modal#info .loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -32px;
+  margin-left: -32px;
 }
 /* Custom Infowindo {{{ */
 .customInfoWindow {

@@ -60,6 +60,14 @@
     return this.currentMap.highlightsCat(cats);
   };
 
+  Cartographer.showInfo = function() {
+    var content, modal;
+    modal = new Cartographer.Modalbox("info");
+    content = "<h1>Hey there fellow explorers!</h1>\n<p class=\"big\">Welcome to gw2cartographers, a Guildwars 2 interactive map. This map is 100% crowdsourced! So if you want to add / edit / remove some points, here is how:</p>\n<h2>Adding points</h2>\n<p>Simply click on the «+» next to the desired point label inside the drop down menu</p>";
+    modal.setContent(content);
+    return modal.open();
+  };
+
   /*
   # class Cartographer.TemplatesLoader {{{
   */
@@ -178,9 +186,14 @@
 
     Modalbox.name = 'Modalbox';
 
-    function Modalbox() {
+    function Modalbox(idModal) {
       this.close = __bind(this.close, this);
-      this.modal = $('<div class="modal"><div class="padding"></div></div>');
+      if (_.isString(idModal)) {
+        idModal = ' id="' + idModal + '"';
+      } else {
+        idModal = "";
+      }
+      this.modal = $('<div class="modal"' + idModal + '><div class="padding"></div></div>');
       this.overlay = $('<span class="overlay"></span>');
       $('body').append(this.modal);
       $('body').append(this.overlay);
@@ -805,7 +818,7 @@
         _this = this;
       this_ = $(e.currentTarget);
       ajaxUrl = this_.attr('data-ajaxUrl');
-      modal = new Cartographer.Modalbox();
+      modal = new Cartographer.Modalbox("waiting");
       confirmMessage = Traduction["notice"]["dataApproval"][LANG];
       return this.confirmBox.initConfirmation(confirmMessage, function(e) {
         var request;
@@ -1388,7 +1401,7 @@
     initialize: function() {
       var routes,
         _this = this;
-      routes = [[/^\/*(en|fr)\/*$/, 'lang', this.handleLang], [/^\/*(en|fr)*\/*show\/([0-9]+)\/*$/, 'show', this.handleShow], [/^\/*(en|fr)*\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord], [/^\/*(en|fr)*\/*cat\/([a-zA-Z&]+)\/*$/, 'categories', this.handleCat]];
+      routes = [[/^\/*(en|fr)\/*$/, 'lang', this.handleLang], [/^\/*(en|fr)*\/*show\/([0-9]+)\/*$/, 'show', this.handleShow], [/^\/*(en|fr)*\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord], [/^\/*(en|fr)*\/*cat\/([a-zA-Z&]+)\/*$/, 'categories', this.handleCat], [/^\/*(en|fr)*\/*info\/*$/, 'info', this.handleInfo]];
       _.each(routes, function(route) {
         return _this.route.apply(_this, route);
       });
@@ -1417,6 +1430,12 @@
         lat: lat,
         lng: lng
       });
+    },
+    handleInfo: function(lang) {
+      if (lang != null) {
+        this.handleLang(lang);
+      }
+      return Cartographer.showInfo();
     }
   });
 

@@ -54,6 +54,17 @@ Cartographer.highlighMarker = (target)->
     
 Cartographer.toggleCat = (cats)->
   @currentMap.highlightsCat(cats)
+
+Cartographer.showInfo = ()->
+  modal = new Cartographer.Modalbox("info")
+  content="""
+  <h1>Hey there fellow explorers!</h1>
+  <p class="big">Welcome to gw2cartographers, a Guildwars 2 interactive map. This map is 100% crowdsourced! So if you want to add / edit / remove some points, here is how:</p>
+  <h2>Adding points</h2>
+  <p>Simply click on the «+» next to the desired point label inside the drop down menu</p>
+  """
+  modal.setContent(content)
+  modal.open()
   # console.log cats
 # }}}
 
@@ -136,8 +147,13 @@ class Cartographer.TemplatesLoader
 # class Cartographer.ModalBox {{{
 ###
 class Cartographer.Modalbox
-  constructor: () ->
-    @modal   = $('<div class="modal"><div class="padding"></div></div>')
+  constructor: (idModal) ->
+    if _.isString(idModal)
+      idModal = ' id="'+idModal+'"'
+    else
+      idModal = ""
+    
+    @modal   = $('<div class="modal"'+idModal+'><div class="padding"></div></div>')
     @overlay = $('<span class="overlay"></span>')
     $('body').append(@modal)
     $('body').append(@overlay)
@@ -542,7 +558,7 @@ class Cartographer.CustomMap
   sendMapForApproval: (e) =>
     this_ = $(e.currentTarget)
     ajaxUrl = this_.attr('data-ajaxUrl')
-    modal = new Cartographer.Modalbox()
+    modal = new Cartographer.Modalbox("waiting")
     confirmMessage = Traduction["notice"]["dataApproval"][LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if(e == true)
@@ -976,6 +992,7 @@ Cartographer.router = Backbone.Router.extend(
       [ /^\/*(en|fr)*\/*show\/([0-9]+)\/*$/, 'show', this.handleShow ]
       [ /^\/*(en|fr)*\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord ]
       [ /^\/*(en|fr)*\/*cat\/([a-zA-Z&]+)\/*$/, 'categories', this.handleCat ]
+      [ /^\/*(en|fr)*\/*info\/*$/, 'info', this.handleInfo ]
     ]
     _.each(routes, (route)=>
       this.route.apply(this,route)
@@ -1001,7 +1018,11 @@ Cartographer.router = Backbone.Router.extend(
       lat : lat
       lng : lng
     )
-    
+  
+  handleInfo: (lang)->
+    if lang?
+      @handleLang(lang)
+    Cartographer.showInfo()
 ) 
 # }}}
 
