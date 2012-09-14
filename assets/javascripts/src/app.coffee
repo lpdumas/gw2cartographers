@@ -260,6 +260,8 @@ class Cartographer.CustomMap
     @handleLocalStorageLoad(()=>
       @setAllMarkers()
     )
+    
+    @bindMapEvents()
     # @initializeAreaSummaryBoxes()
     
     # google.maps.event.addListenerOnce(@map, 'idle', ()=>
@@ -284,29 +286,50 @@ class Cartographer.CustomMap
     # )
     
   bindMapEvents: ()->
-    google.maps.event.addListener(@map, 'zoom_changed', (e)=>
-        zoomLevel = @map.getZoom()
-        if zoomLevel == 4
-          @canToggleMarkers = false
-          @hideMarkersOptionsMenu()
-          @setAllMarkersVisibility(false)
-          @setAreasInformationVisibility(true)
-          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-        else if zoomLevel > 4
-          @canToggleMarkers = true
-          @showMarkersOptionsMenu()
-          @setAllMarkersVisibility(true)
-          @setAreasInformationVisibility(false)
-        else if zoomLevel < 4
-          @canToggleMarkers = false
-          @hideMarkersOptionsMenu()
-          @setAllMarkersVisibility(false)
-          @setAreasInformationVisibility(false)
-          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+    @map.on('zoomend', (e)=>
+      zoomLevel = e.target._zoom
+      if zoomLevel == 4
+        @canToggleMarkers = false
+        @hideMarkersOptionsMenu()
+        @setAllMarkersVisibility(false)
+        # @setAreasInformationVisibility(true)
+        # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+      else if zoomLevel > 4
+        @canToggleMarkers = true
+        @showMarkersOptionsMenu()
+        @setAllMarkersVisibility(true)
+        # @setAreasInformationVisibility(false)
+      else if zoomLevel < 4
+        @canToggleMarkers = false
+        @hideMarkersOptionsMenu()
+        @setAllMarkersVisibility(false)
+        # @setAreasInformationVisibility(false)
+        # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+      
     )
-    google.maps.event.addListener(@map, 'click', (e)=>
-      console.log "Lat : #{e.latLng.lat()}, Lng : #{e.latLng.lng()}"
-    )
+    # google.maps.event.addListener(@map, 'zoom_changed', (e)=>
+    #     zoomLevel = @map.getZoom()
+    #     if zoomLevel == 4
+    #       @canToggleMarkers = false
+    #       @hideMarkersOptionsMenu()
+    #       @setAllMarkersVisibility(false)
+    #       @setAreasInformationVisibility(true)
+    #       if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+    #     else if zoomLevel > 4
+    #       @canToggleMarkers = true
+    #       @showMarkersOptionsMenu()
+    #       @setAllMarkersVisibility(true)
+    #       @setAreasInformationVisibility(false)
+    #     else if zoomLevel < 4
+    #       @canToggleMarkers = false
+    #       @hideMarkersOptionsMenu()
+    #       @setAllMarkersVisibility(false)
+    #       @setAreasInformationVisibility(false)
+    #       if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+    # )
+    # google.maps.event.addListener(@map, 'click', (e)=>
+    #   console.log "Lat : #{e.latLng.lat()}, Lng : #{e.latLng.lng()}"
+    # )
     
   highlightMarker: (marker)->
     @map.setZoom(6)
@@ -543,16 +566,17 @@ class Cartographer.CustomMap
       @setMarkersVisibilityByType(isVisible, markerType, cat) for markerType, markerTypeObject of markersObjects.marker_types when not $("[data-type='#{markerType}']").hasClass('off')
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
-    for marker in @mapMarkersObject[cat]["marker_types"][type]["markers"]
-      if marker.infoWindow?
-        marker.infoWindow.setMap(null)
-        marker.infoWindow = null
-
-      marker.setVisible(isVisible)
-      if isVisible
-          marker.setMap(@map) if !marker.map?
+    for marker in @mapMarkersObject[cat]["marker_types"][type]["markers"] when marker?
+      # if marker.infoWindow?
+        # marker.infoWindow.setMap(null)
+        # marker.infoWindow = null
+      
+      # console.log marker
+      # marker.setOpacity(isVisible)
+      if isVisible and marker?
+        marker.addTo(@map) if !marker._map?
       else
-          marker.setMap(null) if marker.map?
+        @map.removeLayer(marker) if marker._map?
   
   setMarkersVisibilityByCat:(isVisible, cat)->
     for markerType, markerTypeObject of @mapMarkersObject[cat]["marker_types"]
