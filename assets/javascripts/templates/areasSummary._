@@ -13,5 +13,5 @@
             <% } %>
         <% }); %>
     </ul>
-    <a class="show-points" data-areaId="id" href="javascript://">Show points</a>
+    <span class="show-points" href="javascript://">click to show points</span>
 </div>

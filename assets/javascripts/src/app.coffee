@@ -99,7 +99,7 @@ class Cartographer.TemplatesLoader
       "areasSummary" : 
         name :"areasSummary"
         path: "assets/javascripts/templates/areasSummary._"
-        version: 2
+        version: 1
         src : ""
         loadOnStart: yes
     
@@ -784,7 +784,7 @@ class Cartographer.CustomMap
   initializeAreaSummaryBoxes:()->
     Cartographer.templates.get("areasSummary", (e)=>
       for key, area of Areas
-        @areaSummaryBoxes[key] = new AreaSummary(@map, area, e)
+        @areaSummaryBoxes[area.id] = new AreaSummary(@map, area, e)
     )
         
   setAreasInformationVisibility:(isVisible)->
@@ -810,14 +810,20 @@ class AreaSummary
     southWest = new L.LatLng(area.swLat, area.swLng)
     northEast = new L.LatLng(area.neLat, area.neLng)
     @bounds = new L.LatLngBounds(southWest, northEast)
+    @map = map
     @area = area
-    offStyle = 
-      color: "white"
-      weight: 2
-    activeStyle =
+    @defaultStyle =
       color: "black"
+      weight: 4,
+      fill: true,
+      fillOpacity: 0.5
+
+    @activeStyle = 
+      color: "black"
+      weight: 4
+      fill: false 
     # create an orange rectangle
-    @rect = new L.rectangle(@bounds, activeStyle).addTo(map)
+    @rect = new L.rectangle(@bounds, @defaultStyle).addTo(map)
     @rect.on('click', (e)=>
       map.fitBounds(@bounds)
       t = setTimeout(()=>
@@ -841,21 +847,19 @@ class AreaSummary
       iconSize: new L.Point(popupContent.outerWidth() , popupContent.outerHeight())
     )
     @area = new L.marker(@bounds.getCenter(), {icon: myIcon})
+    @area.on('click', (e)=>
+      @setActive()
+    )
     @area.addTo(map)
-    # @popup = new L.Popup(
-      # clickable : false
-      # closeButton: false
-    # )
-    # @popup.setContent(popupContent)
-    # @popup.setLatLng(@bounds.getCenter()).addTo(map)
+
+  setActive:()->
+    @map.removeLayer(@area)
+    @map.fitBounds(@bounds)
+    t = setTimeout(()=>
+      @map.setZoom(6)
+      @rect.setStyle(@activeStyle)
+    , 500)
     
-
-       # @bounds_ = new google.maps.LatLngBounds(swBound, neBound)
-       # @div_ = null
-       # @height_ = 80
-       # @width_ = 150
-       # @setMap(map)
-
    onAdd:()->
        content = @template(@area_)
        @div_ = $(content)[0]
@@ -871,7 +875,7 @@ class AreaSummary
      div = this.div_;
      div.style.left = sw.x + ((ne.x - sw.x) - @width_) / 2 + 'px';
      div.style.top = ne.y + ((sw.y - ne.y) - @height_) / 2 + 'px';
-
+  
    setVisible:(isVisible)->
      if @div_
        if isVisible is true

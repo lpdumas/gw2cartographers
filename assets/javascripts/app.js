@@ -101,7 +101,7 @@
         "areasSummary": {
           name: "areasSummary",
           path: "assets/javascripts/templates/areasSummary._",
-          version: 2,
+          version: 1,
           src: "",
           loadOnStart: true
         }
@@ -1020,7 +1020,7 @@
         _results = [];
         for (key in Areas) {
           area = Areas[key];
-          _results.push(_this.areaSummaryBoxes[key] = new AreaSummary(_this.map, area, e));
+          _results.push(_this.areaSummaryBoxes[area.id] = new AreaSummary(_this.map, area, e));
         }
         return _results;
       });
@@ -1067,20 +1067,25 @@
   AreaSummary = (function() {
 
     function AreaSummary(map, area, template) {
-      var activeStyle, myIcon, northEast, offStyle, popupContent, southWest, stringPopupContent,
+      var myIcon, northEast, popupContent, southWest, stringPopupContent,
         _this = this;
       southWest = new L.LatLng(area.swLat, area.swLng);
       northEast = new L.LatLng(area.neLat, area.neLng);
       this.bounds = new L.LatLngBounds(southWest, northEast);
+      this.map = map;
       this.area = area;
-      offStyle = {
-        color: "white",
-        weight: 2
+      this.defaultStyle = {
+        color: "black",
+        weight: 4,
+        fill: true,
+        fillOpacity: 0.5
       };
-      activeStyle = {
-        color: "black"
+      this.activeStyle = {
+        color: "black",
+        weight: 4,
+        fill: false
       };
-      this.rect = new L.rectangle(this.bounds, activeStyle).addTo(map);
+      this.rect = new L.rectangle(this.bounds, this.defaultStyle).addTo(map);
       this.rect.on('click', function(e) {
         var t;
         map.fitBounds(_this.bounds);
@@ -1100,8 +1105,22 @@
       this.area = new L.marker(this.bounds.getCenter(), {
         icon: myIcon
       });
+      this.area.on('click', function(e) {
+        return _this.setActive();
+      });
       this.area.addTo(map);
     }
+
+    AreaSummary.prototype.setActive = function() {
+      var t,
+        _this = this;
+      this.map.removeLayer(this.area);
+      this.map.fitBounds(this.bounds);
+      return t = setTimeout(function() {
+        _this.map.setZoom(6);
+        return _this.rect.setStyle(_this.activeStyle);
+      }, 500);
+    };
 
     AreaSummary.prototype.onAdd = function() {
       var content, panes;

@@ -528,7 +528,7 @@ html, body {
 }
 
 div.area-summary-overlay {
-  cursor: default;
+  cursor: pointer;
 /* position: absolute;*/
   text-align: center;
   display: block;
@@ -538,14 +538,32 @@ div.area-summary-overlay {
   background: #F9F9F9;
   color: #333;
   min-width: 180px; 
+  -webkit-transition-property: background;
+  -moz-transition-property: background;
+  -ms-transition-property: background;
+  -o-transition-property: background;
+  transition-property: background;
+
+  -webkit-transition-duration: 200ms;
+  -moz-transition-duration: 200ms;
+  -ms-transition-duration: 200ms;
+  -o-transition-duration: 200ms;
+  transition-duration: 200ms;
+
+  -webkit-transition-timing-function: linear;
+  -moz-transition-timing-function: linear;
+  -ms-transition-timing-function: linear;
+  -o-transition-timing-function: linear;
+  transition-timing-function: linear;
+  
 }
-div.area-summary-overlay a.show-points {
+div.area-summary-overlay:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+div.area-summary-overlay span.show-points {
   display: inline-block;
   margin-top: 8px;
   color: #000;
-}
-div.area-summary-overlay a.show-points:hover {
-  color: red;
 }
 div.area-summary-overlay.city {
   width: 100px;
