@@ -99,7 +99,7 @@ class Cartographer.TemplatesLoader
       "areasSummary" : 
         name :"areasSummary"
         path: "assets/javascripts/templates/areasSummary._"
-        version: 2
+        version: 3
         src : ""
         loadOnStart: yes
     
@@ -241,28 +241,19 @@ class Cartographer.CustomMap
 
     @currentMapVersion = 1;
     
-    # @initCustomGoogleMap(HTMLMapWrapperID)
+    @initCustomMap("map")
     
     @editInfoWindowTemplate = _.template(Cartographer.templates.get("customInfoWindow"))
     confirmBoxTemplate = _.template(Cartographer.templates.get("confirmBox"));
     @confirmBox = new Cartographer.Confirmbox(confirmBoxTemplate)
     
-    @map = new L.Map('map', 
-      center: new L.LatLng(10.044584984211879, 10.3271484375)
-      zoom: 4,
-      maxZoom: 7,
-      minZoom: 3
-    )
 
-    tileUrl = 'tiles/{z}_{x}_{y}.jpg'
-    layer = new L.TileLayer(tileUrl, {maxZoom: 7})
-    @map.addLayer(layer)
     @handleLocalStorageLoad(()=>
       @setAllMarkers()
     )
     
     @bindMapEvents()
-    # @initializeAreaSummaryBoxes()
+    @initializeAreaSummaryBoxes()
     
     # google.maps.event.addListenerOnce(@map, 'idle', ()=>
     #       @handleLocalStorageLoad(()=>
@@ -357,40 +348,18 @@ class Cartographer.CustomMap
           if parseInt(markerId) is marker.id_marker
             @highlightMarker(marker)
   
-  initCustomGoogleMap: (HTMLMapWrapperID)->
-    maxZoom       = 7
-    @gMapOptions   = 
-      center: new google.maps.LatLng(@startLat, @startLng)
-      zoom: 5
+  initCustomMap: (wrap)->
+    @map = new L.Map(wrap, 
+      center: new L.LatLng(10.044584984211879, 10.3271484375)
+      zoom: 4,
+      maxZoom: 7,
       minZoom: 3
-      maxZoom: maxZoom
-      streetViewControl: false
-      mapTypeControl: false
-      mapTypeControlOptions:
-        mapTypeIds: ["custom", google.maps.MapTypeId.ROADMAP]
-
-      panControl: false
-      zoomControl: true
-      zoomControlOptions:
-        position: google.maps.ControlPosition.LEFT_CENTER
-        zoomControlStyle: google.maps.ZoomControlStyle.SMALL
-        
-    @customMapType = new google.maps.ImageMapType(
-      getTileUrl : (coord, zoom)=>
-        normalizedCoord = coord
-        if normalizedCoord && (normalizedCoord.x < Math.pow(2, zoom)) && (normalizedCoord.x > -1) && (normalizedCoord.y < Math.pow(2, zoom)) && (normalizedCoord.y > -1)
-          path = 'tiles/' + zoom + '_' + normalizedCoord.x + '_' + normalizedCoord.y + '.jpg'
-        else 
-          return @blankTilePath
-      tileSize: new google.maps.Size(256, 256)
-      maxZoom: maxZoom
-      name: 'GW2 Map'
     )
-    
-    @map = new google.maps.Map($(HTMLMapWrapperID)[0], @gMapOptions)
-    @map.mapTypes.set('custom', @customMapType)
-    @map.setMapTypeId('custom')
-  
+
+    tileUrl = 'tiles/{z}_{x}_{y}.jpg'
+    layer = new L.TileLayer(tileUrl, {maxZoom: 7})
+    @map.addLayer(layer)
+      
   
   handleLocalStorageLoad: (callback)->
     if window.LOCAL_STORAGE and @getConfigFromLocalStorage()
@@ -418,7 +387,7 @@ class Cartographer.CustomMap
     markersType = otherInfo["markersType"]
     markersCat = otherInfo["markersCat"]
 
-    markerVisibility = if markersCat is @defaultCat || isNew then yes else no
+    markerVisibility = if markersCat is @defaultCat || isNew then no else no
     
     if not @markersImages[markersType]?
       image = new L.icon(
@@ -427,7 +396,7 @@ class Cartographer.CustomMap
         iconAnchor: [iconmid, iconmid],
         popupAnchor: [iconmid, iconmid]
       )
-      # image = new google.maps.MarkerImage(iconPath, null, null, new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
+      
       @markersImages[markersType] = image
     
     isMarkerDraggable = if markerInfo.draggable? then markerInfo.draggable else false
@@ -442,9 +411,7 @@ class Cartographer.CustomMap
       clickable : true
       icon : @markersImages[markersType]
       title : markerTitle
-    if markerVisibility
-
-      marker = new L.Marker( new L.LatLng(markerInfo.lat, markerInfo.lng), options).addTo(@map)
+    marker = new L.Marker( new L.LatLng(markerInfo.lat, markerInfo.lng), options)
     # marker = new google.maps.Marker(
       # position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
       # map: if markerVisibility then @map else null
@@ -456,16 +423,16 @@ class Cartographer.CustomMap
       # animation: if isNew then google.maps.Animation.DROP else no
     # )
 
-      if defaultValue?
-        marker["data_translation"] = defaultValue
-        marker["hasDefaultValue"] = true
-      else
-        marker["data_translation"] = markerInfo["data_translation"]
-        marker["hasDefaultValue"] = false
+    if defaultValue?
+      marker["data_translation"] = defaultValue
+      marker["hasDefaultValue"] = true
+    else
+      marker["data_translation"] = markerInfo["data_translation"]
+      marker["hasDefaultValue"] = false
 
-      marker["id_marker"] = markerInfo["id"]
-      marker["type"]  = markersType
-      marker["cat"]  = markersCat
+    marker["id_marker"] = markerInfo["id"]
+    marker["type"]  = markersType
+    marker["cat"]  = markersCat
 
     # if markerInfo.lat.toString() is @startLat and markerInfo.lng.toString() is @startLng
       # if not marker["infoWindow"]?
@@ -473,7 +440,7 @@ class Cartographer.CustomMap
         # marker["infoWindow"].open()
       # else
         # marker["infoWindow"].open()
-        
+      
     # google.maps.event.addListener(marker, 'dragend', (e)=>
       # @saveToLocalStorage()
       # if marker["infoWindow"]?
@@ -491,8 +458,10 @@ class Cartographer.CustomMap
         # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
         # marker["infoWindow"].open()
     # )
-    
-      marker
+  
+    if markerVisibility
+      marker.addTo(@map)
+    marker
   
   createInfoWindow: (marker)=>
     lang = if window.LANG is "en" then "#/" else "#/fr/"
@@ -814,8 +783,8 @@ class Cartographer.CustomMap
       
   initializeAreaSummaryBoxes:()->
     Cartographer.templates.get("areasSummary", (e)=>
-      for area of Areas
-        @areaSummaryBoxes[area] = new AreaSummary(@map, Areas[area], e)
+      for key, area of Areas
+        @areaSummaryBoxes[key] = new AreaSummary(@map, area, e)
     )
         
   setAreasInformationVisibility:(isVisible)->
@@ -835,19 +804,57 @@ class Cartographer.CustomMap
 ###
 # class AreaSummary {{{
 #
+###
 class AreaSummary
-   constructor:(map, area, template)->
-       swBound = new google.maps.LatLng(area.swLat, area.swLng)
-       neBound = new google.maps.LatLng(area.neLat, area.neLng)
-       @bounds_ = new google.maps.LatLngBounds(swBound, neBound)
-       @area_ = area
-       @div_ = null
-       @height_ = 80
-       @width_ = 150
-       @template = _.template(template)
-       @setMap(map)
+  constructor:(map, area, template)->
+    southWest = new L.LatLng(area.swLat, area.swLng)
+    northEast = new L.LatLng(area.neLat, area.neLng)
+    @bounds = new L.LatLngBounds(southWest, northEast)
+    @area = area
+    offStyle = 
+      color: "white"
+      weight: 2
+    activeStyle =
+      color: "black"
+    # create an orange rectangle
+    @rect = new L.rectangle(@bounds, offStyle).addTo(map)
+    @rect.on('click', (e)=>
+      map.fitBounds(@bounds)
+      t = setTimeout(()=>
+        map.setZoom(6)
+      , 500)
+    )
+    @rect.on('mouseover', (e)=>
+      e.target.setStyle(activeStyle)
+    )
+    @rect.on('mouseout', (e)=>
+      e.target.setStyle(offStyle)
+    )
+    
+    @template = _.template(template)
+    stringPopupContent = @template(@area)
+    popupContent = $(stringPopupContent)
+    popupContent.appendTo('html').hide()
+    myIcon = new L.divIcon(
+      className: 'area-summary'
+      html : stringPopupContent
+      iconSize: new L.Point(popupContent.outerWidth() , popupContent.outerHeight())
+    )
+    @area = new L.marker(@bounds.getCenter(), {icon: myIcon})
+    @area.addTo(map)
+    # @popup = new L.Popup(
+      # clickable : false
+      # closeButton: false
+    # )
+    # @popup.setContent(popupContent)
+    # @popup.setLatLng(@bounds.getCenter()).addTo(map)
+    
 
-   AreaSummary:: = new google.maps.OverlayView();
+       # @bounds_ = new google.maps.LatLngBounds(swBound, neBound)
+       # @div_ = null
+       # @height_ = 80
+       # @width_ = 150
+       # @setMap(map)
 
    onAdd:()->
        content = @template(@area_)
@@ -877,7 +884,7 @@ class AreaSummary
 
 ###
 # class CustomInfoWindow {{{
-###
+
 
 class CustomInfoWindow
  constructor: (marker, content, opts) ->

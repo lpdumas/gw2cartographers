@@ -528,13 +528,13 @@ html, body {
 }
 
 div.area-summary-overlay {
- position: absolute;
+/* position: absolute;*/
  display: block;
- padding: 10px 4px;
+/* padding: 10px 4px;*/
  border: none;
  background: #F9F9F9;
  color: #333;
- min-width: 160px; 
+/* min-width: 160px; */
  border: 1px solid #8e8e8e;
 }
 
@@ -572,7 +572,7 @@ div.area-summary-overlay ul.area-summary-list{
   list-style: none;
   padding: 0;
   margin: 0;
-  width: 100%;
+/*  width: 100%;*/
   text-align: center;
 }
 div.area-summary-overlay ul.area-summary-list li {
