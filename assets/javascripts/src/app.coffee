@@ -238,6 +238,7 @@ class Cartographer.CustomMap
     @visibleMarkers   = true
     @canToggleMarkers = true
     @currentOpenedInfoWindow = false
+    @activeArea = null
 
     @currentMapVersion = 1;
     
@@ -782,14 +783,25 @@ class Cartographer.CustomMap
     @turnOffMenuIconsFromCat(markerCat) for markerCat of @MarkersConfig when markerCat isnt @defaultCat
       
   initializeAreaSummaryBoxes:()->
+    @areas = []
     Cartographer.templates.get("areasSummary", (e)=>
       for key, area of Areas
-        @areaSummaryBoxes[area.id] = new AreaSummary(@map, area, e)
+        @areas[area.id] = area
+        @areas[area.id].areaSummary = new AreaSummary(@map, area, e, @)
     )
-        
+  
+  showMarkerFromArea: (areaId)->
+    if @activeArea
+      @activeArea.areaSummary.setInactive()
+    @activeArea = @areas[areaId]
+  
+  hideMarkerFromArea: (areaId)->
+    console.log "hiding marker for area id: #{areaId}"
+    
   setAreasInformationVisibility:(isVisible)->
     for box in @areaSummaryBoxes
       box.setVisible(isVisible)
+  
   toggleMarkersOptionsMenu: () ->
     @markersOptionsMenu.toggleClass('active')
   hideMarkersOptionsMenu: () ->
@@ -806,12 +818,13 @@ class Cartographer.CustomMap
 #
 ###
 class AreaSummary
-  constructor:(map, area, template)->
+  constructor:(map, area, template, carto)->
     southWest = new L.LatLng(area.swLat, area.swLng)
     northEast = new L.LatLng(area.neLat, area.neLng)
     @bounds = new L.LatLngBounds(southWest, northEast)
     @map = map
-    @area = area
+    @carto = carto
+    @areaInfo = area
     @defaultStyle =
       color: "black"
       weight: 4,
@@ -830,15 +843,9 @@ class AreaSummary
         map.setZoom(6)
       , 500)
     )
-    # @rect.on('mouseover', (e)=>
-    #   e.target.setStyle(activeStyle)
-    # )
-    # @rect.on('mouseout', (e)=>
-    #   e.target.setStyle(offStyle)
-    # )
     
     @template = _.template(template)
-    stringPopupContent = @template(@area)
+    stringPopupContent = @template(@areaInfo)
     popupContent = $(stringPopupContent)
     popupContent.appendTo('html').hide()
     myIcon = new L.divIcon(
@@ -854,12 +861,18 @@ class AreaSummary
 
   setActive:()->
     @map.removeLayer(@area)
-    @map.fitBounds(@bounds)
+    @map.panTo(@bounds.getCenter())
     t = setTimeout(()=>
       @map.setZoom(6)
       @rect.setStyle(@activeStyle)
+      @carto.showMarkerFromArea(@areaInfo.id)
     , 500)
     
+   setInactive:()->
+      @area.addTo(@map)
+      @rect.setStyle(@defaultStyle)
+      @carto.hideMarkerFromArea(@areaInfo.id)
+      
    onAdd:()->
        content = @template(@area_)
        @div_ = $(content)[0]

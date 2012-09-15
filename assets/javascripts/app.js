@@ -306,6 +306,7 @@
       this.visibleMarkers = true;
       this.canToggleMarkers = true;
       this.currentOpenedInfoWindow = false;
+      this.activeArea = null;
       this.currentMapVersion = 1;
       this.initCustomMap("map");
       this.editInfoWindowTemplate = _.template(Cartographer.templates.get("customInfoWindow"));
@@ -1015,15 +1016,28 @@
 
     CustomMap.prototype.initializeAreaSummaryBoxes = function() {
       var _this = this;
+      this.areas = [];
       return Cartographer.templates.get("areasSummary", function(e) {
         var area, key, _results;
         _results = [];
         for (key in Areas) {
           area = Areas[key];
-          _results.push(_this.areaSummaryBoxes[area.id] = new AreaSummary(_this.map, area, e));
+          _this.areas[area.id] = area;
+          _results.push(_this.areas[area.id].areaSummary = new AreaSummary(_this.map, area, e, _this));
         }
         return _results;
       });
+    };
+
+    CustomMap.prototype.showMarkerFromArea = function(areaId) {
+      if (this.activeArea) {
+        this.activeArea.areaSummary.setInactive();
+      }
+      return this.activeArea = this.areas[areaId];
+    };
+
+    CustomMap.prototype.hideMarkerFromArea = function(areaId) {
+      return console.log("hiding marker for area id: " + areaId);
     };
 
     CustomMap.prototype.setAreasInformationVisibility = function(isVisible) {
@@ -1066,14 +1080,15 @@
 
   AreaSummary = (function() {
 
-    function AreaSummary(map, area, template) {
+    function AreaSummary(map, area, template, carto) {
       var myIcon, northEast, popupContent, southWest, stringPopupContent,
         _this = this;
       southWest = new L.LatLng(area.swLat, area.swLng);
       northEast = new L.LatLng(area.neLat, area.neLng);
       this.bounds = new L.LatLngBounds(southWest, northEast);
       this.map = map;
-      this.area = area;
+      this.carto = carto;
+      this.areaInfo = area;
       this.defaultStyle = {
         color: "black",
         weight: 4,
@@ -1094,7 +1109,7 @@
         }, 500);
       });
       this.template = _.template(template);
-      stringPopupContent = this.template(this.area);
+      stringPopupContent = this.template(this.areaInfo);
       popupContent = $(stringPopupContent);
       popupContent.appendTo('html').hide();
       myIcon = new L.divIcon({
@@ -1115,11 +1130,18 @@
       var t,
         _this = this;
       this.map.removeLayer(this.area);
-      this.map.fitBounds(this.bounds);
+      this.map.panTo(this.bounds.getCenter());
       return t = setTimeout(function() {
         _this.map.setZoom(6);
-        return _this.rect.setStyle(_this.activeStyle);
+        _this.rect.setStyle(_this.activeStyle);
+        return _this.carto.showMarkerFromArea(_this.areaInfo.id);
       }, 500);
+    };
+
+    AreaSummary.prototype.setInactive = function() {
+      this.area.addTo(this.map);
+      this.rect.setStyle(this.defaultStyle);
+      return this.carto.hideMarkerFromArea(this.areaInfo.id);
     };
 
     AreaSummary.prototype.onAdd = function() {
