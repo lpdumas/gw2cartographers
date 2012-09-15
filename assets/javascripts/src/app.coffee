@@ -99,7 +99,7 @@ class Cartographer.TemplatesLoader
       "areasSummary" : 
         name :"areasSummary"
         path: "assets/javascripts/templates/areasSummary._"
-        version: 3
+        version: 2
         src : ""
         loadOnStart: yes
     
@@ -252,7 +252,7 @@ class Cartographer.CustomMap
       @setAllMarkers()
     )
     
-    @bindMapEvents()
+    # @bindMapEvents()
     @initializeAreaSummaryBoxes()
     
     # google.maps.event.addListenerOnce(@map, 'idle', ()=>
@@ -817,19 +817,19 @@ class AreaSummary
     activeStyle =
       color: "black"
     # create an orange rectangle
-    @rect = new L.rectangle(@bounds, offStyle).addTo(map)
+    @rect = new L.rectangle(@bounds, activeStyle).addTo(map)
     @rect.on('click', (e)=>
       map.fitBounds(@bounds)
       t = setTimeout(()=>
         map.setZoom(6)
       , 500)
     )
-    @rect.on('mouseover', (e)=>
-      e.target.setStyle(activeStyle)
-    )
-    @rect.on('mouseout', (e)=>
-      e.target.setStyle(offStyle)
-    )
+    # @rect.on('mouseover', (e)=>
+    #   e.target.setStyle(activeStyle)
+    # )
+    # @rect.on('mouseout', (e)=>
+    #   e.target.setStyle(offStyle)
+    # )
     
     @template = _.template(template)
     stringPopupContent = @template(@area)

@@ -5,7 +5,7 @@
         <span class="lvl-range"><%= rangeLvl %></span>
         <% } %>
     </p>
-    <ul class="area-summary-list">
+    <ul class="area-summary-list group">
         <% _.each(summary, function(val, type, list) { %>
             <% 
             if(val != 0) { %>
@@ -13,4 +13,5 @@
             <% } %>
         <% }); %>
     </ul>
+    <a class="show-points" data-areaId="id" href="javascript://">Show points</a>
 </div>

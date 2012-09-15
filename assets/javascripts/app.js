@@ -101,7 +101,7 @@
         "areasSummary": {
           name: "areasSummary",
           path: "assets/javascripts/templates/areasSummary._",
-          version: 3,
+          version: 2,
           src: "",
           loadOnStart: true
         }
@@ -314,7 +314,6 @@
       this.handleLocalStorageLoad(function() {
         return _this.setAllMarkers();
       });
-      this.bindMapEvents();
       this.initializeAreaSummaryBoxes();
     }
 
@@ -1081,19 +1080,13 @@
       activeStyle = {
         color: "black"
       };
-      this.rect = new L.rectangle(this.bounds, offStyle).addTo(map);
+      this.rect = new L.rectangle(this.bounds, activeStyle).addTo(map);
       this.rect.on('click', function(e) {
         var t;
         map.fitBounds(_this.bounds);
         return t = setTimeout(function() {
           return map.setZoom(6);
         }, 500);
-      });
-      this.rect.on('mouseover', function(e) {
-        return e.target.setStyle(activeStyle);
-      });
-      this.rect.on('mouseout', function(e) {
-        return e.target.setStyle(offStyle);
       });
       this.template = _.template(template);
       stringPopupContent = this.template(this.area);
