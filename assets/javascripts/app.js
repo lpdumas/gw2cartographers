@@ -315,7 +315,14 @@
       this.handleLocalStorageLoad(function() {
         return _this.setAllMarkers();
       });
+      this.hideMarkersOptionsMenu();
+      this.bindMapEvents();
       this.initializeAreaSummaryBoxes();
+      this.addMenuIcons();
+      this.addTools = $('.menu-marker a.add');
+      this.addTools.each(function(index, target) {
+        return $(target).bind('click', _this.handleAddTool);
+      });
     }
 
     CustomMap.prototype.bindMapEvents = function() {
@@ -323,18 +330,13 @@
       return this.map.on('zoomend', function(e) {
         var zoomLevel;
         zoomLevel = e.target._zoom;
+        console.log(zoomLevel);
         if (zoomLevel === 4) {
-          _this.canToggleMarkers = false;
-          _this.hideMarkersOptionsMenu();
-          return _this.setAllMarkersVisibility(false);
+          return _this.hideMarkersOptionsMenu();
         } else if (zoomLevel > 4) {
-          _this.canToggleMarkers = true;
-          _this.showMarkersOptionsMenu();
-          return _this.setAllMarkersVisibility(true);
+          return _this.showMarkersOptionsMenu();
         } else if (zoomLevel < 4) {
-          _this.canToggleMarkers = false;
-          _this.hideMarkersOptionsMenu();
-          return _this.setAllMarkersVisibility(false);
+          return _this.hideMarkersOptionsMenu();
         }
       });
     };
@@ -470,7 +472,7 @@
       iconPath = Metadata.icons_path + otherInfo.icon;
       markersType = otherInfo["markersType"];
       markersCat = otherInfo["markersCat"];
-      markerVisibility = markersCat === this.defaultCat || isNew ? false : false;
+      markerVisibility = markersCat === isNew ? true : false;
       if (!(this.markersImages[markersType] != null)) {
         image = new L.icon({
           iconUrl: iconPath,
@@ -606,6 +608,54 @@
       return _results;
     };
 
+    CustomMap.prototype.showMarkerFromArea = function(areaId) {
+      var cat, lat, lng, marker, markerType, markerTypeObject, markersObjects, _ref, _results;
+      if (this.activeArea) {
+        this.activeArea.areaSummary.setInactive();
+      }
+      this.activeArea = this.areas[areaId];
+      _ref = this.mapMarkersObject;
+      _results = [];
+      for (cat in _ref) {
+        markersObjects = _ref[cat];
+        _results.push((function() {
+          var _ref1, _results1;
+          _ref1 = markersObjects.marker_types;
+          _results1 = [];
+          for (markerType in _ref1) {
+            markerTypeObject = _ref1[markerType];
+            if (!$("[data-type='" + markerType + "']").hasClass('off')) {
+              _results1.push((function() {
+                var _i, _len, _ref2, _results2;
+                _ref2 = markerTypeObject["markers"];
+                _results2 = [];
+                for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+                  marker = _ref2[_i];
+                  if (!(marker != null)) {
+                    continue;
+                  }
+                  lat = marker.getLatLng().lat;
+                  lng = marker.getLatLng().lng;
+                  if (lat <= this.activeArea.neLat && lat >= this.activeArea.swLat && lng <= this.activeArea.neLng && lng >= this.activeArea.swLng) {
+                    _results2.push(marker.addTo(this.map));
+                  } else {
+                    _results2.push(this.map.removeLayer(marker));
+                  }
+                }
+                return _results2;
+              }).call(this));
+            }
+          }
+          return _results1;
+        }).call(this));
+      }
+      return _results;
+    };
+
+    CustomMap.prototype.hideMarkerFromArea = function(areaId) {
+      return console.log("hiding marker for area id: " + areaId);
+    };
+
     CustomMap.prototype.setAllMarkersVisibility = function(isVisible) {
       var cat, markerType, markerTypeObject, markersObjects, _ref, _results;
       _ref = this.mapMarkersObject;
@@ -629,24 +679,27 @@
     };
 
     CustomMap.prototype.setMarkersVisibilityByType = function(isVisible, type, cat) {
-      var marker, _i, _len, _ref, _results;
+      var lat, lng, marker, _i, _len, _ref, _results;
       _ref = this.mapMarkersObject[cat]["marker_types"][type]["markers"];
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         marker = _ref[_i];
-        if (marker != null) {
-          if (isVisible && (marker != null)) {
-            if (!(marker._map != null)) {
-              _results.push(marker.addTo(this.map));
-            } else {
-              _results.push(void 0);
-            }
+        if (!(marker != null)) {
+          continue;
+        }
+        lat = marker.getLatLng().lat;
+        lng = marker.getLatLng().lng;
+        if (isVisible && (marker != null) && lat <= this.activeArea.neLat && lat >= this.activeArea.swLat && lng <= this.activeArea.neLng && lng >= this.activeArea.swLng) {
+          if (!(marker._map != null)) {
+            _results.push(marker.addTo(this.map));
           } else {
-            if (marker._map != null) {
-              _results.push(this.map.removeLayer(marker));
-            } else {
-              _results.push(void 0);
-            }
+            _results.push(void 0);
+          }
+        } else {
+          if (marker._map != null) {
+            _results.push(this.map.removeLayer(marker));
+          } else {
+            _results.push(void 0);
           }
         }
       }
@@ -654,7 +707,7 @@
     };
 
     CustomMap.prototype.setMarkersVisibilityByCat = function(isVisible, cat) {
-      var marker, markerType, markerTypeObject, _ref, _results;
+      var lat, lng, marker, markerType, markerTypeObject, _ref, _results;
       _ref = this.mapMarkersObject[cat]["marker_types"];
       _results = [];
       for (markerType in _ref) {
@@ -665,20 +718,17 @@
           _results1 = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             marker = _ref1[_i];
-            if (marker.infoWindow != null) {
-              marker.infoWindow.setMap(null);
-              marker.infoWindow = null;
-            }
-            marker.setVisible(isVisible);
-            if (isVisible) {
-              if (!(marker.map != null)) {
-                _results1.push(marker.setMap(this.map));
+            lat = marker.getLatLng().lat;
+            lng = marker.getLatLng().lng;
+            if (isVisible && lat <= this.activeArea.neLat && lat >= this.activeArea.swLat && lng <= this.activeArea.neLng && lng >= this.activeArea.swLng) {
+              if (!(marker._map != null)) {
+                _results1.push(marker.addTo(this.map));
               } else {
                 _results1.push(void 0);
               }
             } else {
-              if (marker.map != null) {
-                _results1.push(marker.setMap(null));
+              if (marker._map != null) {
+                _results1.push(this.map.removeLayer(marker));
               } else {
                 _results1.push(void 0);
               }
@@ -968,6 +1018,7 @@
         _this = this;
       template = _.template(Cartographer.templates.get("markersOptions"));
       html = $(template(this.MarkersConfig));
+      console.log(html);
       html.find(".trigger").bind('click', function(e) {
         var item, markerCat, markerType, myGroupTrigger, myMenuItem;
         item = $(e.currentTarget);
@@ -1027,17 +1078,6 @@
         }
         return _results;
       });
-    };
-
-    CustomMap.prototype.showMarkerFromArea = function(areaId) {
-      if (this.activeArea) {
-        this.activeArea.areaSummary.setInactive();
-      }
-      return this.activeArea = this.areas[areaId];
-    };
-
-    CustomMap.prototype.hideMarkerFromArea = function(areaId) {
-      return console.log("hiding marker for area id: " + areaId);
     };
 
     CustomMap.prototype.setAreasInformationVisibility = function(isVisible) {

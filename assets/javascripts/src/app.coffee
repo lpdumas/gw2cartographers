@@ -253,25 +253,24 @@ class Cartographer.CustomMap
       @setAllMarkers()
     )
     
-    # @bindMapEvents()
+    @hideMarkersOptionsMenu()
+    @bindMapEvents()
     @initializeAreaSummaryBoxes()
+    @addMenuIcons()
+    @addTools = $('.menu-marker a.add')
+    @addTools.each((index, target)=>
+      $(target).bind('click', @handleAddTool)
+    )
     
     # google.maps.event.addListenerOnce(@map, 'idle', ()=>
     #       @handleLocalStorageLoad(()=>
     #         
-    #         @addMenuIcons()
-    #         @addTools = $('.menu-marker a.add')
-    #         @addTools.each((index, target)=>
-    #           $(target).bind('click', @handleAddTool)
-    #         )
+
     #         
     #         # UI
     #         $('#destroy').bind('click', @destroyLocalStorage)
     #         $('#send').bind('click', @sendMapForApproval)
     #         
-    #         @setAllMarkers()
-    #         @bindMapEvents()
-    #         @map.setZoom(4)
     #         
     #         opts.onLoad()
     #       )
@@ -280,21 +279,22 @@ class Cartographer.CustomMap
   bindMapEvents: ()->
     @map.on('zoomend', (e)=>
       zoomLevel = e.target._zoom
+      console.log zoomLevel
       if zoomLevel == 4
-        @canToggleMarkers = false
+        # @canToggleMarkers = false
         @hideMarkersOptionsMenu()
-        @setAllMarkersVisibility(false)
+        # @setAllMarkersVisibility(false)
         # @setAreasInformationVisibility(true)
         # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
       else if zoomLevel > 4
-        @canToggleMarkers = true
+        # @canToggleMarkers = true
         @showMarkersOptionsMenu()
-        @setAllMarkersVisibility(true)
+        # @setAllMarkersVisibility(true)
         # @setAreasInformationVisibility(false)
       else if zoomLevel < 4
-        @canToggleMarkers = false
+        # @canToggleMarkers = false
         @hideMarkersOptionsMenu()
-        @setAllMarkersVisibility(false)
+        # @setAllMarkersVisibility(false)
         # @setAreasInformationVisibility(false)
         # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
       
@@ -388,7 +388,7 @@ class Cartographer.CustomMap
     markersType = otherInfo["markersType"]
     markersCat = otherInfo["markersCat"]
 
-    markerVisibility = if markersCat is @defaultCat || isNew then no else no
+    markerVisibility = if markersCat is isNew then yes else no
     
     if not @markersImages[markersType]?
       image = new L.icon(
@@ -413,16 +413,6 @@ class Cartographer.CustomMap
       icon : @markersImages[markersType]
       title : markerTitle
     marker = new L.Marker( new L.LatLng(markerInfo.lat, markerInfo.lng), options)
-    # marker = new google.maps.Marker(
-      # position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
-      # map: if markerVisibility then @map else null
-      # icon: @markersImages[markersType]
-      # visible: markerVisibility
-      # draggable: isMarkerDraggable
-      # cursor : if isMarkerDraggable then "move" else "pointer"
-      # title: markerTitle
-      # animation: if isNew then google.maps.Animation.DROP else no
-    # )
 
     if defaultValue?
       marker["data_translation"] = defaultValue
@@ -435,6 +425,10 @@ class Cartographer.CustomMap
     marker["type"]  = markersType
     marker["cat"]  = markersCat
 
+    if markerVisibility
+      marker.addTo(@map)
+    
+    marker
     # if markerInfo.lat.toString() is @startLat and markerInfo.lng.toString() is @startLng
       # if not marker["infoWindow"]?
         # @createInfoWindow(marker)
@@ -449,7 +443,7 @@ class Cartographer.CustomMap
     # )
 
     # google.maps.event.addListener(marker, 'click', (e)=>
-      # is it's not a new marker, simply change the hash so that our router
+      # if it's not a new marker, simply change the hash so that our router
       # handle the rest.
       # if marker.id_marker.toString() isnt "-1"
         # lang = if window.LANG is "en" then "" else "fr/"
@@ -459,10 +453,6 @@ class Cartographer.CustomMap
         # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
         # marker["infoWindow"].open()
     # )
-  
-    if markerVisibility
-      marker.addTo(@map)
-    marker
   
   createInfoWindow: (marker)=>
     lang = if window.LANG is "en" then "#/" else "#/fr/"
@@ -531,6 +521,24 @@ class Cartographer.CustomMap
           newMarker = @addMarker(marker, otherInfo, false, defaultValue)
           @mapMarkersObject[markersCat]["marker_types"][markerType]["markers"].push(newMarker)
         
+  showMarkerFromArea: (areaId)->
+    if @activeArea
+      @activeArea.areaSummary.setInactive()
+    @activeArea = @areas[areaId]
+    for cat, markersObjects of @mapMarkersObject
+      for markerType, markerTypeObject of markersObjects.marker_types when not $("[data-type='#{markerType}']").hasClass('off')
+        for marker in markerTypeObject["markers"] when marker?
+          lat = marker.getLatLng().lat
+          lng = marker.getLatLng().lng
+          if lat <= @activeArea.neLat and lat >= @activeArea.swLat and lng <= @activeArea.neLng and lng >= @activeArea.swLng
+            marker.addTo(@map)
+          else
+            @map.removeLayer(marker)
+             
+    
+  hideMarkerFromArea: (areaId)->
+    console.log "hiding marker for area id: #{areaId}"
+  
   setAllMarkersVisibility:(isVisible)->
     for cat, markersObjects of @mapMarkersObject
       @setMarkersVisibilityByType(isVisible, markerType, cat) for markerType, markerTypeObject of markersObjects.marker_types when not $("[data-type='#{markerType}']").hasClass('off')
@@ -543,7 +551,9 @@ class Cartographer.CustomMap
       
       # console.log marker
       # marker.setOpacity(isVisible)
-      if isVisible and marker?
+      lat = marker.getLatLng().lat
+      lng = marker.getLatLng().lng
+      if isVisible and marker? and lat <= @activeArea.neLat and lat >= @activeArea.swLat and lng <= @activeArea.neLng and lng >= @activeArea.swLng
         marker.addTo(@map) if !marker._map?
       else
         @map.removeLayer(marker) if marker._map?
@@ -551,15 +561,15 @@ class Cartographer.CustomMap
   setMarkersVisibilityByCat:(isVisible, cat)->
     for markerType, markerTypeObject of @mapMarkersObject[cat]["marker_types"]
       for marker in markerTypeObject.markers
-        if marker.infoWindow?
-          marker.infoWindow.setMap(null)
-          marker.infoWindow = null
-        
-        marker.setVisible(isVisible)
-        if isVisible
-            marker.setMap(@map) if !marker.map?
+        # if marker.infoWindow?
+          # marker.infoWindow.setMap(null)
+          # marker.infoWindow = null
+        lat = marker.getLatLng().lat
+        lng = marker.getLatLng().lng
+        if isVisible and lat <= @activeArea.neLat and lat >= @activeArea.swLat and lng <= @activeArea.neLng and lng >= @activeArea.swLng
+            marker.addTo(@map) if !marker._map?
         else
-            marker.setMap(null) if marker.map?
+            @map.removeLayer(marker) if marker._map?
 
   highlightsCat:(cats)->
     for markerCat, markerCatObject of @mapMarkersObject
@@ -745,6 +755,7 @@ class Cartographer.CustomMap
   addMenuIcons:()->
     template = _.template(Cartographer.templates.get("markersOptions"));
     html = $(template(@MarkersConfig))
+    console.log html
     
     # Binding click on marker icon in markers option list
     html.find(".trigger").bind 'click', (e) =>
@@ -790,13 +801,6 @@ class Cartographer.CustomMap
         @areas[area.id].areaSummary = new AreaSummary(@map, area, e, @)
     )
   
-  showMarkerFromArea: (areaId)->
-    if @activeArea
-      @activeArea.areaSummary.setInactive()
-    @activeArea = @areas[areaId]
-  
-  hideMarkerFromArea: (areaId)->
-    console.log "hiding marker for area id: #{areaId}"
     
   setAreasInformationVisibility:(isVisible)->
     for box in @areaSummaryBoxes
