@@ -550,6 +550,8 @@ class Cartographer.CustomMap
             marker.addTo(@map)
           else
             @map.removeLayer(marker)
+            if marker["popUp"]
+              @map.removeLayer(marker["popUp"])
              
     
   hideMarkerFromArea: (areaId)->
@@ -891,30 +893,7 @@ class AreaSummary
    setInactive:()->
       @area.addTo(@map)
       @rect.setStyle(@defaultStyle)
-      @carto.hideMarkerFromArea(@areaInfo.id)
-      
-   onAdd:()->
-       content = @template(@area_)
-       @div_ = $(content)[0]
-       panes = @getPanes()
-       panes.overlayImage.appendChild(@div_)
-       @setVisible(false)
-
-   draw:()->
-     overlayProjection = @getProjection()
-     sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
-     ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
-
-     div = this.div_;
-     div.style.left = sw.x + ((ne.x - sw.x) - @width_) / 2 + 'px';
-     div.style.top = ne.y + ((sw.y - ne.y) - @height_) / 2 + 'px';
-  
-   setVisible:(isVisible)->
-     if @div_
-       if isVisible is true
-         @div_.style.visibility = "visible"
-       else
-         @div_.style.visibility = "hidden"
+      @carto.hideMarkerFromArea(@areaInfo.id)      
 ###
 # }}}
 ###                

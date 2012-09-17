@@ -736,7 +736,7 @@ p.marker-permalink { text-align: right; }
   margin-left: -32px;
 }
 /* Custom Infowindo {{{ */
-.customInfoWindow {
+.leaflet-popup-content-wrapper {
   display: block;
   position: "absolute";
   min-height : 103px;
@@ -755,8 +755,11 @@ p.marker-permalink { text-align: right; }
   -ms-transition: opacity 150ms linear;
   -o-transition: opacity 150ms linear;
 }
-
-.customInfoWindow .close {
+.leaflet-popup-content-wrapper .leaflet-popup-content {
+  padding: 0;
+  margin: 0;
+}
+.leaflet-popup-content-wrapper .close {
   position: absolute;
   cursor: pointer;
   top: -22px;
@@ -766,11 +769,11 @@ p.marker-permalink { text-align: right; }
   height: 32px;
   background: url('../images/layout/edit-options.png') -160px top no-repeat;
 }
-.customInfoWindow .close:hover {
+.leaflet-popup-content-wrapper .close:hover {
   background-position: -160px bottom;
 }
 
-.customInfoWindow .iw-options-list {
+.leaflet-popup-content-wrapper .iw-options-list {
   position: absolute;
   top: -22px;
   left: -22px;
@@ -778,11 +781,11 @@ p.marker-permalink { text-align: right; }
   padding: 0;
   list-style: none;
 }
-.customInfoWindow .iw-options-list li {
+.leaflet-popup-content-wrapper .iw-options-list li {
   display: inline-block;
 }
 
-.customInfoWindow .iw-options-list li a{
+.leaflet-popup-content-wrapper .iw-options-list li a{
   display: block;
   position: relative;
   cursor: pointer;
@@ -790,47 +793,47 @@ p.marker-permalink { text-align: right; }
   height: 32px;
   background: url('../images/layout/edit-options.png') -128px top no-repeat;
 }
-.customInfoWindow .iw-options-list li a .edit {
+.leaflet-popup-content-wrapper .iw-options-list li a .edit {
   background-position: -128px top;
 }
 
-.customInfoWindow .iw-options-list li a.edit:hover,
-.customInfoWindow .iw-options-list li a.edit.active {
+.leaflet-popup-content-wrapper .iw-options-list li a.edit:hover,
+.leaflet-popup-content-wrapper .iw-options-list li a.edit.active {
   background-position: -128px bottom;
   opacity: 1;
 }
 
-.customInfoWindow .iw-options-list li a.share {
+.leaflet-popup-content-wrapper .iw-options-list li a.share {
   background-position: -192px top;
 }
 
-.customInfoWindow .iw-options-list li a.share:hover,
-.customInfoWindow .iw-options-list li a.share.active {
+.leaflet-popup-content-wrapper .iw-options-list li a.share:hover,
+.leaflet-popup-content-wrapper .iw-options-list li a.share.active {
   background-position: -192px bottom;
   opacity: 1;
 }
 
-.customInfoWindow .iw-options-list li a.delete {
+.leaflet-popup-content-wrapper .iw-options-list li a.delete {
   background-position: -64px 0px;
 }
 
-.customInfoWindow .iw-options-list li a.delete:hover,
-.customInfoWindow .iw-options-list li a.delete.active {
+.leaflet-popup-content-wrapper .iw-options-list li a.delete:hover,
+.leaflet-popup-content-wrapper .iw-options-list li a.delete.active {
   background-position: -64px bottom;
   opacity: 1;
 }
 
-.customInfoWindow .iw-options-list li a.move {
+.leaflet-popup-content-wrapper .iw-options-list li a.move {
   background-position: -96px top;
 }
 
-.customInfoWindow .iw-options-list li a.move:hover,
-.customInfoWindow .iw-options-list li a.move.active {
+.leaflet-popup-content-wrapper .iw-options-list li a.move:hover,
+.leaflet-popup-content-wrapper .iw-options-list li a.move.active {
   background-position: -96px bottom;
   opacity: 1;
 }
 
-.customInfoWindow:after, .customInfoWindow:before {
+.leaflet-popup-content-wrapper:after, .leaflet-popup-content-wrapper:before {
 	right: 100%;
 	border: solid transparent;
 	content: " ";
@@ -840,34 +843,34 @@ p.marker-permalink { text-align: right; }
 	pointer-events: none;
 }
 
-.customInfoWindow:after {
+.leaflet-popup-content-wrapper:after {
 	border-right-color: #fff;
 	border-width: 20px;
 	top: 49px;
 }
-.customInfoWindow:before {
+.leaflet-popup-content-wrapper:before {
 	border-right-color: #000000;
 	border-width: 34px;
 	top: 35px
 }
-  .customInfoWindow .padding {
+  .leaflet-popup-content-wrapper .padding {
     position: relative;
     cursor: default;
     z-index: 101;
     padding: 10px;
   }
-  .customInfoWindow label {
+  .leaflet-popup-content-wrapper label {
     position: relative;
     display: block;
     margin-bottom: 8px;
   }
-    .customInfoWindow span.label {
+    .leaflet-popup-content-wrapper span.label {
       position: relative;
       display: block;
       margin-bottom: 8px;
     }
-  .customInfoWindow input[type="text"],
-  .customInfoWindow textarea {
+  .leaflet-popup-content-wrapper input[type="text"],
+  .leaflet-popup-content-wrapper textarea {
     position: relative;
     background: #fff;
     border: 1px solid #B3B3B3;
@@ -875,7 +878,7 @@ p.marker-permalink { text-align: right; }
     padding: 8px 5px;
     color: #585858;
   }
-  .customInfoWindow button {
+  .leaflet-popup-content-wrapper button {
     position: relative;
     color: #fff;
     background: #000;
@@ -883,26 +886,26 @@ p.marker-permalink { text-align: right; }
     padding: 5px 10px;
   }
   
-  .customInfoWindow .edit-form,
-  .customInfoWindow .marker-desc,
-  .customInfoWindow .share-input,
-  .customInfoWindow .moving {
+  .leaflet-popup-content-wrapper .edit-form,
+  .leaflet-popup-content-wrapper .marker-desc,
+  .leaflet-popup-content-wrapper .share-input,
+  .leaflet-popup-content-wrapper .moving {
     position: relative;
     z-index: 102;
     display: none;
   }
   
-  .customInfoWindow .share-input {
+  .leaflet-popup-content-wrapper .share-input {
     vertical-align: center;
   }
   
-  .customInfoWindow .edit-form.active,
-  .customInfoWindow .marker-desc.active,
-  .customInfoWindow .share-input.active,
-  .customInfoWindow .moving.active {
+  .leaflet-popup-content-wrapper .edit-form.active,
+  .leaflet-popup-content-wrapper .marker-desc.active,
+  .leaflet-popup-content-wrapper .share-input.active,
+  .leaflet-popup-content-wrapper .moving.active {
     display: block;
   }
-  .customInfoWindow h1 {
+  .leaflet-popup-content-wrapper h1 {
     position: relative;
     font-size: 16px;
     font-size: 1.6rem;

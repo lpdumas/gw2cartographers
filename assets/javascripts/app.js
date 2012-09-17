@@ -647,7 +647,12 @@
                   if (lat <= this.activeArea.neLat && lat >= this.activeArea.swLat && lng <= this.activeArea.neLng && lng >= this.activeArea.swLng) {
                     _results2.push(marker.addTo(this.map));
                   } else {
-                    _results2.push(this.map.removeLayer(marker));
+                    this.map.removeLayer(marker);
+                    if (marker["popUp"]) {
+                      _results2.push(this.map.removeLayer(marker["popUp"]));
+                    } else {
+                      _results2.push(void 0);
+                    }
                   }
                 }
                 return _results2;
@@ -1192,35 +1197,6 @@
       this.area.addTo(this.map);
       this.rect.setStyle(this.defaultStyle);
       return this.carto.hideMarkerFromArea(this.areaInfo.id);
-    };
-
-    AreaSummary.prototype.onAdd = function() {
-      var content, panes;
-      content = this.template(this.area_);
-      this.div_ = $(content)[0];
-      panes = this.getPanes();
-      panes.overlayImage.appendChild(this.div_);
-      return this.setVisible(false);
-    };
-
-    AreaSummary.prototype.draw = function() {
-      var div, ne, overlayProjection, sw;
-      overlayProjection = this.getProjection();
-      sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
-      ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
-      div = this.div_;
-      div.style.left = sw.x + ((ne.x - sw.x) - this.width_) / 2 + 'px';
-      return div.style.top = ne.y + ((sw.y - ne.y) - this.height_) / 2 + 'px';
-    };
-
-    AreaSummary.prototype.setVisible = function(isVisible) {
-      if (this.div_) {
-        if (isVisible === true) {
-          return this.div_.style.visibility = "visible";
-        } else {
-          return this.div_.style.visibility = "hidden";
-        }
-      }
     };
 
     return AreaSummary;
