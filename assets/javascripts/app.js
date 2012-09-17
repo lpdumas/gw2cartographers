@@ -27,6 +27,9 @@
 
   Cartographer.initiate = function() {
     var _this = this;
+    $('.close-notice').click(function(e) {
+      return $(e.target).closest('#notice').hide();
+    });
     this.templates = new Cartographer.TemplatesLoader();
     return this.templates.loadDefaults(function() {
       return _this.currentMap = new Cartographer.CustomMap('#map', {
@@ -88,7 +91,7 @@
         "markersOptions": {
           name: "markersOptions",
           path: "assets/javascripts/templates/markersOptions._",
-          version: 1,
+          version: 2,
           src: "",
           loadOnStart: true
         },
