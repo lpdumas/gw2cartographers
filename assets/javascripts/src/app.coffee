@@ -382,6 +382,7 @@ class Cartographer.CustomMap
     return JSON.parse(json)
   
   addMarker:(markerInfo, otherInfo, isNew, defaultValue) ->
+    latLng = new L.LatLng(markerInfo.lat, markerInfo.lng)
     iconsize = 32;
     iconmid = iconsize / 2;
     iconPath = Metadata.icons_path + otherInfo.icon
@@ -412,7 +413,7 @@ class Cartographer.CustomMap
       clickable : true
       icon : @markersImages[markersType]
       title : markerTitle
-    marker = new L.Marker( new L.LatLng(markerInfo.lat, markerInfo.lng), options)
+    marker = new L.Marker(latLng, options)
 
     if defaultValue?
       marker["data_translation"] = defaultValue
@@ -422,9 +423,18 @@ class Cartographer.CustomMap
       marker["hasDefaultValue"] = false
 
     marker["id_marker"] = markerInfo["id"]
+    marker["uniqueID"] =  _.uniqueId()
     marker["type"]  = markersType
     marker["cat"]  = markersCat
-
+    # marker["popUp"]  = new L.popup()
+    # marker["popUp"].setLatLng(latLng)
+    # marker["popUp"].setContent(markerTitle)
+    
+    marker.on('click', (e)=>
+      @createInfoWindow(e.target)
+      # @map.openPopup(e.target.popUp)
+    )
+    
     if markerVisibility
       marker.addTo(@map)
     
@@ -455,9 +465,10 @@ class Cartographer.CustomMap
     # )
   
   createInfoWindow: (marker)=>
+    # console.log marker
     lang = if window.LANG is "en" then "#/" else "#/fr/"
     templateInfo = 
-      id : marker.__gm_id
+      id : marker.uniqueID
       title: (()=>
         if marker["data_translation"][LANG]["title"] || marker["data_translation"][LANG]["name"]
           return marker["data_translation"][LANG]["title"] || marker["data_translation"][LANG]["name"]
@@ -470,26 +481,31 @@ class Cartographer.CustomMap
       wikiLink  : marker["data_translation"][LANG]["link_wiki"] || ""
       hasDefaultValue : marker["hasDefaultValue"]
       type  : marker.type
-      lat   : marker.position.lat()
-      lng   : marker.position.lng()
+      lat   : marker._latlng.lat
+      lng   : marker._latlng.lng
       shareLink: "http://#{window.location.hostname}/#{lang}show/#{marker.id_marker}/"
     editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
-    marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent,
+    marker["popUp"] = new CustomInfoWindow(marker, editInfoWindowContent,
       onClose : () =>
-        @currentOpenedInfoWindow = null
+        console.log "close"
+        # @currentOpenedInfoWindow = null
       onOpen  : (infoWindow) =>
-        @currentOpenedInfoWindow = infoWindow
+        console.log "open"
+        # @currentOpenedInfoWindow = infoWindow
       onSave  : (newInfo)=>
-        @updateMarkerInfos(newInfo)
+        console.log "save"
+        # @updateMarkerInfos(newInfo)
       deleteCalled : (marker)=>
-        @removeMarker(marker.__gm_id, marker.type, marker.cat)
+        console.log "delete"
+        # @removeMarker(marker.uniqueID, marker.type, marker.cat)
       moveCalled : (marker) =>
-        if marker.getDraggable()
-          marker.setDraggable(false)
-          marker.setCursor("pointer")
-        else
-          marker.setDraggable(true)
-          marker.setCursor("move")
+        console.log "moved"
+        # if marker.getDraggable()
+          # marker.setDraggable(false)
+          # marker.setCursor("pointer")
+        # else
+          # marker.setDraggable(true)
+          # marker.setCursor("move")
       template : @editInfoWindowTemplate
     )
        
@@ -699,7 +715,7 @@ class Cartographer.CustomMap
     confirmMessage = Traduction["notice"]["deleteMarker"][LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if e
-        for marker, markerKey in @mapMarkersObject[mCat]["marker_types"][mType]["markers"] when marker.__gm_id is id
+        for marker, markerKey in @mapMarkersObject[mCat]["marker_types"][mType]["markers"] when marker.uniqueID is id
           if marker.infoWindow?
             marker.infoWindow.setMap(null)
           marker.setMap(null)
@@ -713,7 +729,7 @@ class Cartographer.CustomMap
     )
   
   updateMarkerInfos: (newInfo)->
-    for marker, markerKey in @mapMarkersObject[newInfo.cat]["marker_types"][newInfo.type]["markers"] when marker.__gm_id is newInfo.id
+    for marker, markerKey in @mapMarkersObject[newInfo.cat]["marker_types"][newInfo.type]["markers"] when marker.uniqueID is newInfo.id
       if marker["data_translation"]?
         marker["data_translation"][LANG]["desc"] = newInfo.desc
         marker["data_translation"][LANG]["title"] = newInfo.title
@@ -905,157 +921,124 @@ class AreaSummary
 
 ###
 # class CustomInfoWindow {{{
-
+###
 
 class CustomInfoWindow
- constructor: (marker, content, opts) ->
-   @content = content
-   @marker  = marker
-   @template = opts.template
-   @map     = marker.map
-   wrap = """
-   <div class="customInfoWindow">
+  constructor: (marker, content, opts) ->
+    console.log marker
+    @content = content
+    @marker  = marker
+    @template = opts.template
+    @map     = marker._map
+    @latLng = new L.LatLng(marker._latlng.lat, marker._latlng.lng)
+
+    wrap = """
+    <div class="customInfoWindow">
      <a href="javascript:" title="Close" class="close button"></a>
        <div class="padding"></div>
-   </div>
-   """
-   @wrap = $(wrap)
-   @closeBtn = @wrap.find('.close')
-   @setMap(@map)
-   @isVisible = false
-   @onClose   = opts.onClose
-   @onOpen    = opts.onOpen
-   @onSave    = opts.onSave
-   @deleteCalled = opts.deleteCalled
-   @moveCalled = opts.moveCalled
-   @closeBtn.bind('click', @close)
+    </div>
+    """
+    @wrap = $(wrap)
+    @wrap.find('.padding').append(@content)
+    @closeBtn = @wrap.find('.close')
+    
+    @isVisible = false
+    @onClose   = opts.onClose
+    @onOpen    = opts.onOpen
+    @onSave    = opts.onSave
+    @deleteCalled = opts.deleteCalled
+    @moveCalled = opts.moveCalled
 
- CustomInfoWindow:: = new google.maps.OverlayView()
+    @setLatLng(@latLng)
+    @setContent(@wrap[0])
 
- onAdd:()->
-     @wrap.find('.padding').append(@content)
-     @wrap.css(
-       display: "block"
-       position: "absolute"
-     )
-     panes = @getPanes()
-     panes.overlayMouseTarget.appendChild(@wrap[0])
-     @iWidth = @wrap.outerWidth()
-     @iHeight = @wrap.outerHeight()
+    @map.openPopup(@)
+    @bindButton()
+    # @closeBtn.bind('click', @close)
 
-     @bindButton()
-     # @open()
- bindButton: () ->
-   @wrap.find('button').bind('click', @handleSave)
-   @wrap.find('.iw-options-list .button').bind('click', @toggleSection)
+  CustomInfoWindow:: = new L.popup()
 
- onRemove :() ->
-   @wrap[0].parentNode.removeChild(@wrap[0])
-   @wrap = null
 
- draw: () ->
-   cancelHandler = (e)=>
-       e.cancelBubble = true
-       if e.stopPropagation
-         e.stopPropagation()
-
-   overlayProjection = @getProjection()
-   pos = overlayProjection.fromLatLngToDivPixel(@marker.position)
-   @wrap.css(
-     left: pos.x + 30
-     top: pos.y - 80
-   )
-
-   events = ['mousedown', 'touchstart', 'touchend', 'touchmove', 'contextmenu', 'click', 'dblclick', 'mousewheel', 'DOMMouseScroll']
-   @listeners = []
-   for event in events
-     @listeners.push(google.maps.event.addDomListener(@wrap[0], event, cancelHandler);)
-
- close:()=>
-   if @wrap
-     @onClose(this)
-     @isVisible = false
-     @wrap.css(
-       display : "none"
-     )
- open:()=>
-  if @wrap
-    @panMap()
-    @onOpen(this)
-    @isVisible = true
-    @wrap.css(
-      display : "block"
+  bindButton: () ->
+    # @wrap.find('button').bind('click', @handleSave)
+    console.log @wrap.find('.iw-options-list .button')
+    @wrap.find('.iw-options-list .button').bind('click', (e)=>
+      @toggleSection(e)
     )
+  
+ #  onRemove :() ->
+ #    @wrap[0].parentNode.removeChild(@wrap[0])
+ #    @wrap = null
+ # updatePos: ()->
+ #   overlayProjection = @getProjection()
+ #   pos = overlayProjection.fromLatLngToDivPixel(@marker.position)
+ # 
+ #   shareInput = @wrap.find('[name="share-link"]') 
+ #   val = shareInput.val()
+ #   newVal = val.split("?")[0] + "?lat=" + @marker.position.lat() + "&lng=" + @marker.position.lng()
+ #   shareInput.val(newVal)
+ # 
+ #   @wrap.css(
+ #     left: pos.x + 30
+ #     top: pos.y - 80
+ #   )
 
- updatePos: ()->
-   overlayProjection = @getProjection()
-   pos = overlayProjection.fromLatLngToDivPixel(@marker.position)
+  toggleSection: (e) =>
+    console.log "toggleSection"
+    this_ = $(e.currentTarget)
+    mywrap = this_.closest('.customInfoWindow')
+    action = this_.attr('data-action')
+    defaultTab = mywrap.find('.marker-desc')
+    activeTab = mywrap.find('.toggling-tab.active') 
+    targetTab = mywrap.find("[data-target='#{action}']")
+    
+    switch action
+      when "move", "share", "edit"
+        mywrap.find('.iw-options-list .button').removeClass('active')
+        if targetTab.attr("data-target") is activeTab.attr("data-target")
+          targetTab.removeClass('active')
+          defaultTab.addClass('active')
+        else
+          this_.addClass('active')
+          activeTab.removeClass('active')
+          targetTab.addClass('active')
+          defaultTab.removeClass('active')
+      when "delete"
+        @deleteCalled(@marker)
+ 
+    if action is "move"
+      @moveCalled(@marker)
+ # 
+ # handleSave: (e) =>
+ #   this_ = $(e.currentTarget)
+ #   form = @wrap.find('.edit-form')
+ #   newTitle = @wrap.find('[name="marker-title"]').val()
+ #   newDesc = @wrap.find('[name="marker-description"]').val()
+ #   newDesc = newDesc.replace(/\n/g, '<br />');
+ #   newWikiLink = @wrap.find('[name="marker-wiki"]').val()
+ #   form.removeClass('active')
+ #   
+ #   lang = if window.LANG is "en" then '#/' else "#/fr/"
+ #   newInfo = 
+ #     id    : @marker.uniqueID
+ #     title : newTitle
+ #     desc  : newDesc
+ #     wikiLink : newWikiLink
+ #     type : @marker.type
+ #     cat  : @marker.cat
+ #     lat  : @marker.position.lat()
+ #     lng  : @marker.position.lng()
+ #     shareLink: "http://#{window.location.hostname}/#{lang}show/#{@marker.id_marker}/"
+ #     hasDefaultValue : @marker["hasDefaultValue"]
+ #     
+ #   @wrap.find('.padding').html(@template(newInfo))
+ #   @bindButton()
+ #   @wrap.find('.edit').removeClass('active')
+ #   @onSave(newInfo)
+ # 
+ # panMap: () -> 
+ #   @map.panTo(new google.maps.LatLng(@marker.position.lat(), @marker.position.lng()));
 
-   shareInput = @wrap.find('[name="share-link"]') 
-   val = shareInput.val()
-   newVal = val.split("?")[0] + "?lat=" + @marker.position.lat() + "&lng=" + @marker.position.lng()
-   shareInput.val(newVal)
-
-   @wrap.css(
-     left: pos.x + 30
-     top: pos.y - 80
-   )
-
- toggleSection: (e) =>
-   this_ = $(e.currentTarget)
-   mywrap = this_.closest('.customInfoWindow')
-   action = this_.attr('data-action')
-   defaultTab = mywrap.find('.marker-desc')
-   activeTab = mywrap.find('.toggling-tab.active') 
-   targetTab = mywrap.find("[data-target='#{action}']")
-
-   switch action
-     when "move", "share", "edit"
-       mywrap.find('.iw-options-list .button').removeClass('active')
-       if targetTab.attr("data-target") is activeTab.attr("data-target")
-         targetTab.removeClass('active')
-         defaultTab.addClass('active')
-       else
-         this_.addClass('active')
-         activeTab.removeClass('active')
-         targetTab.addClass('active')
-         defaultTab.removeClass('active')
-     when "delete"
-       @deleteCalled(@marker)
-
-   if action is "move"
-     @moveCalled(@marker)
-
- handleSave: (e) =>
-   this_ = $(e.currentTarget)
-   form = @wrap.find('.edit-form')
-   newTitle = @wrap.find('[name="marker-title"]').val()
-   newDesc = @wrap.find('[name="marker-description"]').val()
-   newDesc = newDesc.replace(/\n/g, '<br />');
-   newWikiLink = @wrap.find('[name="marker-wiki"]').val()
-   form.removeClass('active')
-   
-   lang = if window.LANG is "en" then '#/' else "#/fr/"
-   newInfo = 
-     id    : @marker.__gm_id
-     title : newTitle
-     desc  : newDesc
-     wikiLink : newWikiLink
-     type : @marker.type
-     cat  : @marker.cat
-     lat  : @marker.position.lat()
-     lng  : @marker.position.lng()
-     shareLink: "http://#{window.location.hostname}/#{lang}show/#{@marker.id_marker}/"
-     hasDefaultValue : @marker["hasDefaultValue"]
-     
-   @wrap.find('.padding').html(@template(newInfo))
-   @bindButton()
-   @wrap.find('.edit').removeClass('active')
-   @onSave(newInfo)
-
- panMap: () -> 
-   @map.panTo(new google.maps.LatLng(@marker.position.lat(), @marker.position.lng()));
-###
 ###
 # }}}
 ###
