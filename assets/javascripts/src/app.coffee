@@ -904,16 +904,15 @@ class AreaSummary
 
 class CustomInfoWindow
   constructor: (marker, content, opts) ->
-    console.log marker
     @content = content
     @marker  = marker
     @template = opts.template
     @map     = marker._map
+    
     @latLng = new L.LatLng(marker._latlng.lat, marker._latlng.lng)
 
     wrap = """
     <div class="customInfoWindow">
-     <a href="javascript:" title="Close" class="close button"></a>
        <div class="padding"></div>
     </div>
     """
@@ -935,7 +934,7 @@ class CustomInfoWindow
     @bindButton()
     # @closeBtn.bind('click', @close)
 
-  CustomInfoWindow:: = new L.popup()
+  CustomInfoWindow:: = new L.popup({autoPanPadding : new L.Point(100, 100)})
 
 
   bindButton: () ->

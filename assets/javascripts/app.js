@@ -1221,13 +1221,12 @@
       this.toggleSection = __bind(this.toggleSection, this);
 
       var wrap;
-      console.log(marker);
       this.content = content;
       this.marker = marker;
       this.template = opts.template;
       this.map = marker._map;
       this.latLng = new L.LatLng(marker._latlng.lat, marker._latlng.lng);
-      wrap = "<div class=\"customInfoWindow\">\n <a href=\"javascript:\" title=\"Close\" class=\"close button\"></a>\n   <div class=\"padding\"></div>\n</div>";
+      wrap = "<div class=\"customInfoWindow\">\n   <div class=\"padding\"></div>\n</div>";
       this.wrap = $(wrap);
       this.wrap.find('.padding').append(this.content);
       this.closeBtn = this.wrap.find('.close');
@@ -1243,7 +1242,9 @@
       this.bindButton();
     }
 
-    CustomInfoWindow.prototype = new L.popup();
+    CustomInfoWindow.prototype = new L.popup({
+      autoPanPadding: new L.Point(100, 100)
+    });
 
     CustomInfoWindow.prototype.bindButton = function() {
       var _this = this;

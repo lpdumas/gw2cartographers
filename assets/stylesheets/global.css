@@ -736,6 +736,24 @@ p.marker-permalink { text-align: right; }
   margin-left: -32px;
 }
 /* Custom Infowindo {{{ */
+.leaflet-container a.leaflet-popup-close-button {
+  position: absolute;
+  z-index: 101;
+  cursor: pointer;
+  text-indent: -9999em;
+  top: -10px;
+  right: -10px;
+  display: block;
+  padding: 0;
+  margin: 0;
+  width: 32px;
+  height: 32px;
+  background: url('../images/layout/edit-options.png') -160px top no-repeat;
+}
+.leaflet-container a.leaflet-popup-close-button:hover {
+  background-position: -160px bottom;
+}
+
 .leaflet-popup-content-wrapper {
   display: block;
   position: "absolute";
@@ -758,19 +776,6 @@ p.marker-permalink { text-align: right; }
 .leaflet-popup-content-wrapper .leaflet-popup-content {
   padding: 0;
   margin: 0;
-}
-.leaflet-popup-content-wrapper .close {
-  position: absolute;
-  cursor: pointer;
-  top: -22px;
-  right: -22px;
-  display: block;
-  width: 32px;
-  height: 32px;
-  background: url('../images/layout/edit-options.png') -160px top no-repeat;
-}
-.leaflet-popup-content-wrapper .close:hover {
-  background-position: -160px bottom;
 }
 
 .leaflet-popup-content-wrapper .iw-options-list {
@@ -833,8 +838,13 @@ p.marker-permalink { text-align: right; }
   opacity: 1;
 }
 
+.leaflet-popup-content-wrapper {
+	position: relative;
+	background: #ffffff;
+	border: 10px solid #000000;
+}
 .leaflet-popup-content-wrapper:after, .leaflet-popup-content-wrapper:before {
-	right: 100%;
+	top: 100%;
 	border: solid transparent;
 	content: " ";
 	height: 0;
@@ -844,14 +854,18 @@ p.marker-permalink { text-align: right; }
 }
 
 .leaflet-popup-content-wrapper:after {
-	border-right-color: #fff;
-	border-width: 20px;
-	top: 49px;
+	border-color: rgba(255, 255, 255, 0);
+	border-top-color: #ffffff;
+	border-width: 15px;
+	left: 50%;
+	margin-left: -15px;
 }
 .leaflet-popup-content-wrapper:before {
-	border-right-color: #000000;
-	border-width: 34px;
-	top: 35px
+	border-color: rgba(18, 21, 23, 0);
+	border-top-color: #121517;
+	border-width: 29px;
+	left: 50%;
+	margin-left: -29px;
 }
   .leaflet-popup-content-wrapper .padding {
     position: relative;
@@ -911,4 +925,7 @@ p.marker-permalink { text-align: right; }
     font-size: 1.6rem;
     margin: 0 0 10px 0;
   }
+.leaflet-popup .leaflet-popup-tip {
+  display: none;
+}
 /*}}}*/
