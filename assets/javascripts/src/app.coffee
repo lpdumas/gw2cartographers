@@ -259,6 +259,7 @@ class Cartographer.CustomMap
       @addTools.each((index, target)=>
         $(target).bind('click', @handleAddTool)
       )
+      opts.onLoad()
     )
     
     # google.maps.event.addListenerOnce(@map, 'idle', ()=>
@@ -322,7 +323,6 @@ class Cartographer.CustomMap
     # )
     
   highlightMarker: (marker)->
-    @map.setZoom(6)
     if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
     marker.setVisible(true)
     if !marker.infoWindow?
@@ -338,14 +338,16 @@ class Cartographer.CustomMap
       for markerType, markerTypeObject of markersObjects.marker_types
         for marker in markerTypeObject.markers
           if coord.lat is marker.position.lat().toString() and coord.lng is marker.position.lng().toString()
-            @highlightMarker(marker)
+            # @highlightMarker(marker)
+            marker.trigger('click', ['test'])
             
   panToMarker: (markerId)->
     for markersCat, markersObjects of @mapMarkersObject
       for markerType, markerTypeObject of markersObjects.marker_types
         for marker in markerTypeObject.markers
           if parseInt(markerId) is marker.id_marker
-            @highlightMarker(marker)
+            # @highlightMarker(marker)
+            marker.fire('click', {'src' : 'url'})
   
   initCustomMap: (wrap)->
     @map = new L.Map(wrap, 
@@ -435,10 +437,15 @@ class Cartographer.CustomMap
     # marker["popUp"].setContent(markerTitle)
     
     marker.on('click', (e)=>
-      if e.target.popUp?
-        e.target.popUp.open()
+      
+      if marker.id_marker.toString() isnt "-1" and !e.src?
+        lang = if window.LANG is "en" then "" else "fr/"
+        window.location.hash = "/#{lang}show/#{marker.id_marker}/"
       else
-        @createInfoWindow(e.target)
+        if e.target.popUp?
+          e.target.popUp.open()
+        else
+          @createInfoWindow(e.target)
     )
     marker.on('dragend', (e)=>
       @saveToLocalStorage()
@@ -497,18 +504,11 @@ class Cartographer.CustomMap
       shareLink: "http://#{window.location.hostname}/#{lang}show/#{marker.id_marker}/"
     editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
     marker["popUp"] = new CustomInfoWindow(marker, editInfoWindowContent,
-      onClose : () =>
-        console.log "close"
-        # @currentOpenedInfoWindow = null
-      onOpen  : (infoWindow) =>
-        console.log "open"
-        # @currentOpenedInfoWindow = infoWindow
       onSave  : (newInfo)=>
         @updateMarkerInfos(newInfo)
       deleteCalled : (marker)=>
         @removeMarker(marker.uniqueID, marker.type, marker.cat)
       moveCalled : (marker) =>
-        console.log marker.dragging.enabled()
         if marker.dragging.enabled()
           marker.dragging.disable()
         else
@@ -550,7 +550,6 @@ class Cartographer.CustomMap
     @activeArea = @areas[areaId]
     for cat, markersObjects of @mapMarkersObject
       for markerType, markerTypeObject of markersObjects.marker_types when not $("[data-type='#{markerType}']").hasClass('off')
-        console.log $("[data-type='#{markerType}']").hasClass('off')
         for marker in markerTypeObject["markers"] when marker?
           lat = marker.getLatLng().lat
           lng = marker.getLatLng().lng
@@ -561,10 +560,6 @@ class Cartographer.CustomMap
             if marker["popUp"]
               @map.removeLayer(marker["popUp"])
              
-    
-  hideMarkerFromArea: (areaId)->
-    console.log "hiding marker for area id: #{areaId}"
-  
   setAllMarkersVisibility:(isVisible)->
     for cat, markersObjects of @mapMarkersObject
       @setMarkersVisibilityByType(isVisible, markerType, cat) for markerType, markerTypeObject of markersObjects.marker_types when not $("[data-type='#{markerType}']").hasClass('off')
@@ -758,7 +753,6 @@ class Cartographer.CustomMap
     # Save new exported JSON to local storage if it is supported
     if window.LOCAL_STORAGE
       json = @handleExport()
-      console.log @localStorageKey
       localStorage.setItem(@localStorageKey, json);
 
   getMarkerByCoordinates:(lat, lng)->
@@ -782,7 +776,6 @@ class Cartographer.CustomMap
   addMenuIcons:()->
     template = _.template(Cartographer.templates.get("markersOptions"));
     html = $(template(@MarkersConfig))
-    console.log html
     
     # Binding click on marker icon in markers option list
     html.find(".trigger").bind 'click', (e) =>
@@ -930,8 +923,6 @@ class CustomInfoWindow
     @closeBtn = @wrap.find('.close')
     
     @isVisible = false
-    @onClose   = opts.onClose
-    @onOpen    = opts.onOpen
     @onSave    = opts.onSave
     @deleteCalled = opts.deleteCalled
     @moveCalled = opts.moveCalled
@@ -1045,7 +1036,6 @@ Cartographer.router = Backbone.Router.extend(
     Backbone.history.start()
     
   handleLang: (lang)->
-    console.log "langswitch"
     Cartographer.switchLang(lang)
     
   handleCat: (lang, a)->

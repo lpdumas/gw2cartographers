@@ -319,9 +319,10 @@
         _this.initializeAreaSummaryBoxes();
         _this.addMenuIcons();
         _this.addTools = $('.menu-marker a.add');
-        return _this.addTools.each(function(index, target) {
+        _this.addTools.each(function(index, target) {
           return $(target).bind('click', _this.handleAddTool);
         });
+        return opts.onLoad();
       });
     }
 
@@ -341,7 +342,6 @@
     };
 
     CustomMap.prototype.highlightMarker = function(marker) {
-      this.map.setZoom(6);
       if (this.currentOpenedInfoWindow) {
         this.currentOpenedInfoWindow.close();
       }
@@ -375,16 +375,16 @@
               for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
                 marker = _ref2[_i];
                 if (coord.lat === marker.position.lat().toString() && coord.lng === marker.position.lng().toString()) {
-                  _results2.push(this.highlightMarker(marker));
+                  _results2.push(marker.trigger('click', ['test']));
                 } else {
                   _results2.push(void 0);
                 }
               }
               return _results2;
-            }).call(this));
+            })());
           }
           return _results1;
-        }).call(this));
+        })());
       }
       return _results;
     };
@@ -408,16 +408,18 @@
               for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
                 marker = _ref2[_i];
                 if (parseInt(markerId) === marker.id_marker) {
-                  _results2.push(this.highlightMarker(marker));
+                  _results2.push(marker.fire('click', {
+                    'src': 'url'
+                  }));
                 } else {
                   _results2.push(void 0);
                 }
               }
               return _results2;
-            }).call(this));
+            })());
           }
           return _results1;
-        }).call(this));
+        })());
       }
       return _results;
     };
@@ -508,10 +510,16 @@
       marker["type"] = markersType;
       marker["cat"] = markersCat;
       marker.on('click', function(e) {
-        if (e.target.popUp != null) {
-          return e.target.popUp.open();
+        var lang;
+        if (marker.id_marker.toString() !== "-1" && !(e.src != null)) {
+          lang = window.LANG === "en" ? "" : "fr/";
+          return window.location.hash = "/" + lang + "show/" + marker.id_marker + "/";
         } else {
-          return _this.createInfoWindow(e.target);
+          if (e.target.popUp != null) {
+            return e.target.popUp.open();
+          } else {
+            return _this.createInfoWindow(e.target);
+          }
         }
       });
       marker.on('dragend', function(e) {
@@ -551,12 +559,6 @@
       };
       editInfoWindowContent = this.editInfoWindowTemplate(templateInfo);
       return marker["popUp"] = new CustomInfoWindow(marker, editInfoWindowContent, {
-        onClose: function() {
-          return console.log("close");
-        },
-        onOpen: function(infoWindow) {
-          return console.log("open");
-        },
         onSave: function(newInfo) {
           return _this.updateMarkerInfos(newInfo);
         },
@@ -564,7 +566,6 @@
           return _this.removeMarker(marker.uniqueID, marker.type, marker.cat);
         },
         moveCalled: function(marker) {
-          console.log(marker.dragging.enabled());
           if (marker.dragging.enabled()) {
             return marker.dragging.disable();
           } else {
@@ -638,43 +639,37 @@
           _results1 = [];
           for (markerType in _ref1) {
             markerTypeObject = _ref1[markerType];
-            if (!(!$("[data-type='" + markerType + "']").hasClass('off'))) {
-              continue;
-            }
-            console.log($("[data-type='" + markerType + "']").hasClass('off'));
-            _results1.push((function() {
-              var _i, _len, _ref2, _results2;
-              _ref2 = markerTypeObject["markers"];
-              _results2 = [];
-              for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-                marker = _ref2[_i];
-                if (!(marker != null)) {
-                  continue;
-                }
-                lat = marker.getLatLng().lat;
-                lng = marker.getLatLng().lng;
-                if (lat <= this.activeArea.neLat && lat >= this.activeArea.swLat && lng <= this.activeArea.neLng && lng >= this.activeArea.swLng) {
-                  _results2.push(marker.addTo(this.map));
-                } else {
-                  this.map.removeLayer(marker);
-                  if (marker["popUp"]) {
-                    _results2.push(this.map.removeLayer(marker["popUp"]));
+            if (!$("[data-type='" + markerType + "']").hasClass('off')) {
+              _results1.push((function() {
+                var _i, _len, _ref2, _results2;
+                _ref2 = markerTypeObject["markers"];
+                _results2 = [];
+                for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+                  marker = _ref2[_i];
+                  if (!(marker != null)) {
+                    continue;
+                  }
+                  lat = marker.getLatLng().lat;
+                  lng = marker.getLatLng().lng;
+                  if (lat <= this.activeArea.neLat && lat >= this.activeArea.swLat && lng <= this.activeArea.neLng && lng >= this.activeArea.swLng) {
+                    _results2.push(marker.addTo(this.map));
                   } else {
-                    _results2.push(void 0);
+                    this.map.removeLayer(marker);
+                    if (marker["popUp"]) {
+                      _results2.push(this.map.removeLayer(marker["popUp"]));
+                    } else {
+                      _results2.push(void 0);
+                    }
                   }
                 }
-              }
-              return _results2;
-            }).call(this));
+                return _results2;
+              }).call(this));
+            }
           }
           return _results1;
         }).call(this));
       }
       return _results;
-    };
-
-    CustomMap.prototype.hideMarkerFromArea = function(areaId) {
-      return console.log("hiding marker for area id: " + areaId);
     };
 
     CustomMap.prototype.setAllMarkersVisibility = function(isVisible) {
@@ -993,7 +988,6 @@
       var json;
       if (window.LOCAL_STORAGE) {
         json = this.handleExport();
-        console.log(this.localStorageKey);
         return localStorage.setItem(this.localStorageKey, json);
       }
     };
@@ -1039,7 +1033,6 @@
         _this = this;
       template = _.template(Cartographer.templates.get("markersOptions"));
       html = $(template(this.MarkersConfig));
-      console.log(html);
       html.find(".trigger").bind('click', function(e) {
         var item, markerCat, markerType, myGroupTrigger, myMenuItem;
         item = $(e.currentTarget);
@@ -1237,8 +1230,6 @@
       this.wrap.find('.padding').append(this.content);
       this.closeBtn = this.wrap.find('.close');
       this.isVisible = false;
-      this.onClose = opts.onClose;
-      this.onOpen = opts.onOpen;
       this.onSave = opts.onSave;
       this.deleteCalled = opts.deleteCalled;
       this.moveCalled = opts.moveCalled;
@@ -1351,7 +1342,6 @@
       return Backbone.history.start();
     },
     handleLang: function(lang) {
-      console.log("langswitch");
       return Cartographer.switchLang(lang);
     },
     handleCat: function(lang, a) {
