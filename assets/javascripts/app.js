@@ -703,6 +703,9 @@
         if (!(marker != null)) {
           continue;
         }
+        if (marker.popUp != null) {
+          this.map.removeLayer(marker.popUp);
+        }
         lat = marker.getLatLng().lat;
         lng = marker.getLatLng().lng;
         if (isVisible && (marker != null) && lat <= this.activeArea.neLat && lat >= this.activeArea.swLat && lng <= this.activeArea.neLng && lng >= this.activeArea.swLng) {
@@ -734,6 +737,9 @@
           _results1 = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             marker = _ref1[_i];
+            if (marker.popUp != null) {
+              this.map.removeLayer(marker.popUp);
+            }
             lat = marker.getLatLng().lat;
             lng = marker.getLatLng().lng;
             if (isVisible && lat <= this.activeArea.neLat && lat >= this.activeArea.swLat && lng <= this.activeArea.neLng && lng >= this.activeArea.swLng) {

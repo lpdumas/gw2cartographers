@@ -566,12 +566,8 @@ class Cartographer.CustomMap
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
     for marker in @mapMarkersObject[cat]["marker_types"][type]["markers"] when marker?
-      # if marker.infoWindow?
-        # marker.infoWindow.setMap(null)
-        # marker.infoWindow = null
-      
-      # console.log marker
-      # marker.setOpacity(isVisible)
+      if marker.popUp?
+        @map.removeLayer(marker.popUp)
       lat = marker.getLatLng().lat
       lng = marker.getLatLng().lng
       if isVisible and marker? and lat <= @activeArea.neLat and lat >= @activeArea.swLat and lng <= @activeArea.neLng and lng >= @activeArea.swLng
@@ -580,12 +576,10 @@ class Cartographer.CustomMap
         @map.removeLayer(marker) if marker._map?
   
   setMarkersVisibilityByCat:(isVisible, cat)->
-    
     for markerType, markerTypeObject of @mapMarkersObject[cat]["marker_types"]
       for marker in markerTypeObject.markers
-        # if marker.infoWindow?
-          # marker.infoWindow.setMap(null)
-          # marker.infoWindow = null
+        if marker.popUp?
+          @map.removeLayer(marker.popUp)
         lat = marker.getLatLng().lat
         lng = marker.getLatLng().lng
         if isVisible and lat <= @activeArea.neLat and lat >= @activeArea.swLat and lng <= @activeArea.neLng and lng >= @activeArea.swLng
