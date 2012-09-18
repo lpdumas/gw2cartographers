@@ -65,7 +65,7 @@ Cartographer.showInfo = ()->
   """
   modal.setContent(content)
   modal.open()
-  # console.log cats
+
 # }}}
 
 ##################
@@ -251,15 +251,14 @@ class Cartographer.CustomMap
 
     @handleLocalStorageLoad(()=>
       @setAllMarkers()
-    )
-    
-    @hideMarkersOptionsMenu()
-    @bindMapEvents()
-    @initializeAreaSummaryBoxes()
-    @addMenuIcons()
-    @addTools = $('.menu-marker a.add')
-    @addTools.each((index, target)=>
-      $(target).bind('click', @handleAddTool)
+      @hideMarkersOptionsMenu()
+      @bindMapEvents()
+      @initializeAreaSummaryBoxes()
+      @addMenuIcons()
+      @addTools = $('.menu-marker a.add')
+      @addTools.each((index, target)=>
+        $(target).bind('click', @handleAddTool)
+      )
     )
     
     # google.maps.event.addListenerOnce(@map, 'idle', ()=>
@@ -279,7 +278,6 @@ class Cartographer.CustomMap
   bindMapEvents: ()->
     @map.on('zoomend', (e)=>
       zoomLevel = e.target._zoom
-      console.log zoomLevel
       if zoomLevel == 4
         # @canToggleMarkers = false
         @hideMarkersOptionsMenu()
@@ -409,12 +407,12 @@ class Cartographer.CustomMap
       markerTitle = markerInfo["data_translation"][LANG]["title"]
     
     options = 
-      draggable : isMarkerDraggable
+      draggable: isMarkerDraggable
       clickable : true
       icon : @markersImages[markersType]
       title : markerTitle
     marker = new L.Marker(latLng, options)
-
+    
     if defaultValue?
       marker["data_translation"] = defaultValue
       marker["hasDefaultValue"] = true
@@ -426,13 +424,26 @@ class Cartographer.CustomMap
     marker["uniqueID"] =  _.uniqueId()
     marker["type"]  = markersType
     marker["cat"]  = markersCat
+    # marker["drag"] = new L.Handler.MarkerDrag(marker)
+    # console.log marker
+    # if !isMarkerDraggable
+      # marker.drag.enable()
+    # else
+      # marker.drag.disable()
     # marker["popUp"]  = new L.popup()
     # marker["popUp"].setLatLng(latLng)
     # marker["popUp"].setContent(markerTitle)
     
     marker.on('click', (e)=>
-      @createInfoWindow(e.target)
-      # @map.openPopup(e.target.popUp)
+      if e.target.popUp?
+        e.target.popUp.open()
+      else
+        @createInfoWindow(e.target)
+    )
+    marker.on('dragend', (e)=>
+      @saveToLocalStorage()
+      if e.target.popUp
+        e.target.popUp.setLatLng(new L.LatLng(marker._latlng.lat, marker._latlng.lng))
     )
     
     if markerVisibility
@@ -493,19 +504,15 @@ class Cartographer.CustomMap
         console.log "open"
         # @currentOpenedInfoWindow = infoWindow
       onSave  : (newInfo)=>
-        console.log "save"
-        # @updateMarkerInfos(newInfo)
+        @updateMarkerInfos(newInfo)
       deleteCalled : (marker)=>
-        console.log "delete"
-        # @removeMarker(marker.uniqueID, marker.type, marker.cat)
+        @removeMarker(marker.uniqueID, marker.type, marker.cat)
       moveCalled : (marker) =>
-        console.log "moved"
-        # if marker.getDraggable()
-          # marker.setDraggable(false)
-          # marker.setCursor("pointer")
-        # else
-          # marker.setDraggable(true)
-          # marker.setCursor("move")
+        console.log marker.dragging.enabled()
+        if marker.dragging.enabled()
+          marker.dragging.disable()
+        else
+          marker.dragging.enable()
       template : @editInfoWindowTemplate
     )
        
@@ -543,6 +550,7 @@ class Cartographer.CustomMap
     @activeArea = @areas[areaId]
     for cat, markersObjects of @mapMarkersObject
       for markerType, markerTypeObject of markersObjects.marker_types when not $("[data-type='#{markerType}']").hasClass('off')
+        console.log $("[data-type='#{markerType}']").hasClass('off')
         for marker in markerTypeObject["markers"] when marker?
           lat = marker.getLatLng().lat
           lng = marker.getLatLng().lng
@@ -577,6 +585,7 @@ class Cartographer.CustomMap
         @map.removeLayer(marker) if marker._map?
   
   setMarkersVisibilityByCat:(isVisible, cat)->
+    
     for markerType, markerTypeObject of @mapMarkersObject[cat]["marker_types"]
       for marker in markerTypeObject.markers
         # if marker.infoWindow?
@@ -647,13 +656,13 @@ class Cartographer.CustomMap
         for marker in markerTypeObject.markers
           if marker["data_translation"]?
             nm = 
-              "lng" : marker.getPosition().lng()
-              "lat" : marker.getPosition().lat()
+              "lng" : marker._latlng.lng
+              "lat" : marker._latlng.lat
               "data_translation" : $.extend(true, {}, marker["data_translation"])
           else
             nm = 
-              "lng" : marker.getPosition().lng()
-              "lat" : marker.getPosition().lat()
+              "lng" : marker._latlng.lng
+              "lat" : marker._latlng.lat
  
           exportMarkerObject[markersCat]["marker_types"][markerType]["markers"].push(nm)
           nm["id"] = marker["id_marker"];
@@ -718,9 +727,9 @@ class Cartographer.CustomMap
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if e
         for marker, markerKey in @mapMarkersObject[mCat]["marker_types"][mType]["markers"] when marker.uniqueID is id
-          if marker.infoWindow?
-            marker.infoWindow.setMap(null)
-          marker.setMap(null)
+          if marker.popUp?
+            @map.removeLayer(marker.popUp)
+          @map.removeLayer(marker)
 
           @mapMarkersObject[mCat]["marker_types"][mType]['markers'] = _.reject(@mapMarkersObject[mCat]["marker_types"][mType]["markers"], (m) =>
             return m == marker
@@ -731,7 +740,7 @@ class Cartographer.CustomMap
     )
   
   updateMarkerInfos: (newInfo)->
-    for marker, markerKey in @mapMarkersObject[newInfo.cat]["marker_types"][newInfo.type]["markers"] when marker.uniqueID is newInfo.id
+    for marker, markerKey in @mapMarkersObject[newInfo.cat]["marker_types"][newInfo.type]["markers"] when marker.uniqueId is newInfo.id
       if marker["data_translation"]?
         marker["data_translation"][LANG]["desc"] = newInfo.desc
         marker["data_translation"][LANG]["title"] = newInfo.title
@@ -926,43 +935,31 @@ class CustomInfoWindow
     @onSave    = opts.onSave
     @deleteCalled = opts.deleteCalled
     @moveCalled = opts.moveCalled
-
+    
     @setLatLng(@latLng)
-    @setContent(@wrap[0])
+    @currentContent = @wrap.clone()
+    @setContent(@currentContent[0])
 
     @map.openPopup(@)
     @bindButton()
     # @closeBtn.bind('click', @close)
 
-  CustomInfoWindow:: = new L.popup({autoPanPadding : new L.Point(100, 100)})
-
+  CustomInfoWindow:: = new L.popup({
+    autoPanPadding : new L.Point(120, 120)
+    offset: new L.Point(0, -6)
+  })
+  
+  open: ()->
+    @.openOn(@map)
 
   bindButton: () ->
-    # @wrap.find('button').bind('click', @handleSave)
-    console.log @wrap.find('.iw-options-list .button')
-    @wrap.find('.iw-options-list .button').bind('click', (e)=>
+    @currentContent.find('button').bind('click', @handleSave)
+    @currentContent.find('.iw-options-list .button').bind('click', (e)=>
       @toggleSection(e)
     )
   
- #  onRemove :() ->
- #    @wrap[0].parentNode.removeChild(@wrap[0])
- #    @wrap = null
- # updatePos: ()->
- #   overlayProjection = @getProjection()
- #   pos = overlayProjection.fromLatLngToDivPixel(@marker.position)
- # 
- #   shareInput = @wrap.find('[name="share-link"]') 
- #   val = shareInput.val()
- #   newVal = val.split("?")[0] + "?lat=" + @marker.position.lat() + "&lng=" + @marker.position.lng()
- #   shareInput.val(newVal)
- # 
- #   @wrap.css(
- #     left: pos.x + 30
- #     top: pos.y - 80
- #   )
-
   toggleSection: (e) =>
-    console.log "toggleSection"
+    # console.log "toggleSection"
     this_ = $(e.currentTarget)
     mywrap = this_.closest('.customInfoWindow')
     action = this_.attr('data-action')
@@ -976,43 +973,48 @@ class CustomInfoWindow
         if targetTab.attr("data-target") is activeTab.attr("data-target")
           targetTab.removeClass('active')
           defaultTab.addClass('active')
+          @._update()
         else
           this_.addClass('active')
           activeTab.removeClass('active')
           targetTab.addClass('active')
           defaultTab.removeClass('active')
+          @._update()
       when "delete"
         @deleteCalled(@marker)
  
     if action is "move"
       @moveCalled(@marker)
- # 
- # handleSave: (e) =>
- #   this_ = $(e.currentTarget)
- #   form = @wrap.find('.edit-form')
- #   newTitle = @wrap.find('[name="marker-title"]').val()
- #   newDesc = @wrap.find('[name="marker-description"]').val()
- #   newDesc = newDesc.replace(/\n/g, '<br />');
- #   newWikiLink = @wrap.find('[name="marker-wiki"]').val()
- #   form.removeClass('active')
- #   
- #   lang = if window.LANG is "en" then '#/' else "#/fr/"
- #   newInfo = 
- #     id    : @marker.uniqueID
- #     title : newTitle
- #     desc  : newDesc
- #     wikiLink : newWikiLink
- #     type : @marker.type
- #     cat  : @marker.cat
- #     lat  : @marker.position.lat()
- #     lng  : @marker.position.lng()
- #     shareLink: "http://#{window.location.hostname}/#{lang}show/#{@marker.id_marker}/"
- #     hasDefaultValue : @marker["hasDefaultValue"]
- #     
- #   @wrap.find('.padding').html(@template(newInfo))
- #   @bindButton()
- #   @wrap.find('.edit').removeClass('active')
- #   @onSave(newInfo)
+ 
+  handleSave: (e) =>
+    this_ = $(e.currentTarget)
+    form = @currentContent.find('.edit-form')
+    newTitle = @currentContent.find('[name="marker-title"]').val()
+    newDesc = @currentContent.find('[name="marker-description"]').val()
+    newDesc = newDesc.replace(/\n/g, '<br />');
+    newWikiLink = @currentContent.find('[name="marker-wiki"]').val()
+    form.removeClass('active')
+
+    lang = if window.LANG is "en" then '#/' else "#/fr/"
+    newInfo = 
+      id    : @marker.uniqueId
+      title : newTitle
+      desc  : newDesc
+      wikiLink : newWikiLink
+      type : @marker.type
+      cat  : @marker.cat
+      lat  : @marker.getLatLng().lat
+      lng  : @marker.getLatLng().lng
+      shareLink: "http://#{window.location.hostname}/#{lang}show/#{@marker.id_marker}/"
+      hasDefaultValue : @marker["hasDefaultValue"]
+    
+    @wrap.find('.padding').html(@template(newInfo))
+    @currentContent = @wrap.clone()
+    @setContent(@currentContent[0])
+    @bindButton()
+    @currentContent.find('.edit').removeClass('active')
+    @._update()
+    @onSave(newInfo)
  # 
  # panMap: () -> 
  #   @map.panTo(new google.maps.LatLng(@marker.position.lat(), @marker.position.lng()));
@@ -1043,6 +1045,7 @@ Cartographer.router = Backbone.Router.extend(
     Backbone.history.start()
     
   handleLang: (lang)->
+    console.log "langswitch"
     Cartographer.switchLang(lang)
     
   handleCat: (lang, a)->
