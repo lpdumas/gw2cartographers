@@ -347,6 +347,7 @@ class Cartographer.CustomMap
       time = 0
       if marker.area? and marker.area isnt @activeArea
         marker.area.areaSummary.setActive()
+        # time it takes to animate to the marker
         time = 1000
       
       t = setTimeout(()=>
