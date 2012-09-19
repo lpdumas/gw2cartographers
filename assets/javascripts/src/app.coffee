@@ -33,8 +33,9 @@ Cartographer.initiate = ()->
     # Intanciating the map when all defaults templates
     # are loaded
     @currentMap = new Cartographer.CustomMap('#map',
-      "onLoad" : @mapHasLoaded
+      "onLoad" : ()->
     )
+    @mapHasLoaded()
   )
 
 Cartographer.mapHasLoaded = ()->
@@ -250,10 +251,10 @@ class Cartographer.CustomMap
     
 
     @handleLocalStorageLoad(()=>
+      @initializeAreaSummaryBoxes()
       @setAllMarkers()
       @hideMarkersOptionsMenu()
       @bindMapEvents()
-      @initializeAreaSummaryBoxes()
       @addMenuIcons()
       @addTools = $('.menu-marker a.add')
       @addTools.each((index, target)=>
@@ -342,12 +343,21 @@ class Cartographer.CustomMap
             marker.trigger('click', ['test'])
             
   panToMarker: (markerId)->
+    clickOnMarker = (marker)=>
+      time = 0
+      if marker.area? and marker.area isnt @activeArea
+        marker.area.areaSummary.setActive()
+        time = 1000
+      
+      t = setTimeout(()=>
+        marker.fire('click', {'src' : 'url'})
+      , time)
+      
     for markersCat, markersObjects of @mapMarkersObject
       for markerType, markerTypeObject of markersObjects.marker_types
         for marker in markerTypeObject.markers
           if parseInt(markerId) is marker.id_marker
-            # @highlightMarker(marker)
-            marker.fire('click', {'src' : 'url'})
+            clickOnMarker(marker)
   
   initCustomMap: (wrap)->
     @map = new L.Map(wrap, 
@@ -426,6 +436,12 @@ class Cartographer.CustomMap
     marker["uniqueID"] =  _.uniqueId()
     marker["type"]  = markersType
     marker["cat"]  = markersCat
+    marker["map"] = @map
+    
+    
+    for idArea, area of @areas
+      if marker._latlng.lat <= area.neLat and marker._latlng.lat >= area.swLat and marker._latlng.lng <= area.neLng and marker._latlng.lng >= area.swLng
+        marker["area"] = area
     # marker["drag"] = new L.Handler.MarkerDrag(marker)
     # console.log marker
     # if !isMarkerDraggable
@@ -437,9 +453,9 @@ class Cartographer.CustomMap
     # marker["popUp"].setContent(markerTitle)
     
     marker.on('click', (e)=>
-      
       if marker.id_marker.toString() isnt "-1" and !e.src?
         lang = if window.LANG is "en" then "" else "fr/"
+        console.log "redirection"
         window.location.hash = "/#{lang}show/#{marker.id_marker}/"
       else
         if e.target.popUp?
@@ -808,11 +824,11 @@ class Cartographer.CustomMap
     @turnOffMenuIconsFromCat(markerCat) for markerCat of @MarkersConfig when markerCat isnt @defaultCat
       
   initializeAreaSummaryBoxes:()->
-    @areas = []
+    @areas = {}
     Cartographer.templates.get("areasSummary", (e)=>
       for key, area of Areas
         @areas[area.id] = area
-        @areas[area.id].areaSummary = new AreaSummary(@map, area, e, @)
+        @areas[area.id]['areaSummary'] = new AreaSummary(@map, area, e, @)
     )
   
     
@@ -877,19 +893,19 @@ class AreaSummary
     )
     @area.addTo(map)
 
-  setActive:()->
+  setActive:(callback)->
     @map.removeLayer(@area)
     @map.panTo(@bounds.getCenter())
     t = setTimeout(()=>
       @map.setZoom(6)
       @rect.setStyle(@activeStyle)
       @carto.showMarkerFromArea(@areaInfo.id)
+      callback() if callback?
     , 500)
     
    setInactive:()->
       @area.addTo(@map)
       @rect.setStyle(@defaultStyle)
-      @carto.hideMarkerFromArea(@areaInfo.id)      
 ###
 # }}}
 ###                
@@ -900,10 +916,11 @@ class AreaSummary
 
 class CustomInfoWindow
   constructor: (marker, content, opts) ->
+    console.log marker
     @content = content
     @marker  = marker
     @template = opts.template
-    @map     = marker._map
+    @map     = marker.map
     
     @latLng = new L.LatLng(marker._latlng.lat, marker._latlng.lng)
 
