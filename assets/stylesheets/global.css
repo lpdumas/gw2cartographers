@@ -406,35 +406,37 @@ html, body {
 }
 
 
-.menu-marker .menu-item:hover ul.type-menu{
+.menu-marker .menu-item:hover .type-menu{
   display:block;
 }
-.menu-marker .menu-item ul.type-menu {
+.menu-marker .menu-item .type-menu {
 /*  display: block;*/
   display: none;
   position: absolute;
   z-index: 11;
   min-width: 165px;
-  max-height: 350px;
-  overflow-y: scroll;
   top: 30px;
   left: 0;
-  padding: 0;
-  margin: 0;
   background: #fff;
-  list-style-type: none;
-  border: 10px solid rgba(0, 0, 0, 0.7);
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
+  border: 10px solid black;
+  
   -webkit-border-radius: 0px 15px 15px 15px;
   border-radius: 0px 15px 15px 15px;
 }
-.menu-marker .menu-item ul.type-menu li {
+
+.menu-marker .menu-item .type-menu ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  max-height: 350px;
+  overflow-y: scroll;
+}
+.menu-marker .menu-item .type-menu li {
   position: relative;
   z-index: 12;
 }
-.menu-marker .menu-item ul.type-menu li a.marker-type-link,
-.menu-marker .menu-item ul.type-menu li a.group-toggling{
+.menu-marker .menu-item .type-menu li a.marker-type-link,
+.menu-marker .menu-item .type-menu li a.group-toggling{
   position: relative;
   z-index: 14;
   display: block;
@@ -449,28 +451,28 @@ html, body {
   -o-transition: all 150ms linear;
 }
 
-.menu-marker .menu-item ul.type-menu li a.group-toggling {
+.menu-marker .menu-item .type-menu li a.group-toggling {
   display: block;
   padding-left: 8px;
   font-style: italic;
 }
 
-.menu-marker .menu-item ul.type-menu li a.off.marker-type-link {
+.menu-marker .menu-item .type-menu li a.off.marker-type-link {
   background-color: #DEDEDE;
   color: #B8B8B8;
 }
-.menu-marker .menu-item ul.type-menu li:hover a.marker-type-link,
-.menu-marker .menu-item ul.type-menu li a.marker-type-link:hover {
+.menu-marker .menu-item .type-menu li:hover a.marker-type-link,
+.menu-marker .menu-item .type-menu li a.marker-type-link:hover {
   background-color: #3A3A3A;
   color: #fff;
   opacity: 1;
 }
-.menu-marker .menu-item ul.type-menu li a.off.marker-type-link:hover {
+.menu-marker .menu-item .type-menu li a.off.marker-type-link:hover {
   color: #B8B8B8;
 }
 
 
-.menu-marker .menu-item ul.type-menu li a.button{
+.menu-marker .menu-item .type-menu li a.button{
   position: absolute;
   display: block;
   z-index: 14;
@@ -496,12 +498,12 @@ html, body {
   -o-transition-duration: 150ms;
 }
 
-.menu-marker .menu-item ul.type-menu li:hover a.button{
+.menu-marker .menu-item .type-menu li:hover a.button{
   opacity: 1;
 }
 
-.menu-marker .menu-item ul.type-menu li a.button:hover,
-.menu-marker .menu-item ul.type-menu li a.button.active {
+.menu-marker .menu-item .type-menu li a.button:hover,
+.menu-marker .menu-item .type-menu li a.button.active {
   background-position: -224px -32px;
   -webkit-transform: scale(1);
   -moz-transform: scale(1);
@@ -509,7 +511,7 @@ html, body {
   -o-transform: scale(1);
 }
 
-.menu-marker .menu-item ul.type-menu li img {
+.menu-marker .menu-item .type-menu li img {
   position: absolute;
   top: 50%;
   left: 8px;
@@ -523,7 +525,7 @@ html, body {
   -o-transition: all 150ms linear;
 }
 
-.menu-marker .menu-item ul.type-menu li.off img {
+.menu-marker .menu-item .type-menu li.off img {
     opacity: 0.5;
 }
 
@@ -630,9 +632,8 @@ p.marker-permalink { text-align: right; }
   margin-left: -175px;
   background: #fff;
   border-radius: 15px;
-  border: 10px solid rgba(0, 0, 0, 0.7);
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
+  border: 10px solid black;
+  
   -webkit-box-shadow: 0px 0px 50px 0px #ffffff;
   box-shadow: 0px 0px 50px 0px #ffffff;
   -webkit-transition: opacity 150ms linear;
@@ -735,6 +736,9 @@ p.marker-permalink { text-align: right; }
   margin-top: -32px;
   margin-left: -32px;
 }
+
+#map .leaflet-objects-pane.off > div { display:none}
+
 /* Custom Infowindo {{{ */
 .leaflet-container a.leaflet-popup-close-button {
   position: absolute;
@@ -765,9 +769,8 @@ p.marker-permalink { text-align: right; }
   font-size: 12px;
   font-size: 1.2rem;
   border-radius: 15px;
-  border: 10px solid rgba(0, 0, 0, 0.7);
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
+  border: 10px solid black;
+  
   -webkit-transition: opacity 150ms linear;
   -moz-transition: opacity 150ms linear;
   -ms-transition: opacity 150ms linear;

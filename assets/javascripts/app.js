@@ -97,7 +97,7 @@
         "markersOptions": {
           name: "markersOptions",
           path: "assets/javascripts/templates/markersOptions._",
-          version: 1,
+          version: 2,
           src: "",
           loadOnStart: true
         },
@@ -337,16 +337,24 @@
 
     CustomMap.prototype.bindMapEvents = function() {
       var _this = this;
-      return this.map.on('zoomend', function(e) {
+      this.map.on('zoomend', function(e) {
         var zoomLevel;
         zoomLevel = e.target._zoom;
         if (zoomLevel === 4) {
-          return _this.hideMarkersOptionsMenu();
+          _this.hideMarkersOptionsMenu();
+          return $('#map .leaflet-objects-pane').removeClass('off');
         } else if (zoomLevel > 4) {
-          return _this.showMarkersOptionsMenu();
+          _this.showMarkersOptionsMenu();
+          return $('#map .leaflet-objects-pane').removeClass('off');
         } else if (zoomLevel < 4) {
-          return _this.hideMarkersOptionsMenu();
+          _this.hideMarkersOptionsMenu();
+          return $('#map .leaflet-objects-pane').addClass('off');
         }
+      });
+      return $("#options-toggle").click(function() {
+        var parent;
+        parent = $(this).closest('#markers-options');
+        return parent.toggleClass('active');
       });
     };
 
@@ -457,7 +465,8 @@
       layer = new L.TileLayer(tileUrl, {
         maxZoom: 7
       });
-      return this.map.addLayer(layer);
+      this.map.addLayer(layer);
+      return console.log(this.map.getSize());
     };
 
     CustomMap.prototype.handleLocalStorageLoad = function(callback) {
@@ -943,15 +952,15 @@
       if (defaultValue) {
         newMarkerInfo = {
           id: -1,
-          lat: coord.lat(),
-          lng: coord.lng(),
+          lat: coord.lat,
+          lng: coord.lng,
           draggable: true
         };
       } else {
         newMarkerInfo = {
           id: -1,
-          lat: coord.lat(),
-          lng: coord.lng(),
+          lat: coord.lat,
+          lng: coord.lng,
           data_translation: {
             en: {
               title: "",
@@ -968,6 +977,7 @@
         };
       }
       newMarker = this.addMarker(newMarkerInfo, otherInfo, true, defaultValue);
+      this.map.addLayer(newMarker);
       return this.mapMarkersObject[markerCat]["marker_types"][markerType]["markers"].push(newMarker);
     };
 
@@ -1071,38 +1081,42 @@
       html = $(template(this.MarkersConfig));
       html.find(".trigger").bind('click', function(e) {
         var item, markerCat, markerType, myGroupTrigger, myMenuItem;
-        item = $(e.currentTarget);
-        myGroupTrigger = item.closest(".menu-marker").find('.group-toggling');
-        myMenuItem = item.closest(".menu-item");
-        markerType = item.attr('data-type');
-        markerCat = item.attr('data-cat');
-        if (_this.canToggleMarkers) {
-          if (item.hasClass('off')) {
-            _this.setMarkersVisibilityByType(true, markerType, markerCat);
-            item.removeClass('off');
-            myMenuItem.removeClass('off');
-            return myGroupTrigger.removeClass('off');
-          } else {
-            _this.setMarkersVisibilityByType(false, markerType, markerCat);
-            return item.addClass('off');
+        if (_this.activeArea) {
+          item = $(e.currentTarget);
+          myGroupTrigger = item.closest(".menu-marker").find('.group-toggling');
+          myMenuItem = item.closest(".menu-item");
+          markerType = item.attr('data-type');
+          markerCat = item.attr('data-cat');
+          if (_this.canToggleMarkers) {
+            if (item.hasClass('off')) {
+              _this.setMarkersVisibilityByType(true, markerType, markerCat);
+              item.removeClass('off');
+              myMenuItem.removeClass('off');
+              return myGroupTrigger.removeClass('off');
+            } else {
+              _this.setMarkersVisibilityByType(false, markerType, markerCat);
+              return item.addClass('off');
+            }
           }
         }
       });
       html.find('.group-toggling').bind('click', function(e) {
         var markerCat, menuItem, this_;
-        this_ = $(e.currentTarget);
-        menuItem = this_.closest('.menu-item');
-        markerCat = menuItem.attr('data-markerCat');
-        if (this_.hasClass('off')) {
-          this_.removeClass('off');
-          menuItem.removeClass('off');
-          _this.setMarkersVisibilityByCat(true, markerCat);
-          return menuItem.find('.trigger').removeClass('off');
-        } else {
-          this_.addClass('off');
-          menuItem.addClass('off');
-          _this.setMarkersVisibilityByCat(false, markerCat);
-          return menuItem.find('.trigger').addClass('off');
+        if (_this.activeArea) {
+          this_ = $(e.currentTarget);
+          menuItem = this_.closest('.menu-item');
+          markerCat = menuItem.attr('data-markerCat');
+          if (this_.hasClass('off')) {
+            this_.removeClass('off');
+            menuItem.removeClass('off');
+            _this.setMarkersVisibilityByCat(true, markerCat);
+            return menuItem.find('.trigger').removeClass('off');
+          } else {
+            this_.addClass('off');
+            menuItem.addClass('off');
+            _this.setMarkersVisibilityByCat(false, markerCat);
+            return menuItem.find('.trigger').addClass('off');
+          }
         }
       });
       this.markersOptionsMenu.find('.padding').prepend(html);
@@ -1216,6 +1230,7 @@
         return _this.setActive();
       });
       this.area.addTo(map);
+      popupContent.remove();
     }
 
     AreaSummary.prototype.setActive = function(callback) {
@@ -1378,7 +1393,7 @@
     initialize: function() {
       var routes,
         _this = this;
-      routes = [[/^\/*(en|fr)\/*$/, 'lang', this.handleLang], [/^\/*(en|fr)*\/*show\/([0-9]+)\/*$/, 'show', this.handleShow], [/^\/*(en|fr)*\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord], [/^\/*(en|fr)*\/*cat\/([a-zA-Z&]+)\/*$/, 'categories', this.handleCat], [/^\/*(en|fr)*\/*info\/*$/, 'info', this.handleInfo]];
+      routes = [[/^\/*(en|fr)\/*$/, 'lang', this.handleLang], [/^\/*(en|fr)*\/*show\/([0-9]+)\/*$/, 'show', this.handleShow], [/^\/*(en|fr)*\/*info\/*$/, 'info', this.handleInfo]];
       _.each(routes, function(route) {
         return _this.route.apply(_this, route);
       });

@@ -94,7 +94,7 @@ class Cartographer.TemplatesLoader
       "markersOptions" : 
         name :"markersOptions"
         path: "assets/javascripts/templates/markersOptions._"
-        version : 1
+        version : 2
         src : ""
         loadOnStart: yes
       "areasSummary" : 
@@ -248,7 +248,6 @@ class Cartographer.CustomMap
     @editInfoWindowTemplate = _.template(Cartographer.templates.get("customInfoWindow"))
     confirmBoxTemplate = _.template(Cartographer.templates.get("confirmBox"));
     @confirmBox = new Cartographer.Confirmbox(confirmBoxTemplate)
-    
 
     @handleLocalStorageLoad(()=>
       @initializeAreaSummaryBoxes()
@@ -256,6 +255,7 @@ class Cartographer.CustomMap
       @hideMarkersOptionsMenu()
       @bindMapEvents()
       @addMenuIcons()
+      
       @addTools = $('.menu-marker a.add')
       @addTools.each((index, target)=>
         $(target).bind('click', @handleAddTool)
@@ -278,47 +278,25 @@ class Cartographer.CustomMap
     # )
     
   bindMapEvents: ()->
+    
     @map.on('zoomend', (e)=>
       zoomLevel = e.target._zoom
       if zoomLevel == 4
-        # @canToggleMarkers = false
         @hideMarkersOptionsMenu()
-        # @setAllMarkersVisibility(false)
-        # @setAreasInformationVisibility(true)
-        # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
+        $('#map .leaflet-objects-pane').removeClass('off')
       else if zoomLevel > 4
-        # @canToggleMarkers = true
         @showMarkersOptionsMenu()
-        # @setAllMarkersVisibility(true)
-        # @setAreasInformationVisibility(false)
+        $('#map .leaflet-objects-pane').removeClass('off')
       else if zoomLevel < 4
-        # @canToggleMarkers = false
         @hideMarkersOptionsMenu()
-        # @setAllMarkersVisibility(false)
-        # @setAreasInformationVisibility(false)
-        # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-      
+        $('#map .leaflet-objects-pane').addClass('off')      
     )
-    # google.maps.event.addListener(@map, 'zoom_changed', (e)=>
-    #     zoomLevel = @map.getZoom()
-    #     if zoomLevel == 4
-    #       @canToggleMarkers = false
-    #       @hideMarkersOptionsMenu()
-    #       @setAllMarkersVisibility(false)
-    #       @setAreasInformationVisibility(true)
-    #       if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-    #     else if zoomLevel > 4
-    #       @canToggleMarkers = true
-    #       @showMarkersOptionsMenu()
-    #       @setAllMarkersVisibility(true)
-    #       @setAreasInformationVisibility(false)
-    #     else if zoomLevel < 4
-    #       @canToggleMarkers = false
-    #       @hideMarkersOptionsMenu()
-    #       @setAllMarkersVisibility(false)
-    #       @setAreasInformationVisibility(false)
-    #       if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-    # )
+    
+    $("#options-toggle").click(()->
+      parent = $(this).closest('#markers-options')
+      parent.toggleClass('active')
+    )
+    
     # google.maps.event.addListener(@map, 'click', (e)=>
     #   console.log "Lat : #{e.latLng.lat()}, Lng : #{e.latLng.lng()}"
     # )
@@ -371,7 +349,8 @@ class Cartographer.CustomMap
     tileUrl = 'tiles/{z}_{x}_{y}.jpg'
     layer = new L.TileLayer(tileUrl, {maxZoom: 7})
     @map.addLayer(layer)
-      
+    console.log @map.getSize()
+    # @map.setMaxBounds(@map.getBounds())
   
   handleLocalStorageLoad: (callback)->
     if window.LOCAL_STORAGE and @getConfigFromLocalStorage()
@@ -439,20 +418,10 @@ class Cartographer.CustomMap
     marker["cat"]  = markersCat
     marker["map"] = @map
     
-    
     for idArea, area of @areas
       if marker._latlng.lat <= area.neLat and marker._latlng.lat >= area.swLat and marker._latlng.lng <= area.neLng and marker._latlng.lng >= area.swLng
         marker["area"] = area
-    # marker["drag"] = new L.Handler.MarkerDrag(marker)
-    # console.log marker
-    # if !isMarkerDraggable
-      # marker.drag.enable()
-    # else
-      # marker.drag.disable()
-    # marker["popUp"]  = new L.popup()
-    # marker["popUp"].setLatLng(latLng)
-    # marker["popUp"].setContent(markerTitle)
-    
+
     marker.on('click', (e)=>
       if marker.id_marker.toString() isnt "-1" and !e.src?
         lang = if window.LANG is "en" then "" else "fr/"
@@ -474,30 +443,6 @@ class Cartographer.CustomMap
       marker.addTo(@map)
     
     marker
-    # if markerInfo.lat.toString() is @startLat and markerInfo.lng.toString() is @startLng
-      # if not marker["infoWindow"]?
-        # @createInfoWindow(marker)
-        # marker["infoWindow"].open()
-      # else
-        # marker["infoWindow"].open()
-      
-    # google.maps.event.addListener(marker, 'dragend', (e)=>
-      # @saveToLocalStorage()
-      # if marker["infoWindow"]?
-        # marker["infoWindow"].updatePos()
-    # )
-
-    # google.maps.event.addListener(marker, 'click', (e)=>
-      # if it's not a new marker, simply change the hash so that our router
-      # handle the rest.
-      # if marker.id_marker.toString() isnt "-1"
-        # lang = if window.LANG is "en" then "" else "fr/"
-        # window.location.hash = "/#{lang}show/#{marker.id_marker}/"
-      # else
-        # @createInfoWindow(marker)
-        # if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-        # marker["infoWindow"].open()
-    # )
   
   createInfoWindow: (marker)=>
     # console.log marker
@@ -689,6 +634,7 @@ class Cartographer.CustomMap
     markerCat  = markerLink.attr('data-cat')
     icon       = markerLink.attr('data-icon')
     coord      = @map.getCenter()
+    
     getValue = (cat, type)=>
       defaultValue = null
       defaultDesc = @MarkersConfig[cat]["marker_types"][type]["data_translation"][LANG]["desc"]
@@ -706,14 +652,14 @@ class Cartographer.CustomMap
     if defaultValue
       newMarkerInfo =
         id        : -1
-        lat       : coord.lat()
-        lng       : coord.lng()
+        lat       : coord.lat
+        lng       : coord.lng
         draggable : true
     else
       newMarkerInfo =
         id        : -1
-        lat       : coord.lat()
-        lng       : coord.lng()
+        lat       : coord.lat
+        lng       : coord.lng
         data_translation : 
           en :
             title: ""
@@ -726,6 +672,7 @@ class Cartographer.CustomMap
         draggable : true
 
     newMarker = @addMarker(newMarkerInfo, otherInfo, true, defaultValue)
+    @map.addLayer(newMarker)
     @mapMarkersObject[markerCat]["marker_types"][markerType]["markers"].push(newMarker)
     
   removeMarker:(id, mType, mCat)->
@@ -790,36 +737,38 @@ class Cartographer.CustomMap
     
     # Binding click on marker icon in markers option list
     html.find(".trigger").bind 'click', (e) =>
-      item           = $(e.currentTarget)
-      myGroupTrigger = item.closest(".menu-marker").find('.group-toggling')
-      myMenuItem     = item.closest(".menu-item")
-      markerType     = item.attr('data-type')
-      markerCat      = item.attr('data-cat')
+      if @activeArea
+        item           = $(e.currentTarget)
+        myGroupTrigger = item.closest(".menu-marker").find('.group-toggling')
+        myMenuItem     = item.closest(".menu-item")
+        markerType     = item.attr('data-type')
+        markerCat      = item.attr('data-cat')
 
-      if @canToggleMarkers
-        if item.hasClass('off')
-          @setMarkersVisibilityByType(true, markerType, markerCat)
-          item.removeClass('off')
-          myMenuItem.removeClass('off')
-          myGroupTrigger.removeClass('off')
-        else
-          @setMarkersVisibilityByType(false, markerType, markerCat)
-          item.addClass('off')
+        if @canToggleMarkers
+          if item.hasClass('off')
+            @setMarkersVisibilityByType(true, markerType, markerCat)
+            item.removeClass('off')
+            myMenuItem.removeClass('off')
+            myGroupTrigger.removeClass('off')
+          else
+            @setMarkersVisibilityByType(false, markerType, markerCat)
+            item.addClass('off')
     
     html.find('.group-toggling').bind 'click', (e)=>
-      this_ = $(e.currentTarget)
-      menuItem = this_.closest('.menu-item')
-      markerCat = menuItem.attr('data-markerCat')
-      if this_.hasClass('off')
-        this_.removeClass('off')
-        menuItem.removeClass('off')
-        @setMarkersVisibilityByCat(on, markerCat)
-        menuItem.find('.trigger').removeClass('off')
-      else
-        this_.addClass('off')
-        menuItem.addClass('off')
-        @setMarkersVisibilityByCat(off, markerCat)
-        menuItem.find('.trigger').addClass('off')
+      if @activeArea
+        this_ = $(e.currentTarget)
+        menuItem = this_.closest('.menu-item')
+        markerCat = menuItem.attr('data-markerCat')
+        if this_.hasClass('off')
+          this_.removeClass('off')
+          menuItem.removeClass('off')
+          @setMarkersVisibilityByCat(on, markerCat)
+          menuItem.find('.trigger').removeClass('off')
+        else
+          this_.addClass('off')
+          menuItem.addClass('off')
+          @setMarkersVisibilityByCat(off, markerCat)
+          menuItem.find('.trigger').addClass('off')
           
     @markersOptionsMenu.find('.padding').prepend(html)
     @turnOffMenuIconsFromCat(markerCat) for markerCat of @MarkersConfig when markerCat isnt @defaultCat
@@ -893,6 +842,7 @@ class AreaSummary
       @setActive()
     )
     @area.addTo(map)
+    popupContent.remove()
 
   setActive:(callback)->
     @map.removeLayer(@area)
@@ -1037,8 +987,8 @@ Cartographer.router = Backbone.Router.extend(
     routes = [
       [ /^\/*(en|fr)\/*$/, 'lang', this.handleLang ]
       [ /^\/*(en|fr)*\/*show\/([0-9]+)\/*$/, 'show', this.handleShow ]
-      [ /^\/*(en|fr)*\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord ]
-      [ /^\/*(en|fr)*\/*cat\/([a-zA-Z&]+)\/*$/, 'categories', this.handleCat ]
+      # [ /^\/*(en|fr)*\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord ]
+      # [ /^\/*(en|fr)*\/*cat\/([a-zA-Z&]+)\/*$/, 'categories', this.handleCat ]
       [ /^\/*(en|fr)*\/*info\/*$/, 'info', this.handleInfo ]
     ]
     _.each(routes, (route)=>
