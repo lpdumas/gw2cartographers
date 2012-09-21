@@ -29,14 +29,18 @@
     var _this = this;
     this.templates = new Cartographer.TemplatesLoader();
     return this.templates.loadDefaults(function() {
-      _this.currentMap = new Cartographer.CustomMap('#map', {
-        "onLoad": function() {}
+      return _this.currentMap = new Cartographer.CustomMap('#map', {
+        "onLoad": function(context) {
+          return _this.mapHasLoaded(context);
+        }
       });
-      return _this.mapHasLoaded();
     });
   };
 
-  Cartographer.mapHasLoaded = function() {
+  Cartographer.mapHasLoaded = function(context) {
+    if (!(this.currentMap != null)) {
+      this.currentMap = context;
+    }
     return this.router = new Cartographer.router();
   };
 
@@ -53,6 +57,7 @@
     if (_.isObject(target)) {
       return this.currentMap.panToCoord(target);
     } else {
+      console.log(this.currentMap);
       return this.currentMap.panToMarker(target);
     }
   };
@@ -97,7 +102,7 @@
         "markersOptions": {
           name: "markersOptions",
           path: "assets/javascripts/templates/markersOptions._",
-          version: 2,
+          version: 1,
           src: "",
           loadOnStart: true
         },
@@ -331,7 +336,8 @@
         _this.addTools.each(function(index, target) {
           return $(target).bind('click', _this.handleAddTool);
         });
-        return opts.onLoad();
+        $('#destroy').bind('click', _this.destroyLocalStorage);
+        return opts.onLoad(_this);
       });
     }
 
@@ -476,6 +482,7 @@
         confirmMessage = Traduction["notice"]["localDetected"][LANG];
         return this.confirmBox.initConfirmation(confirmMessage, function(e) {
           var loadedConfig;
+          console.log("adass");
           if (e) {
             loadedConfig = _this.getConfigFromLocalStorage();
             _this.MarkersConfig = loadedConfig.markers;

@@ -739,6 +739,16 @@ p.marker-permalink { text-align: right; }
 
 #map .leaflet-objects-pane.off > div { display:none}
 
+#copyright { 
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  padding: 5px;
+  margin: 0;
+  display: inline-block;
+  color: white;
+}
+
 /* Custom Infowindo {{{ */
 .leaflet-container a.leaflet-popup-close-button {
   position: absolute;

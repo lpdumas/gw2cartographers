@@ -1,7 +1,7 @@
 <ul id="edition-tools">
     <%/*http://gw2cbackend/submit-modification*/%>
     <%/*http://gw2c.jsilvestre.fr/submit-modification*/%>
-    <li><a href="javascript:" data-ajaxUrl="http://crowdsourcing.louisphilippedumas.com/submit-modification" id="send" class="button" title="Send map for approval"/></a></li>
+    <%/*<li><a href="javascript:" data-ajaxUrl="http://crowdsourcing.louisphilippedumas.com/submit-modification" id="send" class="button" title="Send map for approval"/></a></li> */%>
     <li><a href="javascript:" id="destroy" class="button" title="Remove local storage data"/></a></li>
     <li id="lang-switch">
     <% if(window.LANG === "en") {%>

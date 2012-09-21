@@ -33,12 +33,15 @@ Cartographer.initiate = ()->
     # Intanciating the map when all defaults templates
     # are loaded
     @currentMap = new Cartographer.CustomMap('#map',
-      "onLoad" : ()->
+      "onLoad" : (context)=>
+        @mapHasLoaded(context)
     )
-    @mapHasLoaded()
+    
   )
 
-Cartographer.mapHasLoaded = ()->
+Cartographer.mapHasLoaded = (context)->
+  if !@currentMap?
+    @currentMap = context
   @router = new Cartographer.router()
 
 Cartographer.switchLang = (lang)->
@@ -51,6 +54,7 @@ Cartographer.highlighMarker = (target)->
   if _.isObject(target) 
     @currentMap.panToCoord(target)
   else
+    console.log @currentMap
     @currentMap.panToMarker(target)
     
 Cartographer.toggleCat = (cats)->
@@ -94,7 +98,7 @@ class Cartographer.TemplatesLoader
       "markersOptions" : 
         name :"markersOptions"
         path: "assets/javascripts/templates/markersOptions._"
-        version : 2
+        version : 1
         src : ""
         loadOnStart: yes
       "areasSummary" : 
@@ -250,6 +254,7 @@ class Cartographer.CustomMap
     @confirmBox = new Cartographer.Confirmbox(confirmBoxTemplate)
 
     @handleLocalStorageLoad(()=>
+
       @initializeAreaSummaryBoxes()
       @setAllMarkers()
       @hideMarkersOptionsMenu()
@@ -260,7 +265,9 @@ class Cartographer.CustomMap
       @addTools.each((index, target)=>
         $(target).bind('click', @handleAddTool)
       )
-      opts.onLoad()
+      
+      $('#destroy').bind('click', @destroyLocalStorage)
+      opts.onLoad(@)
     )
     
     # google.maps.event.addListenerOnce(@map, 'idle', ()=>
@@ -269,7 +276,6 @@ class Cartographer.CustomMap
 
     #         
     #         # UI
-    #         $('#destroy').bind('click', @destroyLocalStorage)
     #         $('#send').bind('click', @sendMapForApproval)
     #         
     #         
@@ -356,6 +362,7 @@ class Cartographer.CustomMap
     if window.LOCAL_STORAGE and @getConfigFromLocalStorage()
       confirmMessage = Traduction["notice"]["localDetected"][LANG]
       @confirmBox.initConfirmation(confirmMessage, (e)=>
+        console.log "adass"
         if e
           loadedConfig = @getConfigFromLocalStorage()
           @MarkersConfig = loadedConfig.markers
