@@ -105,7 +105,7 @@
         "markersOptions": {
           name: "markersOptions",
           path: "assets/javascripts/templates/markersOptions._",
-          version: 2,
+          version: 4,
           src: "",
           loadOnStart: true
         },
