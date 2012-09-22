@@ -131,12 +131,31 @@ html, body {
 #notice {
   position: absolute;
   bottom: 10px;
-  left: 10px;
-  width: 280px;
+  left: 50%;
+  width: 350px;
+  margin-left: -175px;
   height: auto;
-  background: #000;
-  color: #fff;
-  opacity: 0.7;
+  background: #fff;
+  color: #000;
+  border: 10px solid black;  
+  border-radius:15px;
+}
+#notice .close {
+  position: absolute;
+  z-index: 101;
+  cursor: pointer;
+  text-indent: -9999em;
+  top: -15px;
+  right: -15px;
+  display: block;
+  padding: 0;
+  margin: 0;
+  width: 32px;
+  height: 32px;
+  background: url('../images/layout/edit-options.png') -160px top no-repeat;
+}
+#notice .close:hover {
+  background-position: -160px bottom;
 }
 
 #map {
@@ -940,5 +959,9 @@ p.marker-permalink { text-align: right; }
   }
 .leaflet-popup .leaflet-popup-tip {
   display: none;
+}
+
+.leaflet-top {
+ top: 100px; 
 }
 /*}}}*/

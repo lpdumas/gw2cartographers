@@ -26,7 +26,9 @@ window.LOCAL_STORAGE = (()->
 Cartographer.initiate = ()->
   # Instanciating the template loader
   @templates = new Cartographer.TemplatesLoader()
-  
+  $('#notice .close').click(()->
+    $(this).closest('#notice').hide()
+  )
   # Telling the templateLoader to load defaults template
   @templates.loadDefaults(()=>
 
@@ -54,7 +56,6 @@ Cartographer.highlighMarker = (target)->
   if _.isObject(target) 
     @currentMap.panToCoord(target)
   else
-    console.log @currentMap
     @currentMap.panToMarker(target)
     
 Cartographer.toggleCat = (cats)->
@@ -355,14 +356,12 @@ class Cartographer.CustomMap
     tileUrl = 'tiles/{z}_{x}_{y}.jpg'
     layer = new L.TileLayer(tileUrl, {maxZoom: 7})
     @map.addLayer(layer)
-    console.log @map.getSize()
     # @map.setMaxBounds(@map.getBounds())
   
   handleLocalStorageLoad: (callback)->
     if window.LOCAL_STORAGE and @getConfigFromLocalStorage()
       confirmMessage = Traduction["notice"]["localDetected"][LANG]
       @confirmBox.initConfirmation(confirmMessage, (e)=>
-        console.log "adass"
         if e
           loadedConfig = @getConfigFromLocalStorage()
           @MarkersConfig = loadedConfig.markers
@@ -432,7 +431,6 @@ class Cartographer.CustomMap
     marker.on('click', (e)=>
       if marker.id_marker.toString() isnt "-1" and !e.src?
         lang = if window.LANG is "en" then "" else "fr/"
-        console.log "redirection"
         window.location.hash = "/#{lang}show/#{marker.id_marker}/"
       else
         if e.target.popUp?
@@ -452,7 +450,6 @@ class Cartographer.CustomMap
     marker
   
   createInfoWindow: (marker)=>
-    # console.log marker
     lang = if window.LANG is "en" then "#/" else "#/fr/"
     templateInfo = 
       id : marker.uniqueID
@@ -874,7 +871,6 @@ class AreaSummary
 
 class CustomInfoWindow
   constructor: (marker, content, opts) ->
-    console.log marker
     @content = content
     @marker  = marker
     @template = opts.template
@@ -919,7 +915,6 @@ class CustomInfoWindow
     )
   
   toggleSection: (e) =>
-    # console.log "toggleSection"
     this_ = $(e.currentTarget)
     mywrap = this_.closest('.customInfoWindow')
     action = this_.attr('data-action')
