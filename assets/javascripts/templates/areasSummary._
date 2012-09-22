@@ -1,11 +1,11 @@
-<div class="area-summary-overlay<% if(rangeLvl != ""){ %><%= " city" %><% } %>">
+<div class="area-summary-overlay<% if(rangeLvl == ""){ %><%= " city" %><% } %>">
     <p class="area-summary-title">
         <span class='area-title'><%= data_translation[window.LANG]["name"] %></span>
         <% if(rangeLvl != "") {%>
         <span class="lvl-range"><%= rangeLvl %></span>
         <% } %>
     </p>
-    <ul class="area-summary-list">
+    <ul class="area-summary-list group">
         <% _.each(summary, function(val, type, list) { %>
             <% 
             if(val != 0) { %>
@@ -13,4 +13,5 @@
             <% } %>
         <% }); %>
     </ul>
+    <span class="show-points" href="javascript://">click to show points</span>
 </div>

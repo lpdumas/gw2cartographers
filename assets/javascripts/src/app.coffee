@@ -29,18 +29,24 @@ Cartographer.initiate = ()->
     $(e.target).closest('#notice').hide()
   )
   @templates = new Cartographer.TemplatesLoader()
-  
+  $('#notice .close').click(()->
+    $(this).closest('#notice').hide()
+  )
   # Telling the templateLoader to load defaults template
   @templates.loadDefaults(()=>
 
     # Intanciating the map when all defaults templates
     # are loaded
     @currentMap = new Cartographer.CustomMap('#map',
-      "onLoad" : @mapHasLoaded
+      "onLoad" : (context)=>
+        @mapHasLoaded(context)
     )
+    
   )
 
-Cartographer.mapHasLoaded = ()->
+Cartographer.mapHasLoaded = (context)->
+  if !@currentMap?
+    @currentMap = context
   @router = new Cartographer.router()
 
 Cartographer.switchLang = (lang)->
@@ -57,7 +63,18 @@ Cartographer.highlighMarker = (target)->
     
 Cartographer.toggleCat = (cats)->
   @currentMap.highlightsCat(cats)
-  # console.log cats
+
+Cartographer.showInfo = ()->
+  modal = new Cartographer.Modalbox("info")
+  content="""
+  <h1>Hey there fellow explorers!</h1>
+  <p class="big">Welcome to gw2cartographers, a Guildwars 2 interactive map. This map is 100% crowdsourced! So if you want to add / edit / remove some points, here is how:</p>
+  <h2>Adding points</h2>
+  <p>Simply click on the «+» next to the desired point label inside the drop down menu</p>
+  """
+  modal.setContent(content)
+  modal.open()
+
 # }}}
 
 ##################
@@ -91,7 +108,7 @@ class Cartographer.TemplatesLoader
       "areasSummary" : 
         name :"areasSummary"
         path: "assets/javascripts/templates/areasSummary._"
-        version: 2
+        version: 1
         src : ""
         loadOnStart: yes
     
@@ -139,8 +156,13 @@ class Cartographer.TemplatesLoader
 # class Cartographer.ModalBox {{{
 ###
 class Cartographer.Modalbox
-  constructor: () ->
-    @modal   = $('<div class="modal"><div class="padding"></div></div>')
+  constructor: (idModal) ->
+    if _.isString(idModal)
+      idModal = ' id="'+idModal+'"'
+    else
+      idModal = ""
+    
+    @modal   = $('<div class="modal"'+idModal+'><div class="padding"></div></div>')
     @overlay = $('<span class="overlay"></span>')
     $('body').append(@modal)
     $('body').append(@overlay)
@@ -225,65 +247,71 @@ class Cartographer.CustomMap
     @visibleMarkers   = true
     @canToggleMarkers = true
     @currentOpenedInfoWindow = false
+    @activeArea = null
 
     @currentMapVersion = 1;
     
-    @initCustomGoogleMap(HTMLMapWrapperID)
+    @initCustomMap("map")
     
     @editInfoWindowTemplate = _.template(Cartographer.templates.get("customInfoWindow"))
     confirmBoxTemplate = _.template(Cartographer.templates.get("confirmBox"));
     @confirmBox = new Cartographer.Confirmbox(confirmBoxTemplate)
 
-    @initializeAreaSummaryBoxes()
-    
-    google.maps.event.addListenerOnce(@map, 'idle', ()=>
-      @handleLocalStorageLoad(()=>
-        
-        @addMenuIcons()
-        @addTools = $('.menu-marker a.add')
-        @addTools.each((index, target)=>
-          $(target).bind('click', @handleAddTool)
-        )
-        
-        # UI
-        $('#destroy').bind('click', @destroyLocalStorage)
-        $('#send').bind('click', @sendMapForApproval)
-        
-        @setAllMarkers()
-        @bindMapEvents()
-        @map.setZoom(4)
-        
-        opts.onLoad()
+    @handleLocalStorageLoad(()=>
+
+      @initializeAreaSummaryBoxes()
+      @setAllMarkers()
+      @hideMarkersOptionsMenu()
+      @bindMapEvents()
+      @addMenuIcons()
+      
+      @addTools = $('.menu-marker a.add')
+      @addTools.each((index, target)=>
+        $(target).bind('click', @handleAddTool)
       )
+      
+      $('#destroy').bind('click', @destroyLocalStorage)
+      opts.onLoad(@)
     )
+    
+    # google.maps.event.addListenerOnce(@map, 'idle', ()=>
+    #       @handleLocalStorageLoad(()=>
+    #         
+
+    #         
+    #         # UI
+    #         $('#send').bind('click', @sendMapForApproval)
+    #         
+    #         
+    #         opts.onLoad()
+    #       )
+    # )
     
   bindMapEvents: ()->
-    google.maps.event.addListener(@map, 'zoom_changed', (e)=>
-        zoomLevel = @map.getZoom()
-        if zoomLevel == 4
-          @canToggleMarkers = false
-          @hideMarkersOptionsMenu()
-          @setAllMarkersVisibility(false)
-          @setAreasInformationVisibility(true)
-          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-        else if zoomLevel > 4
-          @canToggleMarkers = true
-          @showMarkersOptionsMenu()
-          @setAllMarkersVisibility(true)
-          @setAreasInformationVisibility(false)
-        else if zoomLevel < 4
-          @canToggleMarkers = false
-          @hideMarkersOptionsMenu()
-          @setAllMarkersVisibility(false)
-          @setAreasInformationVisibility(false)
-          if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-    )
-    google.maps.event.addListener(@map, 'click', (e)=>
-      console.log "Lat : #{e.latLng.lat()}, Lng : #{e.latLng.lng()}"
+    
+    @map.on('zoomend', (e)=>
+      zoomLevel = e.target._zoom
+      if zoomLevel == 4
+        @hideMarkersOptionsMenu()
+        $('#map .leaflet-objects-pane').removeClass('off')
+      else if zoomLevel > 4
+        @showMarkersOptionsMenu()
+        $('#map .leaflet-objects-pane').removeClass('off')
+      else if zoomLevel < 4
+        @hideMarkersOptionsMenu()
+        $('#map .leaflet-objects-pane').addClass('off')      
     )
     
+    $("#options-toggle").click(()->
+      parent = $(this).closest('#markers-options')
+      parent.toggleClass('active')
+    )
+    
+    # google.maps.event.addListener(@map, 'click', (e)=>
+    #   console.log "Lat : #{e.latLng.lat()}, Lng : #{e.latLng.lng()}"
+    # )
+    
   highlightMarker: (marker)->
-    @map.setZoom(6)
     if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
     marker.setVisible(true)
     if !marker.infoWindow?
@@ -299,49 +327,39 @@ class Cartographer.CustomMap
       for markerType, markerTypeObject of markersObjects.marker_types
         for marker in markerTypeObject.markers
           if coord.lat is marker.position.lat().toString() and coord.lng is marker.position.lng().toString()
-            @highlightMarker(marker)
+            # @highlightMarker(marker)
+            marker.trigger('click', ['test'])
             
   panToMarker: (markerId)->
+    clickOnMarker = (marker)=>
+      time = 0
+      if marker.area? and marker.area isnt @activeArea
+        marker.area.areaSummary.setActive()
+        # time it takes to animate to the marker
+        time = 1000
+      
+      t = setTimeout(()=>
+        marker.fire('click', {'src' : 'url'})
+      , time)
+      
     for markersCat, markersObjects of @mapMarkersObject
       for markerType, markerTypeObject of markersObjects.marker_types
         for marker in markerTypeObject.markers
           if parseInt(markerId) is marker.id_marker
-            @highlightMarker(marker)
+            clickOnMarker(marker)
   
-  initCustomGoogleMap: (HTMLMapWrapperID)->
-    maxZoom       = 7
-    @gMapOptions   = 
-      center: new google.maps.LatLng(@startLat, @startLng)
-      zoom: 5
+  initCustomMap: (wrap)->
+    @map = new L.Map(wrap, 
+      center: new L.LatLng(10.044584984211879, 10.3271484375)
+      zoom: 4,
+      maxZoom: 7,
       minZoom: 3
-      maxZoom: maxZoom
-      streetViewControl: false
-      mapTypeControl: false
-      mapTypeControlOptions:
-        mapTypeIds: ["custom", google.maps.MapTypeId.ROADMAP]
-
-      panControl: false
-      zoomControl: true
-      zoomControlOptions:
-        position: google.maps.ControlPosition.LEFT_CENTER
-        zoomControlStyle: google.maps.ZoomControlStyle.SMALL
-        
-    @customMapType = new google.maps.ImageMapType(
-      getTileUrl : (coord, zoom)=>
-        normalizedCoord = coord
-        if normalizedCoord && (normalizedCoord.x < Math.pow(2, zoom)) && (normalizedCoord.x > -1) && (normalizedCoord.y < Math.pow(2, zoom)) && (normalizedCoord.y > -1)
-          path = 'tiles/' + zoom + '_' + normalizedCoord.x + '_' + normalizedCoord.y + '.jpg'
-        else 
-          return @blankTilePath
-      tileSize: new google.maps.Size(256, 256)
-      maxZoom: maxZoom
-      name: 'GW2 Map'
     )
-    
-    @map = new google.maps.Map($(HTMLMapWrapperID)[0], @gMapOptions)
-    @map.mapTypes.set('custom', @customMapType)
-    @map.setMapTypeId('custom')
-  
+
+    tileUrl = 'tiles/{z}_{x}_{y}.jpg'
+    layer = new L.TileLayer(tileUrl, {maxZoom: 7})
+    @map.addLayer(layer)
+    # @map.setMaxBounds(@map.getBounds())
   
   handleLocalStorageLoad: (callback)->
     if window.LOCAL_STORAGE and @getConfigFromLocalStorage()
@@ -363,15 +381,23 @@ class Cartographer.CustomMap
     return JSON.parse(json)
   
   addMarker:(markerInfo, otherInfo, isNew, defaultValue) ->
+    latLng = new L.LatLng(markerInfo.lat, markerInfo.lng)
     iconsize = 32;
     iconmid = iconsize / 2;
     iconPath = Metadata.icons_path + otherInfo.icon
     markersType = otherInfo["markersType"]
     markersCat = otherInfo["markersCat"]
-    markerVisibility = if markersCat is @defaultCat || isNew then yes else no
+
+    markerVisibility = if markersCat is isNew then yes else no
     
     if not @markersImages[markersType]?
-      image = new google.maps.MarkerImage(iconPath, null, null, new google.maps.Point(iconmid,iconmid), new google.maps.Size(iconsize, iconsize));
+      image = new L.icon(
+        iconUrl: iconPath,
+        iconSize: [iconsize, iconsize],
+        iconAnchor: [iconmid, iconmid],
+        popupAnchor: [iconmid, iconmid]
+      )
+      
       @markersImages[markersType] = image
     
     isMarkerDraggable = if markerInfo.draggable? then markerInfo.draggable else false
@@ -380,17 +406,14 @@ class Cartographer.CustomMap
       markerTitle = defaultValue[LANG]["title"] || defaultValue[LANG]["name"]
     else
       markerTitle = markerInfo["data_translation"][LANG]["title"]
-    marker = new google.maps.Marker(
-      position: new google.maps.LatLng(markerInfo.lat, markerInfo.lng)
-      map: if markerVisibility then @map else null
-      icon: @markersImages[markersType]
-      visible: markerVisibility
+    
+    options = 
       draggable: isMarkerDraggable
-      cursor : if isMarkerDraggable then "move" else "pointer"
-      title: markerTitle
-      animation: if isNew then google.maps.Animation.DROP else no
-    )
-
+      clickable : true
+      icon : @markersImages[markersType]
+      title : markerTitle
+    marker = new L.Marker(latLng, options)
+    
     if defaultValue?
       marker["data_translation"] = defaultValue
       marker["hasDefaultValue"] = true
@@ -399,41 +422,40 @@ class Cartographer.CustomMap
       marker["hasDefaultValue"] = false
 
     marker["id_marker"] = markerInfo["id"]
+    marker["uniqueID"] =  _.uniqueId()
     marker["type"]  = markersType
     marker["cat"]  = markersCat
+    marker["map"] = @map
+    
+    for idArea, area of @areas
+      if marker._latlng.lat <= area.neLat and marker._latlng.lat >= area.swLat and marker._latlng.lng <= area.neLng and marker._latlng.lng >= area.swLng
+        marker["area"] = area
 
-    if markerInfo.lat.toString() is @startLat and markerInfo.lng.toString() is @startLng
-      if not marker["infoWindow"]?
-        @createInfoWindow(marker)
-        marker["infoWindow"].open()
-      else
-        marker["infoWindow"].open()
-        
-    google.maps.event.addListener(marker, 'dragend', (e)=>
-      @saveToLocalStorage()
-      if marker["infoWindow"]?
-        marker["infoWindow"].updatePos()
-    )
-
-    google.maps.event.addListener(marker, 'click', (e)=>
-      # is it's not a new marker, simply change the hash so that our router
-      # handle the rest.
-      if marker.id_marker.toString() isnt "-1"
+    marker.on('click', (e)=>
+      if marker.id_marker.toString() isnt "-1" and !e.src?
         lang = if window.LANG is "en" then "" else "fr/"
         window.location.hash = "/#{lang}show/#{marker.id_marker}/"
       else
-        @createInfoWindow(marker)
-        if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
-        marker["infoWindow"].open()
+        if e.target.popUp?
+          e.target.popUp.open()
+        else
+          @createInfoWindow(e.target)
+    )
+    marker.on('dragend', (e)=>
+      @saveToLocalStorage()
+      if e.target.popUp
+        e.target.popUp.setLatLng(new L.LatLng(marker._latlng.lat, marker._latlng.lng))
     )
     
-    # markerType["markers"].push(marker) for markerType in @mapMarkersObject[markersCat]["marker_types"] when markerType.slug is markersType
+    if markerVisibility
+      marker.addTo(@map)
+    
     marker
   
   createInfoWindow: (marker)=>
     lang = if window.LANG is "en" then "#/" else "#/fr/"
     templateInfo = 
-      id : marker.__gm_id
+      id : marker.uniqueID
       title: (()=>
         if marker["data_translation"][LANG]["title"] || marker["data_translation"][LANG]["name"]
           return marker["data_translation"][LANG]["title"] || marker["data_translation"][LANG]["name"]
@@ -446,26 +468,20 @@ class Cartographer.CustomMap
       wikiLink  : marker["data_translation"][LANG]["link_wiki"] || ""
       hasDefaultValue : marker["hasDefaultValue"]
       type  : marker.type
-      lat   : marker.position.lat()
-      lng   : marker.position.lng()
+      lat   : marker._latlng.lat
+      lng   : marker._latlng.lng
       shareLink: "http://#{window.location.hostname}/#{lang}show/#{marker.id_marker}/"
     editInfoWindowContent = @editInfoWindowTemplate(templateInfo)
-    marker["infoWindow"] = new CustomInfoWindow(marker, editInfoWindowContent,
-      onClose : () =>
-        @currentOpenedInfoWindow = null
-      onOpen  : (infoWindow) =>
-        @currentOpenedInfoWindow = infoWindow
+    marker["popUp"] = new CustomInfoWindow(marker, editInfoWindowContent,
       onSave  : (newInfo)=>
         @updateMarkerInfos(newInfo)
       deleteCalled : (marker)=>
-        @removeMarker(marker.__gm_id, marker.type, marker.cat)
+        @removeMarker(marker.uniqueID, marker.type, marker.cat)
       moveCalled : (marker) =>
-        if marker.getDraggable()
-          marker.setDraggable(false)
-          marker.setCursor("pointer")
+        if marker.dragging.enabled()
+          marker.dragging.disable()
         else
-          marker.setDraggable(true)
-          marker.setCursor("move")
+          marker.dragging.enable()
       template : @editInfoWindowTemplate
     )
        
@@ -497,34 +513,48 @@ class Cartographer.CustomMap
           newMarker = @addMarker(marker, otherInfo, false, defaultValue)
           @mapMarkersObject[markersCat]["marker_types"][markerType]["markers"].push(newMarker)
         
+  showMarkerFromArea: (areaId)->
+    if @activeArea
+      @activeArea.areaSummary.setInactive()
+    @activeArea = @areas[areaId]
+    for cat, markersObjects of @mapMarkersObject
+      for markerType, markerTypeObject of markersObjects.marker_types when not $("[data-type='#{markerType}']").hasClass('off')
+        for marker in markerTypeObject["markers"] when marker?
+          lat = marker.getLatLng().lat
+          lng = marker.getLatLng().lng
+          if lat <= @activeArea.neLat and lat >= @activeArea.swLat and lng <= @activeArea.neLng and lng >= @activeArea.swLng
+            marker.addTo(@map)
+          else
+            @map.removeLayer(marker)
+            if marker["popUp"]
+              @map.removeLayer(marker["popUp"])
+             
   setAllMarkersVisibility:(isVisible)->
     for cat, markersObjects of @mapMarkersObject
       @setMarkersVisibilityByType(isVisible, markerType, cat) for markerType, markerTypeObject of markersObjects.marker_types when not $("[data-type='#{markerType}']").hasClass('off')
 
   setMarkersVisibilityByType:(isVisible, type, cat)->
-    for marker in @mapMarkersObject[cat]["marker_types"][type]["markers"]
-      if marker.infoWindow?
-        marker.infoWindow.setMap(null)
-        marker.infoWindow = null
-
-      marker.setVisible(isVisible)
-      if isVisible
-          marker.setMap(@map) if !marker.map?
+    for marker in @mapMarkersObject[cat]["marker_types"][type]["markers"] when marker?
+      if marker.popUp?
+        @map.removeLayer(marker.popUp)
+      lat = marker.getLatLng().lat
+      lng = marker.getLatLng().lng
+      if isVisible and marker? and lat <= @activeArea.neLat and lat >= @activeArea.swLat and lng <= @activeArea.neLng and lng >= @activeArea.swLng
+        marker.addTo(@map) if !marker._map?
       else
-          marker.setMap(null) if marker.map?
+        @map.removeLayer(marker) if marker._map?
   
   setMarkersVisibilityByCat:(isVisible, cat)->
     for markerType, markerTypeObject of @mapMarkersObject[cat]["marker_types"]
       for marker in markerTypeObject.markers
-        if marker.infoWindow?
-          marker.infoWindow.setMap(null)
-          marker.infoWindow = null
-        
-        marker.setVisible(isVisible)
-        if isVisible
-            marker.setMap(@map) if !marker.map?
+        if marker.popUp?
+          @map.removeLayer(marker.popUp)
+        lat = marker.getLatLng().lat
+        lng = marker.getLatLng().lng
+        if isVisible and lat <= @activeArea.neLat and lat >= @activeArea.swLat and lng <= @activeArea.neLng and lng >= @activeArea.swLng
+            marker.addTo(@map) if !marker._map?
         else
-            marker.setMap(null) if marker.map?
+            @map.removeLayer(marker) if marker._map?
 
   highlightsCat:(cats)->
     for markerCat, markerCatObject of @mapMarkersObject
@@ -545,7 +575,7 @@ class Cartographer.CustomMap
   sendMapForApproval: (e) =>
     this_ = $(e.currentTarget)
     ajaxUrl = this_.attr('data-ajaxUrl')
-    modal = new Cartographer.Modalbox()
+    modal = new Cartographer.Modalbox("waiting")
     confirmMessage = Traduction["notice"]["dataApproval"][LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if(e == true)
@@ -584,13 +614,13 @@ class Cartographer.CustomMap
         for marker in markerTypeObject.markers
           if marker["data_translation"]?
             nm = 
-              "lng" : marker.getPosition().lng()
-              "lat" : marker.getPosition().lat()
+              "lng" : marker._latlng.lng
+              "lat" : marker._latlng.lat
               "data_translation" : $.extend(true, {}, marker["data_translation"])
           else
             nm = 
-              "lng" : marker.getPosition().lng()
-              "lat" : marker.getPosition().lat()
+              "lng" : marker._latlng.lng
+              "lat" : marker._latlng.lat
  
           exportMarkerObject[markersCat]["marker_types"][markerType]["markers"].push(nm)
           nm["id"] = marker["id_marker"];
@@ -611,6 +641,7 @@ class Cartographer.CustomMap
     markerCat  = markerLink.attr('data-cat')
     icon       = markerLink.attr('data-icon')
     coord      = @map.getCenter()
+    
     getValue = (cat, type)=>
       defaultValue = null
       defaultDesc = @MarkersConfig[cat]["marker_types"][type]["data_translation"][LANG]["desc"]
@@ -628,14 +659,14 @@ class Cartographer.CustomMap
     if defaultValue
       newMarkerInfo =
         id        : -1
-        lat       : coord.lat()
-        lng       : coord.lng()
+        lat       : coord.lat
+        lng       : coord.lng
         draggable : true
     else
       newMarkerInfo =
         id        : -1
-        lat       : coord.lat()
-        lng       : coord.lng()
+        lat       : coord.lat
+        lng       : coord.lng
         data_translation : 
           en :
             title: ""
@@ -648,16 +679,17 @@ class Cartographer.CustomMap
         draggable : true
 
     newMarker = @addMarker(newMarkerInfo, otherInfo, true, defaultValue)
+    @map.addLayer(newMarker)
     @mapMarkersObject[markerCat]["marker_types"][markerType]["markers"].push(newMarker)
     
   removeMarker:(id, mType, mCat)->
     confirmMessage = Traduction["notice"]["deleteMarker"][LANG]
     @confirmBox.initConfirmation(confirmMessage, (e)=>
       if e
-        for marker, markerKey in @mapMarkersObject[mCat]["marker_types"][mType]["markers"] when marker.__gm_id is id
-          if marker.infoWindow?
-            marker.infoWindow.setMap(null)
-          marker.setMap(null)
+        for marker, markerKey in @mapMarkersObject[mCat]["marker_types"][mType]["markers"] when marker.uniqueID is id
+          if marker.popUp?
+            @map.removeLayer(marker.popUp)
+          @map.removeLayer(marker)
 
           @mapMarkersObject[mCat]["marker_types"][mType]['markers'] = _.reject(@mapMarkersObject[mCat]["marker_types"][mType]["markers"], (m) =>
             return m == marker
@@ -668,7 +700,7 @@ class Cartographer.CustomMap
     )
   
   updateMarkerInfos: (newInfo)->
-    for marker, markerKey in @mapMarkersObject[newInfo.cat]["marker_types"][newInfo.type]["markers"] when marker.__gm_id is newInfo.id
+    for marker, markerKey in @mapMarkersObject[newInfo.cat]["marker_types"][newInfo.type]["markers"] when marker.uniqueId is newInfo.id
       if marker["data_translation"]?
         marker["data_translation"][LANG]["desc"] = newInfo.desc
         marker["data_translation"][LANG]["title"] = newInfo.title
@@ -686,7 +718,6 @@ class Cartographer.CustomMap
     # Save new exported JSON to local storage if it is supported
     if window.LOCAL_STORAGE
       json = @handleExport()
-      console.log @localStorageKey
       localStorage.setItem(@localStorageKey, json);
 
   getMarkerByCoordinates:(lat, lng)->
@@ -713,49 +744,55 @@ class Cartographer.CustomMap
     
     # Binding click on marker icon in markers option list
     html.find(".trigger").bind 'click', (e) =>
-      item           = $(e.currentTarget)
-      myGroupTrigger = item.closest(".menu-marker").find('.group-toggling')
-      myMenuItem     = item.closest(".menu-item")
-      markerType     = item.attr('data-type')
-      markerCat      = item.attr('data-cat')
+      if @activeArea
+        item           = $(e.currentTarget)
+        myGroupTrigger = item.closest(".menu-marker").find('.group-toggling')
+        myMenuItem     = item.closest(".menu-item")
+        markerType     = item.attr('data-type')
+        markerCat      = item.attr('data-cat')
 
-      if @canToggleMarkers
-        if item.hasClass('off')
-          @setMarkersVisibilityByType(true, markerType, markerCat)
-          item.removeClass('off')
-          myMenuItem.removeClass('off')
-          myGroupTrigger.removeClass('off')
-        else
-          @setMarkersVisibilityByType(false, markerType, markerCat)
-          item.addClass('off')
+        if @canToggleMarkers
+          if item.hasClass('off')
+            @setMarkersVisibilityByType(true, markerType, markerCat)
+            item.removeClass('off')
+            myMenuItem.removeClass('off')
+            myGroupTrigger.removeClass('off')
+          else
+            @setMarkersVisibilityByType(false, markerType, markerCat)
+            item.addClass('off')
     
     html.find('.group-toggling').bind 'click', (e)=>
-      this_ = $(e.currentTarget)
-      menuItem = this_.closest('.menu-item')
-      markerCat = menuItem.attr('data-markerCat')
-      if this_.hasClass('off')
-        this_.removeClass('off')
-        menuItem.removeClass('off')
-        @setMarkersVisibilityByCat(on, markerCat)
-        menuItem.find('.trigger').removeClass('off')
-      else
-        this_.addClass('off')
-        menuItem.addClass('off')
-        @setMarkersVisibilityByCat(off, markerCat)
-        menuItem.find('.trigger').addClass('off')
+      if @activeArea
+        this_ = $(e.currentTarget)
+        menuItem = this_.closest('.menu-item')
+        markerCat = menuItem.attr('data-markerCat')
+        if this_.hasClass('off')
+          this_.removeClass('off')
+          menuItem.removeClass('off')
+          @setMarkersVisibilityByCat(on, markerCat)
+          menuItem.find('.trigger').removeClass('off')
+        else
+          this_.addClass('off')
+          menuItem.addClass('off')
+          @setMarkersVisibilityByCat(off, markerCat)
+          menuItem.find('.trigger').addClass('off')
           
     @markersOptionsMenu.find('.padding').prepend(html)
     @turnOffMenuIconsFromCat(markerCat) for markerCat of @MarkersConfig when markerCat isnt @defaultCat
       
   initializeAreaSummaryBoxes:()->
+    @areas = {}
     Cartographer.templates.get("areasSummary", (e)=>
-      for area of Areas
-        @areaSummaryBoxes[area] = new AreaSummary(@map, Areas[area], e)
+      for key, area of Areas
+        @areas[area.id] = area
+        @areas[area.id]['areaSummary'] = new AreaSummary(@map, area, e, @)
     )
-        
+  
+    
   setAreasInformationVisibility:(isVisible)->
     for box in @areaSummaryBoxes
       box.setVisible(isVisible)
+  
   toggleMarkersOptionsMenu: () ->
     @markersOptionsMenu.toggleClass('active')
   hideMarkersOptionsMenu: () ->
@@ -769,43 +806,64 @@ class Cartographer.CustomMap
 
 ###
 # class AreaSummary {{{
+#
 ###
 class AreaSummary
-   constructor:(map, area, template)->
-       swBound = new google.maps.LatLng(area.swLat, area.swLng)
-       neBound = new google.maps.LatLng(area.neLat, area.neLng)
-       @bounds_ = new google.maps.LatLngBounds(swBound, neBound)
-       @area_ = area
-       @div_ = null
-       @height_ = 80
-       @width_ = 150
-       @template = _.template(template)
-       @setMap(map)
+  constructor:(map, area, template, carto)->
+    southWest = new L.LatLng(area.swLat, area.swLng)
+    northEast = new L.LatLng(area.neLat, area.neLng)
+    @bounds = new L.LatLngBounds(southWest, northEast)
+    @map = map
+    @carto = carto
+    @areaInfo = area
+    @defaultStyle =
+      color: "black"
+      weight: 4,
+      fill: true,
+      fillOpacity: 0.5
 
-   AreaSummary:: = new google.maps.OverlayView();
+    @activeStyle = 
+      color: "black"
+      weight: 4
+      fill: false 
+    # create an orange rectangle
+    @rect = new L.rectangle(@bounds, @defaultStyle).addTo(map)
+    @rect.on('click', (e)=>
+      map.fitBounds(@bounds)
+      t = setTimeout(()=>
+        map.setZoom(6)
+      , 500)
+    )
+    
+    @template = _.template(template)
+    stringPopupContent = @template(@areaInfo)
+    popupContent = $(stringPopupContent)
+    popupContent.appendTo('html').hide()
+    myIcon = new L.divIcon(
+      className: 'area-summary'
+      html : stringPopupContent
+      iconSize: new L.Point(popupContent.outerWidth() , popupContent.outerHeight())
+    )
+    @area = new L.marker(@bounds.getCenter(), {icon: myIcon})
+    @area.on('click', (e)=>
+      @setActive()
+    )
+    @area.addTo(map)
+    popupContent.remove()
 
-   onAdd:()->
-       content = @template(@area_)
-       @div_ = $(content)[0]
-       panes = @getPanes()
-       panes.overlayImage.appendChild(@div_)
-       @setVisible(false)
-
-   draw:()->
-     overlayProjection = @getProjection()
-     sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
-     ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
-
-     div = this.div_;
-     div.style.left = sw.x + ((ne.x - sw.x) - @width_) / 2 + 'px';
-     div.style.top = ne.y + ((sw.y - ne.y) - @height_) / 2 + 'px';
-
-   setVisible:(isVisible)->
-     if @div_
-       if isVisible is true
-         @div_.style.visibility = "visible"
-       else
-         @div_.style.visibility = "hidden"
+  setActive:(callback)->
+    @map.removeLayer(@area)
+    @map.panTo(@bounds.getCenter())
+    t = setTimeout(()=>
+      @map.setZoom(6)
+      @rect.setStyle(@activeStyle)
+      @carto.showMarkerFromArea(@areaInfo.id)
+      callback() if callback?
+    , 500)
+    
+   setInactive:()->
+      @area.addTo(@map)
+      @rect.setStyle(@defaultStyle)
 ###
 # }}}
 ###                
@@ -813,154 +871,111 @@ class AreaSummary
 ###
 # class CustomInfoWindow {{{
 ###
+
 class CustomInfoWindow
- constructor: (marker, content, opts) ->
-   @content = content
-   @marker  = marker
-   @template = opts.template
-   @map     = marker.map
-   wrap = """
-   <div class="customInfoWindow">
-     <a href="javascript:" title="Close" class="close button"></a>
+  constructor: (marker, content, opts) ->
+    @content = content
+    @marker  = marker
+    @template = opts.template
+    @map     = marker.map
+    
+    @latLng = new L.LatLng(marker._latlng.lat, marker._latlng.lng)
+
+    wrap = """
+    <div class="customInfoWindow">
        <div class="padding"></div>
-   </div>
-   """
-   @wrap = $(wrap)
-   @closeBtn = @wrap.find('.close')
-   @setMap(@map)
-   @isVisible = false
-   @onClose   = opts.onClose
-   @onOpen    = opts.onOpen
-   @onSave    = opts.onSave
-   @deleteCalled = opts.deleteCalled
-   @moveCalled = opts.moveCalled
-   @closeBtn.bind('click', @close)
+    </div>
+    """
+    @wrap = $(wrap)
+    @wrap.find('.padding').append(@content)
+    @closeBtn = @wrap.find('.close')
+    
+    @isVisible = false
+    @onSave    = opts.onSave
+    @deleteCalled = opts.deleteCalled
+    @moveCalled = opts.moveCalled
+    
+    @setLatLng(@latLng)
+    @currentContent = @wrap.clone()
+    @setContent(@currentContent[0])
 
- CustomInfoWindow:: = new google.maps.OverlayView()
+    @map.openPopup(@)
+    @bindButton()
+    # @closeBtn.bind('click', @close)
 
- onAdd:()->
-     @wrap.find('.padding').append(@content)
-     @wrap.css(
-       display: "block"
-       position: "absolute"
-     )
-     panes = @getPanes()
-     panes.overlayMouseTarget.appendChild(@wrap[0])
-     @iWidth = @wrap.outerWidth()
-     @iHeight = @wrap.outerHeight()
+  CustomInfoWindow:: = new L.popup({
+    autoPanPadding : new L.Point(120, 120)
+    offset: new L.Point(0, -6)
+  })
+  
+  open: ()->
+    @.openOn(@map)
 
-     @bindButton()
-     # @open()
- bindButton: () ->
-   @wrap.find('button').bind('click', @handleSave)
-   @wrap.find('.iw-options-list .button').bind('click', @toggleSection)
-
- onRemove :() ->
-   @wrap[0].parentNode.removeChild(@wrap[0])
-   @wrap = null
-
- draw: () ->
-   cancelHandler = (e)=>
-       e.cancelBubble = true
-       if e.stopPropagation
-         e.stopPropagation()
-
-   overlayProjection = @getProjection()
-   pos = overlayProjection.fromLatLngToDivPixel(@marker.position)
-   @wrap.css(
-     left: pos.x + 30
-     top: pos.y - 80
-   )
-
-   events = ['mousedown', 'touchstart', 'touchend', 'touchmove', 'contextmenu', 'click', 'dblclick', 'mousewheel', 'DOMMouseScroll']
-   @listeners = []
-   for event in events
-     @listeners.push(google.maps.event.addDomListener(@wrap[0], event, cancelHandler);)
-
- close:()=>
-   if @wrap
-     @onClose(this)
-     @isVisible = false
-     @wrap.css(
-       display : "none"
-     )
- open:()=>
-  if @wrap
-    @panMap()
-    @onOpen(this)
-    @isVisible = true
-    @wrap.css(
-      display : "block"
+  bindButton: () ->
+    @currentContent.find('button').bind('click', @handleSave)
+    @currentContent.find('.iw-options-list .button').bind('click', (e)=>
+      @toggleSection(e)
     )
+  
+  toggleSection: (e) =>
+    this_ = $(e.currentTarget)
+    mywrap = this_.closest('.customInfoWindow')
+    action = this_.attr('data-action')
+    defaultTab = mywrap.find('.marker-desc')
+    activeTab = mywrap.find('.toggling-tab.active') 
+    targetTab = mywrap.find("[data-target='#{action}']")
+    
+    switch action
+      when "move", "share", "edit"
+        mywrap.find('.iw-options-list .button').removeClass('active')
+        if targetTab.attr("data-target") is activeTab.attr("data-target")
+          targetTab.removeClass('active')
+          defaultTab.addClass('active')
+          @._update()
+        else
+          this_.addClass('active')
+          activeTab.removeClass('active')
+          targetTab.addClass('active')
+          defaultTab.removeClass('active')
+          @._update()
+      when "delete"
+        @deleteCalled(@marker)
+ 
+    if action is "move"
+      @moveCalled(@marker)
+ 
+  handleSave: (e) =>
+    this_ = $(e.currentTarget)
+    form = @currentContent.find('.edit-form')
+    newTitle = @currentContent.find('[name="marker-title"]').val()
+    newDesc = @currentContent.find('[name="marker-description"]').val()
+    newDesc = newDesc.replace(/\n/g, '<br />');
+    newWikiLink = @currentContent.find('[name="marker-wiki"]').val()
+    form.removeClass('active')
 
- updatePos: ()->
-   overlayProjection = @getProjection()
-   pos = overlayProjection.fromLatLngToDivPixel(@marker.position)
-
-   shareInput = @wrap.find('[name="share-link"]') 
-   val = shareInput.val()
-   newVal = val.split("?")[0] + "?lat=" + @marker.position.lat() + "&lng=" + @marker.position.lng()
-   shareInput.val(newVal)
-
-   @wrap.css(
-     left: pos.x + 30
-     top: pos.y - 80
-   )
-
- toggleSection: (e) =>
-   this_ = $(e.currentTarget)
-   mywrap = this_.closest('.customInfoWindow')
-   action = this_.attr('data-action')
-   defaultTab = mywrap.find('.marker-desc')
-   activeTab = mywrap.find('.toggling-tab.active') 
-   targetTab = mywrap.find("[data-target='#{action}']")
-
-   switch action
-     when "move", "share", "edit"
-       mywrap.find('.iw-options-list .button').removeClass('active')
-       if targetTab.attr("data-target") is activeTab.attr("data-target")
-         targetTab.removeClass('active')
-         defaultTab.addClass('active')
-       else
-         this_.addClass('active')
-         activeTab.removeClass('active')
-         targetTab.addClass('active')
-         defaultTab.removeClass('active')
-     when "delete"
-       @deleteCalled(@marker)
-
-   if action is "move"
-     @moveCalled(@marker)
-
- handleSave: (e) =>
-   this_ = $(e.currentTarget)
-   form = @wrap.find('.edit-form')
-   newTitle = @wrap.find('[name="marker-title"]').val()
-   newDesc = @wrap.find('[name="marker-description"]').val()
-   newDesc = newDesc.replace(/\n/g, '<br />');
-   newWikiLink = @wrap.find('[name="marker-wiki"]').val()
-   form.removeClass('active')
-   
-   lang = if window.LANG is "en" then '#/' else "#/fr/"
-   newInfo = 
-     id    : @marker.__gm_id
-     title : newTitle
-     desc  : newDesc
-     wikiLink : newWikiLink
-     type : @marker.type
-     cat  : @marker.cat
-     lat  : @marker.position.lat()
-     lng  : @marker.position.lng()
-     shareLink: "http://#{window.location.hostname}/#{lang}show/#{@marker.id_marker}/"
-     hasDefaultValue : @marker["hasDefaultValue"]
-     
-   @wrap.find('.padding').html(@template(newInfo))
-   @bindButton()
-   @wrap.find('.edit').removeClass('active')
-   @onSave(newInfo)
-
- panMap: () -> 
-   @map.panTo(new google.maps.LatLng(@marker.position.lat(), @marker.position.lng()));
+    lang = if window.LANG is "en" then '#/' else "#/fr/"
+    newInfo = 
+      id    : @marker.uniqueId
+      title : newTitle
+      desc  : newDesc
+      wikiLink : newWikiLink
+      type : @marker.type
+      cat  : @marker.cat
+      lat  : @marker.getLatLng().lat
+      lng  : @marker.getLatLng().lng
+      shareLink: "http://#{window.location.hostname}/#{lang}show/#{@marker.id_marker}/"
+      hasDefaultValue : @marker["hasDefaultValue"]
+    
+    @wrap.find('.padding').html(@template(newInfo))
+    @currentContent = @wrap.clone()
+    @setContent(@currentContent[0])
+    @bindButton()
+    @currentContent.find('.edit').removeClass('active')
+    @._update()
+    @onSave(newInfo)
+ # 
+ # panMap: () -> 
+ #   @map.panTo(new google.maps.LatLng(@marker.position.lat(), @marker.position.lng()));
 
 ###
 # }}}
@@ -977,8 +992,9 @@ Cartographer.router = Backbone.Router.extend(
     routes = [
       [ /^\/*(en|fr)\/*$/, 'lang', this.handleLang ]
       [ /^\/*(en|fr)*\/*show\/([0-9]+)\/*$/, 'show', this.handleShow ]
-      [ /^\/*(en|fr)*\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord ]
-      [ /^\/*(en|fr)*\/*cat\/([a-zA-Z&]+)\/*$/, 'categories', this.handleCat ]
+      # [ /^\/*(en|fr)*\/*lat\/([\-0-9.]+)\/lng\/([\-0-9.]+)\/*$/, 'coord', this.handleCoord ]
+      # [ /^\/*(en|fr)*\/*cat\/([a-zA-Z&]+)\/*$/, 'categories', this.handleCat ]
+      [ /^\/*(en|fr)*\/*info\/*$/, 'info', this.handleInfo ]
     ]
     _.each(routes, (route)=>
       this.route.apply(this,route)
@@ -1004,7 +1020,11 @@ Cartographer.router = Backbone.Router.extend(
       lat : lat
       lng : lng
     )
-    
+  
+  handleInfo: (lang)->
+    if lang?
+      @handleLang(lang)
+    Cartographer.showInfo()
 ) 
 # }}}
 

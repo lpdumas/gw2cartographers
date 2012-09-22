@@ -1,7 +1,7 @@
 <ul id="edition-tools">
     <%/*http://gw2cbackend/submit-modification*/%>
     <%/*http://gw2c.jsilvestre.fr/submit-modification*/%>
-    <%/*<li><a href="javascript:" data-ajaxUrl="http://crowdsourcing.louisphilippedumas.com/submit-modification" id="send" class="button" title="Send map for approval"/></a></li>*/%>
+    <%/*<li><a href="javascript:" data-ajaxUrl="http://crowdsourcing.louisphilippedumas.com/submit-modification" id="send" class="button" title="Send map for approval"/></a></li> */%>
     <li><a href="javascript:" id="destroy" class="button" title="Remove local storage data"/></a></li>
     <li id="lang-switch">
     <% if(window.LANG === "en") {%>
@@ -14,15 +14,18 @@
 <% _.each(Markers, function(markerCat, cat) { %>
     <li class="menu-item" data-markerCat="<%= cat %>">
         <a href="javascript:" class="menu-title"><%= markerCat["data_translation"][window.LANG]["name"] %> <span class="arrow"> ▼</span></a>
-        <ul class="type-menu group">
-          <li class="type-menu-item"><a href="javascript:" class="group-toggling"><%= Traduction["markersOptions"]["toggle"][window.LANG] %></a></li>
-          <% _.each(markerCat["marker_types"], function(oMarkersInfo, type) { %>
-          <li class="type-menu-item">
-              <a href="javascript:" class="marker-type-link trigger" data-icon="<%=oMarkersInfo.icon%>" data-type="<%= type %>" data-cat="<%= cat %>" title="Click to toggle"><img src="<%= (Metadata.icons_path + oMarkersInfo.icon) %>" alt="<%= oMarkersInfo["data_translation"][window.LANG]["name"] %>" /><span><%= oMarkersInfo["data_translation"][window.LANG]["name"] %></span></a>
-              <a href="javascript:" class="add button" title="Add marker"></a>
-          </li> 
-          <% }); %>
-        </ul>
+        <div class="type-menu group">
+            <ul>
+              <li class="type-menu-item"><a href="javascript:" class="group-toggling"><%= Traduction["markersOptions"]["toggle"][window.LANG] %></a></li>
+              <% _.each(markerCat["marker_types"], function(oMarkersInfo, type) { %>
+              <li class="type-menu-item">
+                  <a href="javascript:" class="marker-type-link trigger" data-icon="<%=oMarkersInfo.icon%>" data-type="<%= type %>" data-cat="<%= cat %>" title="Click to toggle"><img src="<%= (Metadata.icons_path + oMarkersInfo.icon) %>" alt="<%= oMarkersInfo["data_translation"][window.LANG]["name"] %>" /><span><%= oMarkersInfo["data_translation"][window.LANG]["name"] %></span></a>
+                  <a href="javascript:" class="add button" title="Add marker"></a>
+              </li> 
+              <% }); %>
+            </ul>
+        </div>
+        
     </li>
 <% }); %>
 </ul>

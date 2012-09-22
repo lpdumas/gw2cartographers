@@ -11,6 +11,7 @@
   <meta name="viewport" content="width=device-width">
   <link type="image/x-icon" rel="shortcut icon" href="favicon.ico">
   <link href='http://fonts.googleapis.com/css?family=Belgrano' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="assets/stylesheets/leaflet.css" />
   <link rel="stylesheet" href="assets/stylesheets/global.css">
 
   <!--[if lt IE 9]>
@@ -40,19 +41,18 @@
     </div>
     
     <div id="notice">
-        <a style="position: absolute; right: -5px; top: -5px; color: red; display:inline-block; background: black; font-size: 125%; text-decoration: none" class="close-notice" href="javascript://">X</a>
+        <a class="close" href="javascript://">close</a>
         <div class="padding">
-            <p>IMPORTANT! Crowdsourcing tool is going down for a bit while I'm rewriting the core code. You may still edit the map, but your modifications may be lost when I'll reactivate the tool. Sorry for the inconvenience.</p>
-            <p>Questions? <strong>Bug</strong>? Send us a <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#103;&#119;&#50;&#99;&#97;&#114;&#116;&#111;&#103;&#114;&#97;&#112;&#104;&#101;&#114;&#115;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">email</a> or <a target="_blank" href="http://www.twitter.com/gw2cartographer">follow us on twitter!</a></p>
-            <p></p>
-            <p><span>0.9 beta | © 2011 ArenaNet, Inc. <a target="blank_" href="http://www.guildwars2.com/en/media/asset-kit/terms-of-use.html">Term of use</a></span></p>
+            <p>Running some test with this build. Crowdsourcing will be back when I'm sure everything is running smoothly ;)</p>
+            <p style="text-align: center;"><a target="_blank" href="https://docs.google.com/spreadsheet/viewform?formkey=dE5kV3VCeW41czR0UVIzTXl4akd5Smc6MQ">Report a bug</a>, <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#103;&#119;&#50;&#99;&#97;&#114;&#116;&#111;&#103;&#114;&#97;&#112;&#104;&#101;&#114;&#115;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">email</a>, <a target="_blank" href="http://www.twitter.com/gw2cartographer">twitter.</a></p>
         </div>
     </div>
     
+    <p id="copyright"><span>0.9.9 beta | © 2011 ArenaNet, Inc. <a target="blank_" href="https://www.guildwars2.com/en/legal/guild-wars-2-content-terms-of-use/">Term of use</a></span></p>
     
-    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="assets/javascripts/libs/jquery-latest.js"><\/script>')</script>
+    <script src="assets/javascripts/libs/leaflet.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="assets/javascripts/libs/jquery.js"><\/script>')</script>
     <script src="assets/javascripts/libs/underscore.js"></script>
     <script src="assets/javascripts/libs/backbone.js"></script>
     <!--
