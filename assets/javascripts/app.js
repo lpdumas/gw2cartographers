@@ -1014,9 +1014,10 @@
       _ref = this.mapMarkersObject[newInfo.cat]["marker_types"][newInfo.type]["markers"];
       for (markerKey = _i = 0, _len = _ref.length; _i < _len; markerKey = ++_i) {
         marker = _ref[markerKey];
-        if (!(marker.uniqueId === newInfo.id)) {
+        if (!(marker.uniqueID === newInfo.id)) {
           continue;
         }
+        console.log(marker);
         if (marker["data_translation"] != null) {
           marker["data_translation"][LANG]["desc"] = newInfo.desc;
           marker["data_translation"][LANG]["title"] = newInfo.title;
@@ -1355,7 +1356,7 @@
       form.removeClass('active');
       lang = window.LANG === "en" ? '#/' : "#/fr/";
       newInfo = {
-        id: this.marker.uniqueId,
+        id: this.marker.uniqueID,
         title: newTitle,
         desc: newDesc,
         wikiLink: newWikiLink,
