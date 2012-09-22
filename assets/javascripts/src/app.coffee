@@ -697,7 +697,8 @@ class Cartographer.CustomMap
     )
   
   updateMarkerInfos: (newInfo)->
-    for marker, markerKey in @mapMarkersObject[newInfo.cat]["marker_types"][newInfo.type]["markers"] when marker.uniqueId is newInfo.id
+    for marker, markerKey in @mapMarkersObject[newInfo.cat]["marker_types"][newInfo.type]["markers"] when marker.uniqueID is newInfo.id
+      console.log marker
       if marker["data_translation"]?
         marker["data_translation"][LANG]["desc"] = newInfo.desc
         marker["data_translation"][LANG]["title"] = newInfo.title
@@ -952,7 +953,7 @@ class CustomInfoWindow
 
     lang = if window.LANG is "en" then '#/' else "#/fr/"
     newInfo = 
-      id    : @marker.uniqueId
+      id    : @marker.uniqueID
       title : newTitle
       desc  : newDesc
       wikiLink : newWikiLink
