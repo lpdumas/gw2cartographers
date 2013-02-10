@@ -271,21 +271,12 @@ class Cartographer.CustomMap
       opts.onLoad(@)
     )
     
-    # google.maps.event.addListenerOnce(@map, 'idle', ()=>
-    #       @handleLocalStorageLoad(()=>
-    #         
-
-    #         
-    #         # UI
-    #         $('#send').bind('click', @sendMapForApproval)
-    #         
-    #         
-    #         opts.onLoad()
-    #       )
-    # )
-    
   bindMapEvents: ()->
     
+    # @map.on('click', (e) =>
+      # console.log "Lat : #{e.latlng.lat}, Lng : #{e.latlng.lng}"
+    # )
+
     @map.on('zoomend', (e)=>
       zoomLevel = e.target._zoom
       if zoomLevel == 4
@@ -304,10 +295,6 @@ class Cartographer.CustomMap
       parent.toggleClass('active')
     )
     
-    # google.maps.event.addListener(@map, 'click', (e)=>
-    #   console.log "Lat : #{e.latLng.lat()}, Lng : #{e.latLng.lng()}"
-    # )
-    
   highlightMarker: (marker)->
     if @currentOpenedInfoWindow then @currentOpenedInfoWindow.close()
     marker.setVisible(true)
@@ -324,7 +311,6 @@ class Cartographer.CustomMap
       for markerType, markerTypeObject of markersObjects.marker_types
         for marker in markerTypeObject.markers
           if coord.lat is marker.position.lat().toString() and coord.lng is marker.position.lng().toString()
-            # @highlightMarker(marker)
             marker.trigger('click', ['test'])
             
   panToMarker: (markerId)->
@@ -569,6 +555,7 @@ class Cartographer.CustomMap
         localStorage.removeItem(@localStorageKey);
         window.location = "/"
     )
+    
   sendMapForApproval: (e) =>
     this_ = $(e.currentTarget)
     ajaxUrl = this_.attr('data-ajaxUrl')
@@ -677,6 +664,7 @@ class Cartographer.CustomMap
 
     newMarker = @addMarker(newMarkerInfo, otherInfo, true, defaultValue)
     @map.addLayer(newMarker)
+    console.log @mapMarkersObject
     @mapMarkersObject[markerCat]["marker_types"][markerType]["markers"].push(newMarker)
     
   removeMarker:(id, mType, mCat)->
