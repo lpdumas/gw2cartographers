@@ -27,6 +27,9 @@
 
   Cartographer.initiate = function() {
     var _this = this;
+    $('.close-notice').click(function(e) {
+      return $(e.target).closest('#notice').hide();
+    });
     this.templates = new Cartographer.TemplatesLoader();
     $('#notice .close').click(function() {
       return $(this).closest('#notice').hide();

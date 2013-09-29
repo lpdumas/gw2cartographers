@@ -25,6 +25,9 @@ window.LOCAL_STORAGE = (()->
 ###############{{{
 Cartographer.initiate = ()->
   # Instanciating the template loader
+  $('.close-notice').click((e)->
+    $(e.target).closest('#notice').hide()
+  )
   @templates = new Cartographer.TemplatesLoader()
   $('#notice .close').click(()->
     $(this).closest('#notice').hide()
