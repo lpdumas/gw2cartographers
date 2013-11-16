@@ -1,6 +1,0 @@
-<p class="confirm-message"><%= choiceMessage %></p>
-<ul>
-    <% _.each(choiceActions, function(obj, key) { %>
-        <li><a class="choice-action" href="javascript:"><%= obj.msg %></a></li>
-    <% }); %>
-</ul>
