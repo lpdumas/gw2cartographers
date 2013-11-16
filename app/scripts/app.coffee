@@ -4,7 +4,7 @@ DEFAULTS =
   mapType: 'pve'
 
 Carto.init = ->
-  myMap = new Carto.Maps[DEFAULTS.mapType]()
+  myMap = new Carto.Maps[DEFAULTS.mapType]('leaflet-map')
 
-
-$(document).on 'ready', Carto.init
+$ Carto.init
+# $(document).on 'ready',
