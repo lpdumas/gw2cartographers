@@ -8,11 +8,8 @@ class Carto.Maps.pve extends Carto.Map
   constructor: (containerId) ->
     super(containerId)
 
-    @mapFloorData = []
     @markerIcons  = {}
-    @UI           = {}
-    @UI.rectangle = {}
-    @UI.markers   = {}
+    @areas        = {}
 
     @tiles = L.tileLayer "https://tiles.guildwars2.com/1/1/{z}/{x}/{y}.jpg",
       minZoom: 0,
@@ -53,40 +50,19 @@ class Carto.Maps.pve extends Carto.Map
         iconAnchor: [16,16]
 
     @markerIcons =
-      waypoint : L.icon(getIconsOptions('waypoints'))
-      poi      : L.icon(getIconsOptions('poi'))
+      waypoints   : L.icon(getIconsOptions('waypoints'))
+      poi         : L.icon(getIconsOptions('poi'))
+      skillpoints : L.icon(getIconsOptions('skillpoints'))
+      tasks       : L.icon(getIconsOptions('tasks'))
 
     callback()
 
   handleUI: (data) =>
     console?.log "====================="
     for key, region of data.regions
-      for k, map of region.maps
-        for region in @regions when map.name is region
-          @UI.rectangle[map.name] = new Carto.UI.Area(map.continent_rect, map.name, @map)
-          @UI.markers[map.name]   = {}
-          @handlePOIcreation(map.name, map.points_of_interest)
-
-
-  handlePOIcreation: (regionName, poiArray) =>
-    @UI.markers[regionName]["points_of_interest"] = {}
-    @UI.markers[regionName]["waypoints"] = {}
-
-    for poi in poiArray
-      coord  = Carto.helpers.LatLng poi.coord, @map
-      markerInfos =
-        coord: coord
-        name: poi.name
-        data: poi
-
-      if poi.type isnt "waypoint"
-        markerInfos.icon = @markerIcons["poi"]
-        marker = @createMarker(markerInfos)
-        @UI.markers[regionName]["points_of_interest"][poi.poi_id] = marker
-      else
-        markerInfos.icon = @markerIcons["waypoint"]
-        marker = @createMarker(markerInfos)
-        @UI.markers[regionName]["waypoints"][poi.poi_id] = marker
+      for k, area of region.maps
+        for region in @regions when area.name is region
+          @areas[area.name] = new Carto.Maps.Area area, @
 
       # marker.addTo @map
 

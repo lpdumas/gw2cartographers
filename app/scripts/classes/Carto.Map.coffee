@@ -8,19 +8,12 @@ class Carto.Map
       crs: L.CRS.Simple
     ).setView([0, 0], 0)
 
-    southWest = Carto.helpers.LatLng [0,32768], @map
-    northEast = Carto.helpers.LatLng [32768,0], @map
+    southWest = Carto.helpers.LatLng [0,36768], @map
+    northEast = Carto.helpers.LatLng [36768,0], @map
 
     @map.setMaxBounds new L.LatLngBounds(southWest, northEast)
 
-  createMarker: (markerInfos) ->
 
-    marker = new L.Marker markerInfos.coord,
-      title: markerInfos.name,
-      icon: markerInfos.icon
-
-    marker.data = markerInfos.data
-    return marker
-
-
-
+  addToMap: (markersObjet) =>
+    for key, marker of markersObjet
+      marker.addTo @map
