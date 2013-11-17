@@ -8,13 +8,19 @@ class Carto.Map
       crs: L.CRS.Simple
     ).setView([0, 0], 0)
 
-    southWest = @map.unproject([0,32768], @map.getMaxZoom())
-    northEast = @map.unproject([32768,0], @map.getMaxZoom())
+    southWest = Carto.helpers.LatLng [0,32768], @map
+    northEast = Carto.helpers.LatLng [32768,0], @map
 
     @map.setMaxBounds new L.LatLngBounds(southWest, northEast)
 
-    onMapClick = (e) =>
-      console.log("You clicked the map at " + @map.project(e.latlng))
+  createMarker: (markerInfos) ->
 
-    @map.on("click", onMapClick)
+    marker = new L.Marker markerInfos.coord,
+      title: markerInfos.name,
+      icon: markerInfos.icon
+
+    marker.data = markerInfos.data
+    return marker
+
+
 

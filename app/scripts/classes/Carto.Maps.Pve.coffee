@@ -9,6 +9,7 @@ class Carto.Maps.pve extends Carto.Map
     super(containerId)
 
     @mapFloorData = []
+    @markerIcons  = {}
     @UI           = {}
     @UI.rectangle = {}
     @UI.markers   = {}
@@ -20,64 +21,74 @@ class Carto.Maps.pve extends Carto.Map
 
     @tiles.addTo @map
 
+    # Starting a async series call to the GW2 API
+    async.series
+      generateMarkerIcons : @generateMarkerIcons
+      getRegionsData      : @getRegionsData
+    , @handleUI
+
+
+  getRegionsData: (callback) =>
+    _onSingleAreaFetched = (data) =>
+      console?.log "#{data.name} fetched..."
+
+    _onAllAreaFetched = (data) =>
+      callback(data)
+
+    _onAreaFetchFail = (data) =>
+
     floorInfosJSONPath = "https://api.guildwars2.com/v1/map_floor.json?continent_id=1&floor=1"
 
     oboe(floorInfosJSONPath)
-    .node('regions.*', @_onSingleAreaFetched)
-    .done(@_onAllAreaFetched)
-    .fail(@_onAreaFetchFail)
+    .node('regions.*', _onSingleAreaFetched)
+    .done(_onAllAreaFetched)
+    .fail(_onAreaFetchFail)
 
-  _onSingleAreaFetched: (data) =>
-    console?.log "#{data.name} fetched..."
+  generateMarkerIcons: (callback) =>
+    getIconsOptions = (name) =>
+      options =
+        iconUrl: "/images/icons/#{name}.png"
+        iconRetinaUrl: "/images/icons/#{name}.png"
+        iconSize: [32, 32],
+        iconAnchor: [16,16]
 
-  _onAllAreaFetched: (data) =>
+    @markerIcons =
+      waypoint : L.icon(getIconsOptions('waypoints'))
+      poi      : L.icon(getIconsOptions('poi'))
+
+    callback()
+
+  handleUI: (data) =>
     console?.log "====================="
     for key, region of data.regions
       for k, map of region.maps
         for region in @regions when map.name is region
           @UI.rectangle[map.name] = new Carto.UI.Area(map.continent_rect, map.name, @map)
           @UI.markers[map.name]   = {}
-
           @handlePOIcreation(map.name, map.points_of_interest)
 
-  _onAreaFetchFail: (data) =>
 
   handlePOIcreation: (regionName, poiArray) =>
-    # console?.log regionName
-    # console?.log poiArray
-    @UI.markers[regionName]["points_of_interest"] = []
-    @UI.markers[regionName]["waypoints"] = []
+    @UI.markers[regionName]["points_of_interest"] = {}
+    @UI.markers[regionName]["waypoints"] = {}
 
     for poi in poiArray
+      coord  = Carto.helpers.LatLng poi.coord, @map
+      markerInfos =
+        coord: coord
+        name: poi.name
+        data: poi
+
       if poi.type isnt "waypoint"
-        coord  = @map.unproject(poi.coord, @map.getMaxZoom())
-
-        myIcon = L.icon
-          iconUrl: '/images/icons/poi.png'
-          iconRetinaUrl: '/images/icons/poi.png'
-          iconSize: [32, 32],
-          iconAnchor: [16,16]
-
-        marker = new L.Marker coord,
-          title: poi.name,
-          icon: myIcon
-        @UI.markers[regionName]["points_of_interest"].push marker
-        marker.addTo @map
-
+        markerInfos.icon = @markerIcons["poi"]
+        marker = @createMarker(markerInfos)
+        @UI.markers[regionName]["points_of_interest"][poi.poi_id] = marker
       else
-        coord  = @map.unproject(poi.coord, @map.getMaxZoom())
+        markerInfos.icon = @markerIcons["waypoint"]
+        marker = @createMarker(markerInfos)
+        @UI.markers[regionName]["waypoints"][poi.poi_id] = marker
 
-        myIcon = L.icon
-          iconUrl: '/images/icons/waypoints.png'
-          iconRetinaUrl: '/images/icons/waypoints.png'
-          iconSize: [32, 32],
-          iconAnchor: [16,16]
-
-        marker = new L.Marker coord,
-          title: poi.name,
-          icon: myIcon
-        @UI.markers[regionName]["waypoints"].push marker
-        marker.addTo @map
+      # marker.addTo @map
 
 
 

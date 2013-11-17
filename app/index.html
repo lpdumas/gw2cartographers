@@ -23,13 +23,13 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-
         <div id="leaflet-map" class="js-leaflet-map leaflet-map"></div>
 
 
         <!-- build:js scripts/vendor.js -->
         <!-- bower:js -->
         <script src="bower_components/jquery/jquery.js"></script>
+        <script src="bower_components/async/lib/async.js"></script>
         <script src="libs/leaflet.js"></script>
         <script src="libs/oboe.js"></script>
         <!-- endbower -->
@@ -46,6 +46,7 @@
         </script>
 
         <!-- build:js(.tmp) scripts/coffee.js -->
+        <script src="scripts/helpers.js"></script>
         <script src="scripts/classes/Carto.UI.Area.js"></script>
         <script src="scripts/classes/Carto.Map.js"></script>
         <script src="scripts/classes/Carto.Maps.Pve.js"></script>
