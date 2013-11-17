@@ -3,13 +3,13 @@ Carto.UI     ?= {}
 class Carto.UI.Area
   constructor: (bounds, name, map) ->
     defaultStyle =
-      color: "black"
-      weight: 4,
+      color: "white"
+      weight: 2,
       fill: true,
-      fillOpacity: 0.5
+      fillOpacity: 0.2
 
     activeStyle =
-      color: "black"
+      color: "white"
       weight: 4
       fill: false
 

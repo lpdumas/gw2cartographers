@@ -1,7 +1,6 @@
 window.Carto ?= {}
 class Carto.Map
   constructor: (containerId) ->
-    console?.log containerId
 
     @map = L.map(containerId,
       minZoom: 0
