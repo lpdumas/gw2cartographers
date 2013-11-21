@@ -20,6 +20,10 @@ module.exports = function (grunt) {
             dist: 'dist'
         },
         watch: {
+            handlebars: {
+                files: '<%= yeoman.app %>/views/**/*.hbs',
+                tasks: ['handlebars']
+            },
             coffee: {
                 files: ['<%= yeoman.app %>/scripts/{,*/}*.{coffee,litcoffee,coffee.md}'],
                 tasks: ['coffee:dist']
@@ -159,6 +163,13 @@ module.exports = function (grunt) {
             server: {
                 options: {
                     debugInfo: true
+                }
+            }
+        },
+        handlebars: {
+            compile: {
+                files: {
+                  '.tmp/scripts/compiled-templates.js': '<%= yeoman.app %>/views/{,*/}*.hbs'
                 }
             }
         },
@@ -312,13 +323,15 @@ module.exports = function (grunt) {
             server: [
                 'compass',
                 'coffee:dist',
-                'copy:styles'
+                'copy:styles',
+                'handlebars'
             ],
             test: [
                 'coffee',
                 'copy:styles'
             ],
             dist: [
+                'handlebars',
                 'coffee',
                 'compass',
                 'copy:styles',

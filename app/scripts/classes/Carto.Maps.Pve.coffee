@@ -7,7 +7,6 @@ class Carto.Maps.pve extends Carto.Map
 
   constructor: (containerId) ->
     super(containerId)
-
     @activeArea   = null
     @markerIcons  = {}
     @areas        = {}
@@ -63,6 +62,8 @@ class Carto.Maps.pve extends Carto.Map
       for k, area of region.maps
         for region in @regions when area.name is region
           @areas[area.name] = new Carto.Maps.Area area, @
+
+    OVERLAYUI.append JST["app/views/overlay-ui-pve-toolbar.hbs"]()
 
   setActiveArea: (area) =>
     @activeArea = area
