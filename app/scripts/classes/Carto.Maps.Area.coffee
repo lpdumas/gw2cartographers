@@ -62,10 +62,19 @@ class Carto.Maps.Area
       marker = Carto.helpers.CreateMarker(markerInfos)
       @markers["tasks"][task.task_id] = marker
 
-  setActive: () =>
-    @rectangle.hide()
-    @parent.map.setMaxBounds @rectangle.bounds
-
+  setInactive: () ->
+    @rectangle.show()
     for markerType, markersObject of @markers
-      @parent.addToMap(markersObject)
+      for key, marker of markersObject
+        @parent.map.removeLayer marker
+
+  setActive: () =>
+    @parent.closeActiveArea()
+    @parent.setActiveArea(@)
+    @rectangle.hide()
+
+    @parent.map.setMaxBounds @rectangle.bounds.pad(0.9)
+    @parent.map.panTo @rectangle.bounds.getCenter()
+
+    @parent.addToMap(markersObject) for markerType, markersObject of @markers
 

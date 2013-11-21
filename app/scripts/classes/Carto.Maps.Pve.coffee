@@ -8,6 +8,7 @@ class Carto.Maps.pve extends Carto.Map
   constructor: (containerId) ->
     super(containerId)
 
+    @activeArea   = null
     @markerIcons  = {}
     @areas        = {}
 
@@ -58,12 +59,16 @@ class Carto.Maps.pve extends Carto.Map
     callback()
 
   handleUI: (data) =>
-    console?.log "====================="
     for key, region of data.regions
       for k, area of region.maps
         for region in @regions when area.name is region
           @areas[area.name] = new Carto.Maps.Area area, @
 
+  setActiveArea: (area) =>
+    @activeArea = area
+
+  closeActiveArea: () =>
+    @activeArea?.setInactive()
       # marker.addTo @map
 
 
