@@ -1,10 +1,66 @@
 .ui-pve-toolbar
-  background: #333333
+  @extend .clearfix
+  +transform(translateY(-$toolbarHeight))
+  +transition(transform 200ms ease)
+  +box-shadow(0 0 6px black)
+  background: rgba(#333333, 0.9)
   color: white
   left: 0
   height: $toolbarHeight
-  padding: 5px 10px
+  padding: 0 0
   position: fixed
   top: 0
   width: 100%
   z-index: 15
+
+  &.active
+    +transform(translateY(0))
+
+  .active-area
+    display: inline-block
+    font-family: "Menomonia", Arial
+    font-size: 16px
+    height: 100%
+    line-height: $toolbarHeight
+    margin-left: 20px
+    vertical-align: middle
+
+  .left-col,
+  .right-col
+    height: 100%
+    line-height: $toolbarHeight
+    width: 50%
+
+  .right-col
+    float: right
+
+  .left-col
+    float: left
+
+.ui-pve-toolbar-menu
+  @extend .clearfix
+  height: 100%
+  list-style: none
+  margin: 0
+  padding: 0
+
+  li
+    border-left: 1px solid #777777
+    display: inline-block
+    height: 100%
+    float: right
+
+.ui-toolbar-button
+  +transition(color 200ms linear, background 200ms linear)
+  font-size: 13px
+  background: transparent
+  border: none
+  color: white
+  height: 100%
+  line-height: 100%
+  margin: 0
+  padding: 0 20px
+
+  &:hover
+    background-color: black
+    color: #666666

@@ -7,9 +7,11 @@ class Carto.Maps.pve extends Carto.Map
 
   constructor: (containerId) ->
     super(containerId)
-    @activeArea   = null
-    @markerIcons  = {}
-    @areas        = {}
+    @$toolbar       = null
+    @activeArea     = null
+    @activeAreaName = @regions[Math.floor(Math.random()*@regions.length)]
+    @markerIcons    = {}
+    @areas          = {}
 
     @tiles = L.tileLayer "https://tiles.guildwars2.com/1/1/{z}/{x}/{y}.jpg",
       minZoom: 0,
@@ -21,7 +23,7 @@ class Carto.Maps.pve extends Carto.Map
     # Starting a async series call to the GW2 API
     async.series
       generateMarkerIcons : @generateMarkerIcons
-      getRegionsData      : @getRegionsData
+      # getRegionsData      : @getRegionsData
     , @handleUI
 
 
@@ -33,6 +35,7 @@ class Carto.Maps.pve extends Carto.Map
       callback(data)
 
     _onAreaFetchFail = (data) =>
+      console?.log "There seems to be a problem with the guildwars2 API ..."
 
     floorInfosJSONPath = "https://api.guildwars2.com/v1/map_floor.json?continent_id=1&floor=1"
 
@@ -58,12 +61,18 @@ class Carto.Maps.pve extends Carto.Map
     callback()
 
   handleUI: (data) =>
-    for key, region of data.regions
+    for key, region of data?.regions
       for k, area of region.maps
         for region in @regions when area.name is region
           @areas[area.name] = new Carto.Maps.Area area, @
 
-    OVERLAYUI.append JST["app/views/overlay-ui-pve-toolbar.hbs"]()
+
+    @$toolbar = $(JST["app/views/overlay-ui-pve-toolbar.hbs"]())
+    OVERLAYUI.append @$toolbar
+
+    t = setTimeout =>
+      @$toolbar.addClass 'active'
+    , 900
 
   setActiveArea: (area) =>
     @activeArea = area
