@@ -1,10 +1,21 @@
 <div class="ui-pve-toolbar">
   <div class="left-col">
-    <span class="active-area">Tyria :: <span data-bind="text: activeAreaName">Queensdale</span></span>
+  </div>
+
+  <div class="center-col">
+    <span class="active-area" data-bind="text: activeAreaName">Queensdale</span>
   </div>
 
   <div class="right-col">
     <ul class="ui-pve-toolbar-menu">
+      <li>
+        <select class="world-select">
+          <option value="Coucouc">Choose your world</option>
+          <option value="1">option1</option>
+          <option value="2">option2</option>
+          <option value="3">option3</option>
+        </select>
+      </li>
       <li><button class="js-close-toolbar ui-toolbar-button"><span class="icon-close"></span></button></li>
     </ul>
   </div>

@@ -19,23 +19,24 @@
   .active-area
     display: inline-block
     font-family: "Menomonia", Arial
-    font-size: 16px
+    font-size: 20px
     height: 100%
     line-height: $toolbarHeight
-    margin-left: 20px
     vertical-align: middle
 
   .left-col,
-  .right-col
+  .right-col,
+  .center-col
+    float: left
     height: 100%
     line-height: $toolbarHeight
-    width: 50%
+    width: 33.33333333%
 
-  .right-col
-    float: right
+  .center-col
+    text-align: center
 
-  .left-col
-    float: left
+  select.world-select
+    min-width: 350px
 
 .ui-pve-toolbar-menu
   @extend .clearfix
@@ -43,12 +44,12 @@
   list-style: none
   margin: 0
   padding: 0
+  text-align: right
 
   li
     border-left: 1px solid #777777
     display: inline-block
     height: 100%
-    float: right
 
 .ui-toolbar-button
   +transition(color 200ms linear, background 200ms linear)
