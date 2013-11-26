@@ -29,7 +29,7 @@ class Carto.Maps.pve extends Carto.Map
 
 
   getRegionsData: (callback) =>
-    floorInfosJSONPath = "https://api.guildwars2.com/v1/map_floors.json?continent_id=1&floor=1"
+    floorInfosJSONPath = "https://api.guildwars2.com/v1/map_floor.json?continent_id=1&floor=1"
     staticfloorInfosJSONPath = "/floor.json"
 
     _onSingleAreaFetched = (data) =>
