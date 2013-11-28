@@ -3,20 +3,15 @@
   </div>
 
   <div class="center-col">
-    <span class="active-area" data-bind="text: activeAreaName">Queensdale</span>
+    <span class="active-area" data-bind="text: activeAreaName"></span>
   </div>
 
   <div class="right-col">
     <ul class="ui-pve-toolbar-menu">
-      <li>
-        <select class="world-select">
-          <option value="Coucouc">Choose your world</option>
-          <option value="1">option1</option>
-          <option value="2">option2</option>
-          <option value="3">option3</option>
-        </select>
+      <li data-bind="if: worldDataFetched">
+        <select class="world-select js-world-select" data-bind="options: worlds, optionsText: 'name', optionsCaption: 'Select your world'"></select>
       </li>
-      <li><button class="js-close-toolbar ui-toolbar-button"><span class="icon-close"></span></button></li>
+      <li><button data-bind="click: closeActiveArea" class="js-close-toolbar ui-toolbar-button"><span class="icon-close"></span></button></li>
     </ul>
   </div>
 </div>

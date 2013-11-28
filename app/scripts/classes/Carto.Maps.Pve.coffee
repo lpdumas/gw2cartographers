@@ -7,12 +7,19 @@ class Carto.Maps.pve extends Carto.Map
 
   constructor: (containerId) ->
     super(containerId)
-    @$toolbar       = null
-    @activeArea     = null
-    test =  @regions[Math.floor(Math.random()*@regions.length)];
-    @activeAreaName = ko.observable(test);
-    @markerIcons    = {}
-    @areas          = {}
+    @$toolbar         = null
+    @activeArea       = null
+    @worldSelect      = null
+    @worldDataFetched = ko.observable(false)
+    @worlds           = ko.observableArray()
+    @activeAreaName   = ko.observable()
+    @markerIcons      = {}
+    @areas            = {}
+
+    @apiPath =
+      floor :      "https://api.guildwars2.com/v1/map_floor.json?continent_id=1&floor=1"
+      staticFloor: "/floor.json"
+      world :      "https://api.guildwars2.com/v1/world_names.json?lang=en"
 
     @tiles = L.tileLayer "https://tiles.guildwars2.com/1/1/{z}/{x}/{y}.jpg",
       minZoom: 0,
@@ -29,8 +36,7 @@ class Carto.Maps.pve extends Carto.Map
 
 
   getRegionsData: (callback) =>
-    floorInfosJSONPath = "https://api.guildwars2.com/v1/map_floor.json?continent_id=1&floor=1"
-    staticfloorInfosJSONPath = "/floor.json"
+    staticfloorInfosJSONPath =
 
     _onSingleAreaFetched = (data) =>
       console?.log "#{data.name} fetched..."
@@ -40,15 +46,34 @@ class Carto.Maps.pve extends Carto.Map
 
     _onAreaFetchFail = (data) =>
       console?.log "There seems to be a problem with the guildwars2 API ... getting static data"
-      oboe(staticfloorInfosJSONPath)
+      oboe(@apiPath.staticFloor)
       .node('regions.*', _onSingleAreaFetched)
       .done(_onAllAreaFetched)
       .fail(_onAreaFetchFail)
 
-    oboe(floorInfosJSONPath)
+    oboe(@apiPath.floor)
     .node('regions.*', _onSingleAreaFetched)
     .done(_onAllAreaFetched)
     .fail(_onAreaFetchFail)
+
+  getWorldDataAsync: ->
+    _onWorldDataFetched = (worldData) =>
+      console?.log worldData
+      for worldObject in worldData
+        @worlds.push worldObject
+
+      @worldDataFetched(true)
+      @worldSelect = $(".js-world-select")
+      @worldSelect.select2
+        width: 165
+
+    _onWorldDataFetchFail = (data) =>
+      console?.log data
+      console?.log "There seems to be a problem with the guildwars2 world API ... getting static data"
+
+    oboe(@apiPath.world)
+    .done(_onWorldDataFetched)
+    .fail(_onWorldDataFetchFail)
 
   generateMarkerIcons: (callback) =>
     getIconsOptions = (name) =>
@@ -67,6 +92,7 @@ class Carto.Maps.pve extends Carto.Map
     callback()
 
   handleUI: (data) =>
+
     for key, region of data?.regions
       for k, area of region.maps
         for region in @regions when area.name is region
@@ -76,23 +102,21 @@ class Carto.Maps.pve extends Carto.Map
     @$toolbar = $(JST["app/views/overlay-ui-pve-toolbar.hbs"]())
     OVERLAYUI.append @$toolbar
 
-    $("select").select2
-      width: 165
+    @getWorldDataAsync()
 
+    # Applying KnockoutJS binding
     ko.applyBindings @
-
-    t = setTimeout =>
-      @$toolbar.addClass 'active'
-    , 900
 
   setActiveArea: (area) =>
     @activeArea = area
-    # @activeAreaName = area.name
-    console?.log @activeAreaName(area.name)
+    @$toolbar.addClass 'active'
+    @activeAreaName @activeArea.name
 
-
-  closeActiveArea: () =>
+  closeActiveArea: (shouldZoomOut = true) =>
     @activeArea?.setInactive()
+    @$toolbar.removeClass 'active'
+    @setDefaultBounds()
+    @map.setView(@map.getCenter(), 0) if shouldZoomOut
       # marker.addTo @map
 
 

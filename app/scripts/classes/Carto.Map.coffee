@@ -8,12 +8,14 @@ class Carto.Map
       crs: L.CRS.Simple
     ).setView([0, 0], 0)
 
-    southWest = Carto.helpers.LatLng [0,36768], @map
-    northEast = Carto.helpers.LatLng [36768,0], @map
+    @defaultSouthWest = Carto.helpers.LatLng [0,36768], @map
+    @defaultNorthEast = Carto.helpers.LatLng [36768,0], @map
 
-    @map.setMaxBounds new L.LatLngBounds(southWest, northEast)
-
+    @setDefaultBounds()
 
   addToMap: (markersObjet) =>
     for key, marker of markersObjet
       marker.addTo @map
+
+  setDefaultBounds: ->
+    @map.setMaxBounds new L.LatLngBounds(@defaultSouthWest, @defaultNorthEast)

@@ -69,7 +69,7 @@ class Carto.Maps.Area
         @parent.map.removeLayer marker
 
   setActive: () =>
-    @parent.closeActiveArea()
+    @parent.closeActiveArea(false)
     @parent.setActiveArea(@)
     @rectangle.hide()
 
