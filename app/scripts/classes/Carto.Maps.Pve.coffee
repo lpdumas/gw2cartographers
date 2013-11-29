@@ -7,14 +7,15 @@ class Carto.Maps.pve extends Carto.Map
 
   constructor: (containerId) ->
     super(containerId)
-    @$toolbar         = null
-    @activeArea       = null
-    @worldSelect      = null
-    @worldDataFetched = ko.observable(false)
-    @worlds           = ko.observableArray()
-    @activeAreaName   = ko.observable()
-    @markerIcons      = {}
-    @areas            = {}
+    @$toolbar          = null
+    @activeArea        = null
+    @worldSelect       = null
+    @selectedWorldName = ko.observable()
+    @worldDataFetched  = ko.observable(false)
+    @worlds            = ko.observableArray()
+    @activeAreaName    = ko.observable()
+    @markerIcons       = {}
+    @areas             = {}
 
     @apiPath =
       floor :      "https://api.guildwars2.com/v1/map_floor.json?continent_id=1&floor=1"
@@ -34,6 +35,11 @@ class Carto.Maps.pve extends Carto.Map
       getRegionsData      : @getRegionsData
     , @handleUI
 
+    # Calling @onWorldChange when world select user interaction
+    koWorldListener = @selectedWorldName.subscribe @onWorldChange
+
+  onWorldChange: (val) =>
+    console?.log "fetching dynamic events data for #{@activeAreaName()} on #{@selectedWorldName().name} world"
 
   getRegionsData: (callback) =>
     staticfloorInfosJSONPath =
@@ -58,17 +64,15 @@ class Carto.Maps.pve extends Carto.Map
 
   getWorldDataAsync: ->
     _onWorldDataFetched = (worldData) =>
-      console?.log worldData
       for worldObject in worldData
         @worlds.push worldObject
 
       @worldDataFetched(true)
       @worldSelect = $(".js-world-select")
-      @worldSelect.select2
-        width: 165
+      # @worldSelect.select2
+        # width: 165
 
     _onWorldDataFetchFail = (data) =>
-      console?.log data
       console?.log "There seems to be a problem with the guildwars2 world API ... getting static data"
 
     oboe(@apiPath.world)

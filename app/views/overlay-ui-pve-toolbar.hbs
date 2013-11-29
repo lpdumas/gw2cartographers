@@ -9,7 +9,7 @@
   <div class="right-col">
     <ul class="ui-pve-toolbar-menu">
       <li data-bind="if: worldDataFetched">
-        <select class="world-select js-world-select" data-bind="options: worlds, optionsText: 'name', optionsCaption: 'Select your world'"></select>
+        <select class="world-select js-world-select" data-bind="options: worlds, optionsText: 'name', optionsCaption: 'Select your world', value: selectedWorldName"></select>
       </li>
       <li><button data-bind="click: closeActiveArea" class="js-close-toolbar ui-toolbar-button"><span class="icon-close"></span></button></li>
     </ul>
