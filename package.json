@@ -1,0 +1,30 @@
+{
+  "name": "reactStarter",
+  "version": "1.0.0",
+  "description": "Simple react starter",
+  "main": "index.js",
+  "author": "Louis-Philippe Dumas",
+  "dependencies": {
+    "jquery": "^1.11.3",
+    "leaflet": "^0.7.3",
+    "react": "0.13.3",
+    "reflux": "^0.2.7"
+  },
+  "devDependencies": {
+    "browserify": "^6.2.0",
+    "gulp": "^3.8.11",
+    "gulp-autoprefixer": "^2.2.0",
+    "gulp-ruby-sass": "^1.0.5",
+    "gulp-serve": "^0.3.1",
+    "gulp-util": "^3.0.4",
+    "jest-cli": "~0.1.17",
+    "lodash.assign": "^3.1.0",
+    "react-router": "^0.13.3",
+    "reactify": "^0.15.2",
+    "uglify-js": "~2.4.15",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^2.1.1"
+  },
+  "license": "ISC"
+}
